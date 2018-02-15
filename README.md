@@ -2,7 +2,7 @@
 
 Execute Gherkin scenarios in Jest
 
-[Jest Cucumber Demo](./images/jest-cucumber-demo.gif?raw=true)
+<img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" width="100%" />
 
 ## Motivation
 
