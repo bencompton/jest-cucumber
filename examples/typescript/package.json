@@ -1,0 +1,30 @@
+{
+  "name": "jest-cucumber-examples",
+  "version": "1.0.0",
+  "description": "Execute Gherkin scenarios in Jest",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
+  "scripts": {
+    "test": "jest --color",
+    "update-jest-cucumber": "cd ../../ && npm run build && cd ./examples/typescript/ && rm -rf node_modules/jest-cucumber && npm install"
+  },
+  "devDependencies": {
+    "jest": "^22.3.0",
+    "ts-jest": "^22.0.4",
+    "typescript": "^2.7.2",
+    "jest-cucumber": "file:../../"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/*.steps.ts"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "tsx"
+    ]
+  }
+}
