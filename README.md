@@ -6,7 +6,7 @@ Execute Gherkin scenarios in Jest
 
 ## Motivation
 
-Jest is an excellent test runner with great features like parallel test execution, mocking, snapshots, code coverage, etc. If you're using VS Code, there's also a terrific [Jest extension](https://github.com/jest-community/vscode-jest) that allows you get realtime feedback as you're writing your tests and easily debug failing tests individually. Cucumber is a popular tool for doing Acceptance Test-Driven Development and creating business-readable executable specifications. This library aims to achieve the best of both worlds, and even run your unit tests and acceptance tests in the same test runner.
+Jest is an excellent test runner with great features like parallel test execution, mocking, snapshots, code coverage, etc. If you're using VS Code, there's also a terrific [Jest extension](https://github.com/jest-community/vscode-jest) that allows you get realtime feedback as you're writing your tests and easily debug failing tests individually. [Cucumber](https://cucumber.io) is a popular tool for doing [Acceptance Test-Driven Development](https://en.wikipedia.org/wiki/Acceptance_test–driven_development) and creating business-readable executable specifications. This library aims to achieve the best of both worlds, and even run your unit tests and acceptance tests in the same test runner.
 
 ## Getting Started
 
