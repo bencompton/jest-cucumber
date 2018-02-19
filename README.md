@@ -217,6 +217,7 @@ Scenario: Adding an item to my todo list
   | Sign up for unemployment              | high     |
 ```
 
+```javascript
 import { defineFeature, loadFeature } from 'cucumber-jest';
 import TodoList from '../TodoList';
 
@@ -256,6 +257,7 @@ defineFeature(feature, test => {
     });
   });
 });
+```
 
 ### Scenario outlines
 
