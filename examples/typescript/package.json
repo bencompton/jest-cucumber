@@ -11,8 +11,7 @@
   "devDependencies": {
     "jest": "^22.3.0",
     "ts-jest": "^22.0.4",
-    "typescript": "^2.7.2",
-    "jest-cucumber": "file:../../"
+    "typescript": "^2.7.2"
   },
   "jest": {
     "transform": {

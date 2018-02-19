@@ -14,8 +14,9 @@ export type FeatureFromStepDefinitions = {
 };
 
 export type ParsedStep = {
+    keyword: string;
     stepText: string;
-    stepArgument: any;
+    stepArgument: string | {};
 };
 
 export type ParsedScenario = {

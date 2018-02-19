@@ -1,4 +1,5 @@
 import { FeatureFromStepDefinitions, ScenarioFromStepDefinitions, ParsedFeature, ParsedScenario, ParsedScenarioOutline } from '../models';
+import { generateScenarioCode } from '../code-generation';
 
 const findScenarioFromParsedFeature = (
     errors: string[],
@@ -13,7 +14,7 @@ const findScenarioFromParsedFeature = (
     }
 
     if (matchingScenarios.length === 0) {
-        errors.push(`No scenarios found in feature file that match scenario title "${scenarioTitle}"`);
+        errors.push(`No scenarios found in feature file that match scenario title "${scenarioTitle}."`);
 
         return null;
     } else if (matchingScenarios.length > 1) {
@@ -28,13 +29,14 @@ const findScenarioFromParsedFeature = (
 const findScenarioFromStepDefinitions = (
     errors: string[],
     scenariosFromStepDefinitions: ScenarioFromStepDefinitions[],
-    scenarioTitle: string
+    scenario: ParsedScenario | ParsedScenarioOutline
 ) => {
+    const scenarioTitle = scenario.title;
     const matchingScenarios = scenariosFromStepDefinitions
         .filter(scenarioFromStepDefinitions => scenarioFromStepDefinitions.title.toLocaleLowerCase() === scenarioTitle.toLocaleLowerCase());
 
     if (matchingScenarios.length === 0) {
-        errors.push(`Feature file has a scenario titled "${scenarioTitle}", but no match found in step definitions.`);
+        errors.push(`Feature file has a scenario titled "${scenarioTitle}", but no match found in step definitions. Try adding the following code:\n\n${generateScenarioCode(scenario)}`);
 
         return null;
     } else if (matchingScenarios.length > 1) {
@@ -90,7 +92,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
 
     if (parsedFeature && parsedFeature.scenarios && parsedFeature.scenarios.length) {
         parsedScenarios.forEach(parsedScenario => {
-            findScenarioFromStepDefinitions(errors, featureFromStepDefinitions && featureFromStepDefinitions.scenarios, parsedScenario.title);
+            findScenarioFromStepDefinitions(errors, featureFromStepDefinitions && featureFromStepDefinitions.scenarios, parsedScenario);
         });
     }
 

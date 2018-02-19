@@ -8,7 +8,10 @@
         "outDir": "dist",
         "strict": true,
         "rootDir": ".",
-        "lib": ["esnext"]
+        "lib": ["esnext"],
+        "paths": {
+            "jest-cucumber": ["../../src/"]
+        }
     },
     "exclude": [
         "node_modules",

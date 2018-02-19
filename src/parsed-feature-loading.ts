@@ -55,6 +55,7 @@ const parseStepArgument = (astStepArgument: any) => {
 const parseStep = (astStep: any) => {
     return <ParsedStep>{
         stepText: astStep.text,
+        keyword: <string>(astStep.keyword).trim().toLowerCase(),
         stepArgument: parseStepArgument(astStep.argument)
     };
 };

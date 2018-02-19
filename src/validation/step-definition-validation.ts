@@ -19,6 +19,10 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
         return;
     }
 
+    if (!parsedScenario) {
+        return;
+    }
+
     const errors: string[] = [];
 
     let parsedScenarioSteps: ParsedStep[];
