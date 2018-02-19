@@ -217,6 +217,46 @@ Scenario: Adding an item to my todo list
   | Sign up for unemployment              | high     |
 ```
 
+import { defineFeature, loadFeature } from 'cucumber-jest';
+import TodoList from '../TodoList';
+
+const feature = loadFeature('./features/TodoList.feature');
+
+defineFeature(feature, test => {
+  let todoList;
+		
+  beforeEach(() => {
+    todoList = new TodoList();
+  });
+
+  test('Adding an item to my todo list', ({ given, when, then }) => {
+    given('my todo list currently looks as follows:', table => {
+      table.forEach(row => {
+        todoList.add({
+	  name: row.TaskName,
+	  priority: row.Priority
+	});
+      });
+    });
+
+    when('I add the following task:', table => {
+      todoList.add({
+        name: table[0].TaskName,
+	priority: table[0].Priority
+      });
+    });
+
+    then('I should see the following todo list:', table => {
+      expect(todoList.items.length).toBe(table.length);
+    
+      table.forEach((row, index) => {
+        expect(todoList.items[index].name).toBe(table[index].TaskName);
+	expect(todoList.items[index].priority).toBe(table[index].Priority);
+      });
+    });
+  });
+});
+
 ### Scenario outlines
 
 ```gherkin
@@ -233,6 +273,36 @@ Scenario Outline: Selling an item
   | Autographed Neil deGrasse Tyson book           | 100    |
   | Rick Astley t-shirt                            | 22     |
   | An idea to replace EVERYTHING with blockchains | $0     |
+```
+
+```javascript
+import { defineFeature, loadFeature } from 'cucumber-jest';
+import { OnlineSales} from '../OnlineSales';
+
+const feature = loadFeature('./features/OnlineSales.feature');
+
+defineFeature(feature, test => {
+  let onlineSales;
+  let salesPrice;
+		
+  beforeEach(() => {
+    onlineSales = new OnlineSales();
+  });
+
+  test('Selling an item', ({ given, when, then }) => {
+    given(/^I have a\(n\) (.*)$/, itemName => {
+      onlineSales.listItem(itemName);
+    });
+
+    when(/^I sell the (.*)$/, itemName, => {
+      salesPrise = onlineSales.sell(itemName);
+    });
+
+    then(/^I should get \$(.*)$/, amount => {
+      expect(salesPrice).toBe(amount);
+    });
+  });
+});
 ```
 
 ### Re-using step definitions
