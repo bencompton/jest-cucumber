@@ -2,7 +2,7 @@
 
 Execute Gherkin scenarios in Jest
 
-[Jest Cucumber Demo](./images/jest-cucumber-demo.gif?raw=true)
+<img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" width="100%" />
 
 ## Motivation
 
@@ -13,7 +13,7 @@ Jest is an excellent test runner with great features like parallel test executio
 ### Install Jest Cucumber:
 
 ```
-npm install jest-cucumber-jest
+npm install jest-cucumber
 ```
 
 ### Add a Feature file:
