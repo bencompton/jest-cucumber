@@ -37,10 +37,36 @@ Scenario: Launching a SpaceX rocket
   ],
 ```
 
-### Add a file with your step definitions:
+### Add a step definition file that links to your feature file:
 
 ```javascript
-//rocket-launching.spec.js
+//rocket-launching.steps.js
+
+import { defineFeature, loadFeature } from 'cucumber-jest';
+
+const feature = loadFeature('./features/RocketLaunching.feature');
+```
+
+### Add a Jest test for each scenario into your step definition file:
+
+```javascript
+//rocket-launching.steps.js
+
+import { defineFeature, loadFeature } from 'cucumber-jest';
+
+const feature = loadFeature('./features/RocketLaunching.feature');
+
+defineFeature(feature, test => {
+  test('Launching a SpaceX rocket', ({ given, when, then }) => {
+
+  });
+});
+```
+
+### Add step definitions to your scenario Jest tests:
+
+```javascript
+//rocket-launching.steps.js
 
 import { defineFeature, loadFeature } from 'cucumber-jest';
 import Rocket from '../Rocket';
@@ -73,6 +99,62 @@ defineFeature(feature, test => {
   });
 });
 ```
+
+## Additional Configuration Options
+
+### Disabling scenario / step definition validation
+
+Cucumber's approach is to start with your feature file and execute the step definitions in the order defined in the feature file. In contrast, jest-cucumber scenarios are merely Jest tests. In order to provide the same ability as Cucumber to keep the feature files and step definitions in sync, jest-cucumber validates your step definitions against the feature file.
+
+By default, this step definition / feature file validation is enabled. If you have scenarios that are defined in the feature file, but not in your step definitions for that feature file, jest-cucumber will raise an error (and provide starter code). If you have scenarios defined in your step definitions for that aren't in your feature file, jest-cucumber will also raise an error. Additionally, jest-cucumber also validates that the steps you define within your scenarios match the steps that are defined in the feature file, and are in the same order. 
+
+If you would prefer not to have this validation occur (perhaps you just want to consume Gherkin tables in your feature file, etc.), then validation can be disabled like so:
+
+```javascript
+import { defineFeature, loadFeature } from 'cucumber-jest';
+
+const feature = loadFeature('./features/RocketLaunching.feature', {
+  errorOnMissingScenariosAndSteps: false
+});
+```
+
+### Tag filtering
+
+jest-cucumber also has the ability to specify a tag filter. This simply causes jest-cucumber to ignore missing scenarios during validation that do not match the specified tag(s).
+
+For example, consider the following feature file:
+
+```gherkin
+Feature: Tagged scenarios
+
+  @included
+  Scenario: Tagged scenario that is included
+    Given my scenario has a tag that is included in my jest-cucumber step definitions tag filter
+    But I don't have that scenario defined in my step definitions
+    When I execute my jest-cucumber scenarios
+    Then jest-cucumber should show me an error
+  
+  @not-included
+  Scenario: Tagged scenario that is not included
+    Given my scenario has a tag that is NOT included in my jest-cucumber step definitions tag filter
+    But I don't have that scenario defined in my step definitions
+    When I execute my jest-cucumber scenarios
+    Then jest-cucumber should NOT show me an error
+```
+
+Consider the following step definitions file:
+
+```javascript
+import { defineFeature, loadFeature } from 'cucumber-jest';
+
+const feature = loadFeature('./features/RocketLaunching.feature', {
+  tagFilter: ['@included']
+});
+
+//No scenarios defined yet
+```
+
+In this case with a tag filter and no scenarios defined, jest-cucumber will raise an error about the first scenario, and will not raise an error about the second scenario.
 
 ## More Examples
 
