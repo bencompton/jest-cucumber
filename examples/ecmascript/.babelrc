@@ -1,0 +1,12 @@
+{
+    "presets": [
+        "env"
+    ],
+    "plugins": [
+        ["module-resolver", {
+            "alias": {
+                "jest-cucumber": "../../dist/src"
+            }
+        }]
+    ]
+}

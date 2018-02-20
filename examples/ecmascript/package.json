@@ -1,0 +1,28 @@
+{
+  "name": "jest-cucumber-examples",
+  "version": "1.0.0",
+  "description": "Execute Gherkin scenarios in Jest",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "test": "jest --color"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.4.0",
+    "babel-plugin-module-resolver": "^3.1.0",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.3.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "testMatch": [
+      "**/*.steps.js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ]
+  }
+}
