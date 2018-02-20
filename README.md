@@ -359,17 +359,23 @@ defineFeature(feature, test => {
 
 Note that examples are provided in both ECMAScript and TypeScript.
 
-### Running from the CMD line
+First, build jest-cucumber: 
 
 ```
-cd examples\ecmascript\
-npm install
-npm test
+$npm run build
+```
 
-cd ..
-cd typescript
-npm install
-npm test
+### Running examples from the CMD line
+
+```
+$ cd examples\ecmascript\
+$ npm install
+$ npm test
+
+$ cd ..
+$ cd typescript
+$ npm install
+$ npm test
 ```
 
 ### Running via Visual Studio Code Jest extension
