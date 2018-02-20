@@ -42,7 +42,7 @@ Scenario: Launching a SpaceX rocket
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 ```
@@ -52,7 +52,7 @@ const feature = loadFeature('./features/RocketLaunching.feature');
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 
@@ -309,7 +309,7 @@ defineFeature(feature, test => {
 
 ### Re-using step definitions
 
-Cucumber Jest expects you to define all of your step definitions inline for each scenario exactly as they are defined in your feature file. This makes your automation code easy to read: it reads pretty much like your feature file. However, there will often be cases where the same steps are repeated in multiple scenarios.
+Jest Cucumber expects you to define all of your step definitions inline for each scenario exactly as they are defined in your feature file. This makes your automation code easy to read: it reads pretty much like your feature file. However, there will often be cases where the same steps are repeated in multiple scenarios.
 
 It is normally recommended that your test code contain as little logic as possible, with common setup logic abstracted into other modules (e.g., test data creation), so there really shouldn't be much duplicated code in the first place. To further reduce duplicated code, you could do something like this:
 
@@ -354,3 +354,35 @@ defineFeature(feature, test => {
   });
 });
 ```
+
+## Running the examples
+
+Note that examples are provided in both ECMAScript and TypeScript.
+
+First, build jest-cucumber: 
+
+```
+$ npm install
+$ npm run build
+```
+
+### Running examples from the CMD line
+
+```
+$ cd examples\ecmascript\
+$ npm install
+$ npm test
+
+$ cd ..
+$ cd typescript
+$ npm install
+$ npm test
+```
+
+### Running via Visual Studio Code Jest extension
+
+1. Install the [VS Code Jest extension](https://github.com/jest-community/vscode-jest)
+
+2. Open either the examples\ecmascript or examples\typescript directory in VS Code. If you open the root jest-cucumber directory in VS Code, the Jest extension won't find your tests by default.
+
+3. The extension should perform an initial test run. Afterwards, you should be able to navigate to the step definitions and see that they are passing, edit them to make them fail, etc.
