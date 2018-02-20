@@ -90,7 +90,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
         });
     }
 
-    if (parsedFeature && parsedFeature.scenarios && parsedFeature.scenarios.length) {
+    if (parsedScenarios && parsedScenarios.length) {
         parsedScenarios.forEach(parsedScenario => {
             findScenarioFromStepDefinitions(errors, featureFromStepDefinitions && featureFromStepDefinitions.scenarios, parsedScenario);
         });

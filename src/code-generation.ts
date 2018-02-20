@@ -6,32 +6,40 @@ const scenarioTemplate = (scenarioTitle: string, steps: string) =>
 });`;
 
 const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) =>
-`${stepKeyword}('${stepMatcher}', (${stepArgumentVariables.join(', ')}) => {
+`${stepKeyword}(${stepMatcher}, (${stepArgumentVariables.join(', ')}) => {
         pending();
     });`;
 
-const stepTextArgumentRegex = /( [-+]?[0-9]*\.?[0-9]+|\".+\")/;
+const stepTextArgumentRegex = /([-+]?[0-9]*\.?[0-9]+|\"(.+)\"|\"?\<(.*)\>\"?)/g;
 
 const escapeRegexCharacters = (text: string) => {
     return text
-        .replace(/\$/g, '\$');
+        .replace(/\$/g, '\\$')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)');
 };
 
 const convertStepTextToRegex = (step: ParsedStep) => {
     let stepText = escapeRegexCharacters(step.stepText);
+    let match: RegExpExecArray | null;
 
-    return `/^${stepText}}$/`;
+    while (match = stepTextArgumentRegex.exec(stepText)) {
+        stepText = stepText.replace(new RegExp(match[1], 'g'), '(.*)');
+    }
+
+    return `/^${stepText}$/`;
 };
 
 const getStepArguments = (step: ParsedStep) => {
     const stepArgumentVariables: string[] = [];
-    const argumentMatches = step.stepText.match(stepTextArgumentRegex);
 
-    if (argumentMatches) {
-        argumentMatches.forEach((match, index) => {
-            stepArgumentVariables.push(`arg${index}`);
-        });
-    }
+    let match: RegExpExecArray | null;
+    let index: number = 0;
+
+    while (match = stepTextArgumentRegex.exec(step.stepText)) {
+        stepArgumentVariables.push(`arg${index}`);
+        index++;
+    }    
 
     if (step.stepArgument) {
         if (typeof step.stepArgument === 'string') {
@@ -50,7 +58,7 @@ const getStepMatcher = (step: ParsedStep) => {
     if (step.stepText.match(stepTextArgumentRegex)) {
         stepMatcher = convertStepTextToRegex(step);
     } else {
-        stepMatcher = step.stepText;
+        stepMatcher = `'${step.stepText}'`;
     }
 
     return stepMatcher;
@@ -82,15 +90,8 @@ export const generateStepCode = (steps: ParsedStep[], stepPosition: number) => {
 
 export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {    
     let stepsCode: string[];
-    let steps: ParsedStep[];
     
-    if ((<ParsedScenario>scenario).steps) {
-        steps = (<ParsedScenario>scenario).steps;
-    } else {
-        steps = (<ParsedScenarioOutline>scenario).scenarios[0].steps;
-    }
-
-    stepsCode = steps.map((step, index) => generateStepCode(steps, index));
+    stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
 
     return scenarioTemplate(scenario.title, stepsCode.join('\n\n\t'));
 };

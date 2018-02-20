@@ -25,14 +25,10 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
 
     const errors: string[] = [];
 
-    let parsedScenarioSteps: ParsedStep[];
+    let parsedScenarioSteps: ParsedStep[] = [];
 
     if ((<ParsedScenario>parsedScenario).steps) {
         parsedScenarioSteps = (<ParsedScenario>parsedScenario).steps;
-    } else {
-        const parsedScenarioOutline = (<ParsedScenarioOutline>parsedScenario);
-        const firstScenario = parsedScenarioOutline.scenarios[0];
-        parsedScenarioSteps = firstScenario && firstScenario.steps;
     }
 
     const parsedStepCount = parsedScenarioSteps.length;

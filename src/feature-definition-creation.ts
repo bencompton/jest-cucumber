@@ -95,8 +95,6 @@ const createDefineScenarioFunction = (featureFromStepDefinitions: FeatureFromSte
             parsedScenarioOutline.scenarios.forEach(scenario => {
                 defineScenario(scenarioFromStepDefinitions, scenario);
             });
-        } else {
-            throw new Error(`Scenario with title "${scenarioTitle}" not found`);
         }
     };
 };

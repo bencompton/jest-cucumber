@@ -123,7 +123,8 @@ const parseScenarioOutline = (astScenarioOutline: any) => {
     return <ParsedScenarioOutline>{
         title: outlineScenario.title,
         scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.examples, outlineScenario),
-        tags: outlineScenario.tags
+        tags: outlineScenario.tags,
+        steps: outlineScenario.steps
     };
 };
 

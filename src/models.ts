@@ -29,6 +29,7 @@ export type ParsedScenarioOutline = {
     title: string;
     tags: string[];
     scenarios: ParsedScenario[];
+    steps: ParsedStep[];
 };
 
 export type ParsedFeature = {

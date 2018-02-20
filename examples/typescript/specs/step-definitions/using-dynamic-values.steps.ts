@@ -11,17 +11,17 @@ defineFeature(feature, test => {
         myAccount = new BankAccount();
     });
 
-    test('Depositing a paycheck', ({ given, when, then }) => {
-        given(/^my account balance is \$(.*)$/, accountBalance => {
-            myAccount.deposit(parseInt(accountBalance));
+    test('Depositing a paycheck', ({ given, when, then, pending }) => {
+        given(/^my account balance is \$(.*)$/, balance => {
+            myAccount.deposit(parseInt(balance));
         });
 
-        when(/^I get paid \$(.*) for writing some awesome code$/, amount => {
-            myAccount.deposit(parseInt(amount));
+        when(/^I get paid \$(.*) for writing some awesome code$/, paycheck => {
+            myAccount.deposit(parseInt(paycheck));
         });
 
-        then(/^my account balance should be \$(.*)$/, accountBalance => {
-            expect(myAccount.balance).toBe(parseInt(accountBalance));
+        then(/^my account balance should be \$(.*)$/, expectedBalance => {
+            expect(myAccount.balance).toBe(parseInt(expectedBalance));
         });
-    });
+    });    
 });
