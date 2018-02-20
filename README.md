@@ -42,7 +42,7 @@ Scenario: Launching a SpaceX rocket
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 ```
@@ -52,7 +52,7 @@ const feature = loadFeature('./features/RocketLaunching.feature');
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 
@@ -354,3 +354,28 @@ defineFeature(feature, test => {
   });
 });
 ```
+
+## Running the examples
+
+Note that examples are provided in both EcmaScript and TypeScript.
+
+### Running from the CMD line
+
+```
+cd examples\ecmascript\
+npm install
+npm test
+
+cd ..
+cd typescript
+npm install
+npm test
+```
+
+### Running via Visual Studio Code Jest extension
+
+1. Install the [VS Code Jest extension](https://github.com/jest-community/vscode-jest)
+
+2. Open either the examples\ecmascript or examples\typescript directory in VS Code. If you open the root jest-cucumber directory in VS Code, the Jest extension won't find your tests by default.
+
+3. The extension should perform an initial test run. Afterwards, you should be able to navigate to the step definitions and see that they are passing, edit them to make them fail, etc.
