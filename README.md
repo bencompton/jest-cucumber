@@ -357,7 +357,7 @@ defineFeature(feature, test => {
 
 ## Running the examples
 
-Note that examples are provided in both EcmaScript and TypeScript.
+Note that examples are provided in both ECMAScript and TypeScript.
 
 ### Running from the CMD line
 
