@@ -68,7 +68,7 @@ defineFeature(feature, test => {
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 import Rocket from '../Rocket';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
@@ -111,7 +111,7 @@ By default, this step definition / feature file validation is enabled. If you ha
 If you would prefer not to have this validation occur (perhaps you just want to consume Gherkin tables in your feature file, etc.), then validation can be disabled like so:
 
 ```javascript
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature', {
   errorOnMissingScenariosAndSteps: false
@@ -145,7 +145,7 @@ Feature: Tagged scenarios
 Consider the following step definitions file:
 
 ```javascript
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature', {
   tagFilter: ['@included']
@@ -170,7 +170,7 @@ Scenario: Depositing a paycheck
 ```
 
 ```javascript
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 import BankAccount from '../BankAccount';
 
 const feature = loadFeature('./features/GettingRichWritingSoftware.feature');
@@ -218,7 +218,7 @@ Scenario: Adding an item to my todo list
 ```
 
 ```javascript
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 import TodoList from '../TodoList';
 
 const feature = loadFeature('./features/TodoList.feature');
@@ -278,7 +278,7 @@ Scenario Outline: Selling an item
 ```
 
 ```javascript
-import { defineFeature, loadFeature } from 'cucumber-jest';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 import { OnlineSales} from '../OnlineSales';
 
 const feature = loadFeature('./features/OnlineSales.feature');
