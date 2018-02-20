@@ -381,8 +381,10 @@ $ npm test
 
 ### Running via Visual Studio Code Jest extension
 
-1. Install the [VS Code Jest extension](https://github.com/jest-community/vscode-jest)
+1. Ensure that running the tests from the CMD line works (see above)
 
-2. Open either the examples\ecmascript or examples\typescript directory in VS Code. If you open the root jest-cucumber directory in VS Code, the Jest extension won't find your tests by default.
+2. Install the [VS Code Jest extension](https://github.com/jest-community/vscode-jest)
 
-3. The extension should perform an initial test run. Afterwards, you should be able to navigate to the step definitions and see that they are passing, edit them to make them fail, etc.
+3. Open either the examples\ecmascript or examples\typescript directory in VS Code. If you open the root jest-cucumber directory in VS Code, the Jest extension won't find your tests by default.
+
+4. The extension should perform an initial test run. Afterwards, you should be able to navigate to the step definitions and see that they are passing, edit them to make them fail, etc.
