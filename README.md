@@ -362,7 +362,7 @@ Note that examples are provided in both ECMAScript and TypeScript.
 First, build jest-cucumber: 
 
 ```
-$npm run build
+$ npm run build
 ```
 
 ### Running examples from the CMD line
