@@ -1,6 +1,6 @@
 {
   "name": "jest-cucumber",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Execute Gherkin scenarios in Jest",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
