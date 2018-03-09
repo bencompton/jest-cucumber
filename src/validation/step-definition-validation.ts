@@ -27,7 +27,15 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
 
     let parsedScenarioSteps: ParsedStep[] = [];
 
-    if ((<ParsedScenario>parsedScenario).steps) {
+    if ((<ParsedScenarioOutline>parsedScenario).scenarios) {
+        const parsedScenarioOutlineScenarios = (<ParsedScenarioOutline>parsedScenario).scenarios;
+
+        if (parsedScenarioOutlineScenarios && parsedScenarioOutlineScenarios.length) {
+            parsedScenarioSteps = parsedScenarioOutlineScenarios[0].steps;
+        } else {
+            parsedScenarioSteps = [];
+        }
+    } else if ((<ParsedScenario>parsedScenario).steps) {
         parsedScenarioSteps = (<ParsedScenario>parsedScenario).steps;
     }
 

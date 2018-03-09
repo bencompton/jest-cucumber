@@ -20,7 +20,7 @@ defineFeature(feature, test => {
             salesPrice = onlineSales.sellItem(item);
         });
 
-        then(/^I should get \$(.*)$/, expectedSalesPrice => {
+        then(/^I should get \$(\d+)$/, expectedSalesPrice => {
             expect(salesPrice).toBe(parseInt(expectedSalesPrice));
         });
     });    
