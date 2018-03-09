@@ -1,7 +1,7 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from '../../../../src/';
 import { TodoList } from '../../src/todo-list';
 
-const feature = loadFeature('./specs/features/using-gherkin-tables.feature');
+const feature = loadFeature('./examples/typescript/specs/features/using-gherkin-tables.feature');
 
 defineFeature(feature, test => {
     let todoList: TodoList;

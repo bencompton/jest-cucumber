@@ -1,8 +1,8 @@
-import { loadFeature, defineFeature } from 'jest-cucumber';
+import { loadFeature, defineFeature } from '../../../../src/';
 
 import { Rocket } from '../../src/rocket';
 
-const feature = loadFeature('./specs/features/basic-scenarios.feature');
+const feature = loadFeature('./examples/typescript/specs/features/basic-scenarios.feature');
 
 defineFeature(feature, test => {
     test('Launching a SpaceX rocket', ({ given, when, then }) => {
@@ -25,7 +25,7 @@ defineFeature(feature, test => {
         });
 
         then('nobody should doubt me ever again', () => {
-            expect('people').not.toBe('haters');
+            expect('people').not.toBe('');
         });
     });
 });

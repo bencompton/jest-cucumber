@@ -1,8 +1,8 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from '../../../../src/';
 
 import { BankAccount } from '../../src/bank-account';
 
-const feature = loadFeature('./specs/features/using-dynamic-values.feature');
+const feature = loadFeature('./examples/typescript/specs/features/using-dynamic-values.feature');
 
 defineFeature(feature, test => {
     let myAccount: BankAccount;

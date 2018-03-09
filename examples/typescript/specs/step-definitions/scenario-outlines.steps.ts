@@ -1,7 +1,7 @@
-import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from '../../../../src/';
 import { OnlineSales } from '../../src/online-sales';
 
-const feature = loadFeature('./specs/features/scenario-outlines.feature');
+const feature = loadFeature('./examples/typescript/specs/features/scenario-outlines.feature');
 
 defineFeature(feature, test => {
     let onlineSales: OnlineSales;
