@@ -393,7 +393,7 @@ $ npm test
 
 4. The extension should perform an initial test run the directories above are opened. Afterwards, you should be able to navigate to the step definitions and see that they are passing, edit them to make them fail, etc.
 
-#### Running via Majestic
+### Running via Majestic
 
 1. Ensure that running the tests from the CMD line works (see above)
 
