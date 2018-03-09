@@ -183,15 +183,15 @@ defineFeature(feature, test => {
   });
 
   test('Depositing a paycheck', ({ given, when, then }) => {
-    given(/^my account balance is \$(.*)$/, accountBalance => {
+    given(/^my account balance is \$(\d+)$/, accountBalance => {
       myAccount.deposit(parseInt(accountBalance));
     });
 
-    when(/^I get paid \$(.*) for writing awesome code$/, amount, => {
+    when(/^I get paid \$(\d+) for writing awesome code$/, amount, => {
       myAccount.deposit(parseInt(amount));
     });
 
-    then(/^my account balance should be \$(.*)$/, accountBalance => {
+    then(/^my account balance should be \$(\d+)$/, accountBalance => {
       expect(myAccount.balance).toBe(parseInt(accountBalance));
     });
   });
@@ -300,7 +300,7 @@ defineFeature(feature, test => {
       salesPrise = onlineSales.sell(itemName);
     });
 
-    then(/^I should get \$(.*)$/, amount => {
+    then(/^I should get \$(\d+)$/, amount => {
       expect(salesPrice).toBe(amount);
     });
   });
@@ -322,13 +322,13 @@ defineFeature(feature, test => {
   });
 	
   const givenIHaveMoneyInMyBankAccount = given => {
-    given(/I have \$(.*) in my bank account/, balance => {
+    given(/I have \$(\d+) in my bank account/, balance => {
       myAccount.deposit(balance);
     });
   };
 
   const thenMyBalanceShouldBe = then => {
-    then(/my balance should be \$(.*)/, balance => {
+    then(/my balance should be \$(\d+)/, balance => {
       expect(myAccount.balance).toBe(balance);
     });
   };
@@ -336,7 +336,7 @@ defineFeature(feature, test => {
   test('Making a deposit', ({ given, when, then }) => {
     givenIHaveMoneyInMyBankAccount(given);
 
-    when(/I deposit \$(.*)/, deposit => {
+    when(/I deposit \$(\d+)/, deposit => {
       myAccount.deposit(deposit);
     });
 
@@ -346,7 +346,7 @@ defineFeature(feature, test => {
   test('Making a withdrawal', ({ given, when, then }) => {
     givenIHaveDollarsInMyBankAccount(given);
 
-    when(/I withdraw \$(.*)/, withdrawal => {
+    when(/I withdraw \$(\d+)/, withdrawal => {
       myAccount.withdraw(withdrawal);
     });		
 
