@@ -321,7 +321,7 @@ defineFeature(feature, test => {
     myAccount = new BankAccount();
   });
 	
-  const givenIHaveMoneyInMyBankAccount = given => {
+  const givenIHaveXDollarsInMyBankAccount = given => {
     given(/I have \$(\d+) in my bank account/, balance => {
       myAccount.deposit(balance);
     });
@@ -334,7 +334,7 @@ defineFeature(feature, test => {
   };
 
   test('Making a deposit', ({ given, when, then }) => {
-    givenIHaveMoneyInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given);
 
     when(/I deposit \$(\d+)/, deposit => {
       myAccount.deposit(deposit);
@@ -344,7 +344,7 @@ defineFeature(feature, test => {
   });
 	
   test('Making a withdrawal', ({ given, when, then }) => {
-    givenIHaveDollarsInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given);
 
     when(/I withdraw \$(\d+)/, withdrawal => {
       myAccount.withdraw(withdrawal);
