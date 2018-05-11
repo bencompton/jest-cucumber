@@ -87,6 +87,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
         }, scenarioStep.stepText);
 
         return <ParsedStep>{
+            ...scenarioStep,
             stepText
         };
     });
