@@ -86,13 +86,12 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
             return processedStepText.replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
         }, scenarioStep.stepText);
 
-        var stepArgument;
+        let stepArgument;
         if(scenarioStep.stepArgument) {
             stepArgument = (<any>scenarioStep.stepArgument).map((stepArgumentRow: any) => {
-                var modifiedStepAgrumentRow = {...stepArgumentRow};
-                Object.keys(exampleTableRow).forEach(function (nextTableColumn) {
-                    for(var prop in modifiedStepAgrumentRow)
-                    {
+                const modifiedStepAgrumentRow = {...stepArgumentRow};
+                Object.keys(exampleTableRow).forEach((nextTableColumn) => {
+                    for(const prop in modifiedStepAgrumentRow) {
                         modifiedStepAgrumentRow[prop] = modifiedStepAgrumentRow[prop].replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
                     }
                 });
