@@ -37,9 +37,18 @@ export type ParsedFeature = {
     scenarios: ParsedScenario[];
     scenarioOutlines: ParsedScenarioOutline[];
     options: Options;
+    tags: string[];
+};
+
+export type ScenarioNameTemplateVars = {
+    featureTitle: string;
+    scenarioTitle: string;
+    scenarioTags: string[];
+    featureTags: string[];
 };
 
 export type Options = {
     tagFilter?: string[];
     errorOnMissingScenariosAndSteps?: boolean;
+    scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
 };

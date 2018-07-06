@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "TypeScript examples",
-            "program": "${workspaceRoot}/examples/typescript/node_modules/jest/bin/jest.js",
+            "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
             "args": [
                 "-i"
             ],

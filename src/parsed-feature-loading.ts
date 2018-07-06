@@ -64,11 +64,11 @@ const parseSteps = (astScenario: any) => {
     return astScenario.steps.map((astStep: any) => parseStep(astStep));
 };
 
-const parseScenarioTags = (astScenario: any) => {
-    if (!astScenario.tags) {
+const parseTags = (ast: any) => {
+    if (!ast.tags) {
         return <string[]>[];
     } else {
-        return astScenario.tags.map((tag: any) => tag.name.toLowerCase());
+        return ast.tags.map((tag: any) => tag.name.toLowerCase());
     }
 };
 
@@ -76,7 +76,7 @@ const parseScenario = (astScenario: any) => {
     return <ParsedScenario>{
         title: astScenario.name,
         steps: parseSteps(astScenario),
-        tags: parseScenarioTags(astScenario)
+        tags: parseTags(astScenario)
     };
 };
 
@@ -163,6 +163,7 @@ const parseFeature = (ast: any, options?: Options): ParsedFeature => {
         title: astFeature.name,
         scenarios: parseScenarios(astFeature),
         scenarioOutlines: parseScenarioOutlines(astFeature),
+        tags: parseTags(astFeature),
         options
     };
 };

@@ -48,12 +48,23 @@ const findScenarioFromStepDefinitions = (
     return matchingScenarios[0];
 };
 
-const filterParsedScenariosByTags = (tagNames: string[], parsedScenarios: (ParsedScenario | ParsedScenarioOutline)[]) => {
+const filterParsedScenariosByTags = (
+    filterTagNames: string[],
+    parsedFeature: ParsedFeature,
+    parsedScenarios: (ParsedScenario | ParsedScenarioOutline)[],
+) => {
+    const featureTagNames = parsedFeature.tags
+        .map(tag => tag.toLowerCase());
+
     return parsedScenarios.filter(parsedScenario => {
         const tagMatches = parsedScenario.tags
             .map(tag => tag.toLowerCase())
-            .filter(scenarioTagNames => {
-                return tagNames.filter(tagName => scenarioTagNames.indexOf(tagName.toLowerCase()) !== -1).length > 0;
+            .filter(scenarioTagNames => {                
+                return filterTagNames
+                    .filter(tagName => {
+                        return scenarioTagNames.indexOf(tagName.toLowerCase()) !== -1
+                            || featureTagNames.indexOf(tagName.toLowerCase()) !== -1
+                    }).length > 0;
             });
 
         return tagMatches.length > 0;
@@ -77,7 +88,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
     }
 
     if (parsedFeature.options && parsedFeature.options.tagFilter) {
-        parsedScenarios = filterParsedScenariosByTags(parsedFeature.options.tagFilter, parsedScenarios);
+        parsedScenarios = filterParsedScenariosByTags(parsedFeature.options.tagFilter, parsedFeature, parsedScenarios);
     }
 
     if (parsedFeature.options && parsedFeature.options.errorOnMissingScenariosAndSteps === false) {

@@ -1,5 +1,5 @@
 import { checkThatFeatureFileAndStepDefinitionsHaveSameScenarios } from './validation/scenario-validation';
-import { ScenarioFromStepDefinitions, FeatureFromStepDefinitions, StepFromStepDefinitions, ParsedFeature, ParsedScenario } from './models';
+import { ScenarioFromStepDefinitions, FeatureFromStepDefinitions, StepFromStepDefinitions, ParsedFeature, ParsedScenario, ScenarioNameTemplateVars, Options, ParsedScenarioOutline } from './models';
 import { ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps, matchSteps } from './validation/step-definition-validation';
 
 export type StepsDefinitionCallbackOptions = {
@@ -14,6 +14,31 @@ export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenari
 export type DefineScenarioFunction = (scenarioTitle: string, stepsDefinitionCallback: StepsDefinitionCallbackFunction) => void;
 export type StepsDefinitionCallbackFunction = (options: StepsDefinitionCallbackOptions) => void;
 export type DefineStepFunction = (stepMatcher: string | RegExp, stepDefinitionCallback: (...args: any[]) => any) => any;
+
+const processScenarioTitleTemplate = (
+    scenarioTitle: string,
+    parsedFeature: ParsedFeature,
+    options: Options,
+    parsedScenario: ParsedScenario,
+    parsedScenarioOutline: ParsedScenarioOutline
+) => {
+    if (options && options.scenarioNameTemplate) {
+        try {
+            return options && options.scenarioNameTemplate({
+                featureTitle: parsedFeature.title,
+                scenarioTitle: scenarioTitle.toString(),
+                featureTags: parsedFeature.tags,
+                scenarioTags: (parsedScenario || parsedScenarioOutline).tags
+            });
+        } catch (err) {
+            throw new Error(
+                `An error occurred while executing a scenario name template. \nTemplate:\n${options.scenarioNameTemplate}\nError:${err.message}`
+            )
+        }
+    }
+    
+    return scenarioTitle;
+};
 
 const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
     let scenarioPending = false;
@@ -45,8 +70,12 @@ const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefin
     return scenarioPending;
 };
 
-const defineScenario = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions, parsedScenario: ParsedScenario) => {
-    test(parsedScenario.title, () => {
+const defineScenario = (
+    scenarioTitle: string,
+    scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
+    parsedScenario: ParsedScenario
+) => {
+    test(scenarioTitle, () => {
         return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
             const stepArgument = parsedScenario.steps[index].stepArgument;
             const matches = matchSteps(parsedScenario.steps[index].stepText, scenarioFromStepDefinitions.steps[index].stepMatcher);
@@ -85,15 +114,17 @@ const createDefineScenarioFunction = (featureFromStepDefinitions: FeatureFromSte
 
         const options = parsedFeature.options;
 
+        scenarioTitle = processScenarioTitleTemplate(scenarioTitle, parsedFeature, options, parsedScenario, parsedScenarioOutline);
+
         ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps(options, parsedScenario || parsedScenarioOutline, scenarioFromStepDefinitions);
 
         if (checkForPendingSteps(scenarioFromStepDefinitions)) {
-            xtest(scenarioTitle);
+            xtest(scenarioTitle, () => {}, undefined);
         } else if (parsedScenario) {
-            defineScenario(scenarioFromStepDefinitions, parsedScenario);
+            defineScenario(scenarioTitle, scenarioFromStepDefinitions, parsedScenario);
         } else if (parsedScenarioOutline) {
             parsedScenarioOutline.scenarios.forEach(scenario => {
-                defineScenario(scenarioFromStepDefinitions, scenario);
+                defineScenario(scenarioTitle, scenarioFromStepDefinitions, scenario);
             });
         }
     };
@@ -114,7 +145,7 @@ export function defineFeature (featureFromFile: ParsedFeature, scenariosDefiniti
     const featureFromDefinedSteps: FeatureFromStepDefinitions = {
         title: featureFromFile.title,
         scenarios: []
-    };
+    };    
 
     scenariosDefinitionCallback(
         createDefineScenarioFunction(featureFromDefinedSteps, featureFromFile)
