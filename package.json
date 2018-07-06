@@ -31,10 +31,7 @@
     "@types/jest": "^22.1.2",
     "@types/node": "^9.4.6",
     "gherkin": "^5.0.0",
-    "jest": "^22.3.0"
-  },
-  "peerDependencies": {
-    "jest": "22.x"
+    "jest": "^23.3.0"
   },
   "jest": {
     "transform": {
@@ -48,5 +45,5 @@
       "ts",
       "tsx"
     ]
-  }  
+  }
 }
