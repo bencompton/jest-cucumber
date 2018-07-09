@@ -1,8 +1,8 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
-
 const Gherkin = require('gherkin');
 
+import { getJestCucumberConfiguration } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
@@ -172,6 +172,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
     if (!existsSync(featureFilePath)) {
         throw new Error(`Feature file not found (${resolve(featureFilePath)})`);
     }
+
+    options = getJestCucumberConfiguration(options);
 
     const featureText: string = readFileSync(featureFilePath, 'utf8');
     const ast = new Gherkin.Parser().parse(featureText);

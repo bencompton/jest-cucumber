@@ -25,7 +25,7 @@ defineFeature(feature, test => {
         });
 
         then('nobody should doubt me ever again', () => {
-            expect('people').not.toBe('');
+            expect('people').not.toBe('haters');
         });
     });
 });
