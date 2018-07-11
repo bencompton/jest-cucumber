@@ -1,8 +1,3 @@
-import { readFileSync, } from 'fs';
-import { extname } from 'path';
-import { createContext, runInContext } from 'vm';
-const { readConfig } = require('jest-config');
-
 import { Options } from "./models";
 
 let globalConfiguration: Options = {};
