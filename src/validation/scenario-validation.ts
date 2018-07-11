@@ -1,16 +1,22 @@
-import { FeatureFromStepDefinitions, ScenarioFromStepDefinitions, ParsedFeature, ParsedScenario, ParsedScenarioOutline } from '../models';
+import {
+    FeatureFromStepDefinitions,
+    ScenarioFromStepDefinitions,
+    ParsedFeature,
+    ParsedScenario,
+    ParsedScenarioOutline,
+} from '../models';
 import { generateScenarioCode } from '../code-generation';
 
 const findScenarioFromParsedFeature = (
     errors: string[],
-    parsedScenarios: (ParsedScenario | ParsedScenarioOutline)[],
-    scenarioTitle: string
+    parsedScenarios: Array<ParsedScenario | ParsedScenarioOutline>,
+    scenarioTitle: string,
 ) => {
-    let matchingScenarios: (ParsedScenario | ParsedScenarioOutline)[] = [];
+    let matchingScenarios: Array<ParsedScenario | ParsedScenarioOutline> = [];
 
     if (parsedScenarios) {
         matchingScenarios = parsedScenarios
-            .filter(parsedScenario => parsedScenario.title.toLowerCase() === scenarioTitle.toLowerCase());
+            .filter((parsedScenario) => parsedScenario.title.toLowerCase() === scenarioTitle.toLowerCase());
     }
 
     if (matchingScenarios.length === 0) {
@@ -29,13 +35,16 @@ const findScenarioFromParsedFeature = (
 const findScenarioFromStepDefinitions = (
     errors: string[],
     scenariosFromStepDefinitions: ScenarioFromStepDefinitions[],
-    scenario: ParsedScenario | ParsedScenarioOutline
+    scenario: ParsedScenario | ParsedScenarioOutline,
 ) => {
     const scenarioTitle = scenario.title;
     const matchingScenarios = scenariosFromStepDefinitions
-        .filter(scenarioFromStepDefinitions => scenarioFromStepDefinitions.title.toLocaleLowerCase() === scenarioTitle.toLocaleLowerCase());
+        .filter((scenarioFromStepDefinitions) => {
+            return scenarioFromStepDefinitions.title.toLocaleLowerCase() === scenarioTitle.toLocaleLowerCase();
+        });
 
     if (matchingScenarios.length === 0) {
+        // tslint:disable-next-line:max-line-length
         errors.push(`Feature file has a scenario titled "${scenarioTitle}", but no match found in step definitions. Try adding the following code:\n\n${generateScenarioCode(scenario)}`);
 
         return null;
@@ -51,19 +60,19 @@ const findScenarioFromStepDefinitions = (
 const filterParsedScenariosByTags = (
     filterTagNames: string[],
     parsedFeature: ParsedFeature,
-    parsedScenarios: (ParsedScenario | ParsedScenarioOutline)[],
+    parsedScenarios: Array<ParsedScenario | ParsedScenarioOutline>,
 ) => {
     const featureTagNames = parsedFeature.tags
-        .map(tag => tag.toLowerCase());
+        .map((tag) => tag.toLowerCase());
 
-    return parsedScenarios.filter(parsedScenario => {
+    return parsedScenarios.filter((parsedScenario) => {
         const tagMatches = parsedScenario.tags
-            .map(tag => tag.toLowerCase())
-            .filter(scenarioTagNames => {                
+            .map((tag) => tag.toLowerCase())
+            .filter((scenarioTagNames) => {
                 return filterTagNames
-                    .filter(tagName => {
+                    .filter((tagName) => {
                         return scenarioTagNames.indexOf(tagName.toLowerCase()) !== -1
-                            || featureTagNames.indexOf(tagName.toLowerCase()) !== -1
+                            || featureTagNames.indexOf(tagName.toLowerCase()) !== -1;
                     }).length > 0;
             });
 
@@ -73,11 +82,11 @@ const filterParsedScenariosByTags = (
 
 export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
     parsedFeature: ParsedFeature,
-    featureFromStepDefinitions: FeatureFromStepDefinitions
+    featureFromStepDefinitions: FeatureFromStepDefinitions,
 ) => {
     const errors: string[] = [];
 
-    let parsedScenarios: (ParsedScenario | ParsedScenarioOutline)[] = [];
+    let parsedScenarios: Array<ParsedScenario | ParsedScenarioOutline> = [];
 
     if (parsedFeature && parsedFeature.scenarios && parsedFeature.scenarios.length) {
         parsedScenarios = parsedScenarios.concat(parsedFeature.scenarios);
@@ -95,15 +104,22 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
         return;
     }
 
-    if (featureFromStepDefinitions && featureFromStepDefinitions.scenarios && featureFromStepDefinitions.scenarios.length) {
-        featureFromStepDefinitions.scenarios.forEach(scenarioFromStepDefinitions => {
+    if (featureFromStepDefinitions
+        && featureFromStepDefinitions.scenarios
+        && featureFromStepDefinitions.scenarios.length
+    ) {
+        featureFromStepDefinitions.scenarios.forEach((scenarioFromStepDefinitions) => {
             findScenarioFromParsedFeature(errors, parsedScenarios, scenarioFromStepDefinitions.title);
         });
     }
 
     if (parsedScenarios && parsedScenarios.length) {
-        parsedScenarios.forEach(parsedScenario => {
-            findScenarioFromStepDefinitions(errors, featureFromStepDefinitions && featureFromStepDefinitions.scenarios, parsedScenario);
+        parsedScenarios.forEach((parsedScenario) => {
+            findScenarioFromStepDefinitions(
+                errors,
+                featureFromStepDefinitions && featureFromStepDefinitions.scenarios,
+                parsedScenario,
+            );
         });
     }
 

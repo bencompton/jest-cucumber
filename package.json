@@ -6,7 +6,8 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest --color"
+    "test": "npm run build & npm run lint & jest --color",
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'examples/typescript/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
   "homepage": "https://github.com/bencompton/jest-cucumber#readme",
   "devDependencies": {
     "ts-jest": "^22.4.1",
+    "tslint": "^5.10.0",
     "typescript": "^2.7.2"
   },
   "dependencies": {

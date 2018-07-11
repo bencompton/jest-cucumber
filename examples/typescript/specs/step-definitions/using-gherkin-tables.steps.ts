@@ -3,9 +3,9 @@ import { TodoList } from '../../src/todo-list';
 
 const feature = loadFeature('./examples/typescript/specs/features/using-gherkin-tables.feature');
 
-defineFeature(feature, test => {
+defineFeature(feature, (test) => {
     let todoList: TodoList;
-		
+
     beforeEach(() => {
         todoList = new TodoList();
     });
@@ -15,7 +15,7 @@ defineFeature(feature, test => {
             table.forEach((row: any) => {
                 todoList.add({
                     name: row.TaskName,
-                    priority: row.Priority
+                    priority: row.Priority,
                 });
             });
         });
@@ -23,7 +23,7 @@ defineFeature(feature, test => {
         when('I add the following task:', (table: any) => {
             todoList.add({
                 name: table[0].TaskName,
-                priority: table[0].Priority
+                priority: table[0].Priority,
             });
         });
 

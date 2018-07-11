@@ -1,4 +1,4 @@
-import { Options } from "./models";
+import { Options } from './models';
 
 let globalConfiguration: Options = {};
 

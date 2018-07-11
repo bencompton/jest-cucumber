@@ -1,6 +1,6 @@
-import { ParsedScenario, ParsedStep, ParsedScenarioOutline } from "./models";
+import { ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
 
-const scenarioTemplate = (scenarioTitle: string, steps: string) => 
+const scenarioTemplate = (scenarioTitle: string, steps: string) =>
 `test('${scenarioTitle}', ({ given, when, then, pending }) => {
     ${steps}
 });`;
@@ -39,7 +39,7 @@ const getStepArguments = (step: ParsedStep) => {
     while (match = stepTextArgumentRegex.exec(step.stepText)) {
         stepArgumentVariables.push(`arg${index}`);
         index++;
-    }    
+    }
 
     if (step.stepArgument) {
         if (typeof step.stepArgument === 'string') {
@@ -71,7 +71,7 @@ export const getStepKeyword = (steps: ParsedStep[], stepPosition: number) => {
 
     return steps
         .slice(0, stepPosition)
-        .map(step => step.keyword)
+        .map((step) => step.keyword)
         .reverse()
         .reduce((previousKeyword, nextKeyword) => {
             if (!containsConjunction(previousKeyword)) {
@@ -88,9 +88,9 @@ export const generateStepCode = (steps: ParsedStep[], stepPosition: number) => {
     return stepTemplate(getStepKeyword(steps, stepPosition), getStepMatcher(step), getStepArguments(step));
 };
 
-export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {    
+export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
     let stepsCode: string[];
-    
+
     stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
 
     return scenarioTemplate(scenario.title, stepsCode.join('\n\n\t'));

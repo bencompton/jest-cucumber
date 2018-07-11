@@ -4,10 +4,10 @@ import { Rocket } from '../../src/rocket';
 
 const feature = loadFeature('./examples/typescript/specs/features/basic-scenarios.feature');
 
-defineFeature(feature, test => {
+defineFeature(feature, (test) => {
     test('Launching a SpaceX rocket', ({ given, when, then }) => {
         let rocket: Rocket;
-    
+
         given('I am Elon Musk attempting to launch a rocket into space', () => {
             rocket = new Rocket();
         });
@@ -18,7 +18,7 @@ defineFeature(feature, test => {
 
         then('the rocket should end up in space', () => {
             expect(rocket.isInSpace).toBe(true);
-        });        
+        });
 
         then('the booster(s) should land back on the launch pad', () => {
             expect(rocket.boostersLanded).toBe(true);

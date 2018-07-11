@@ -3,25 +3,25 @@ import { OnlineSales } from '../../src/online-sales';
 
 const feature = loadFeature('./examples/typescript/specs/features/scenario-outlines.feature');
 
-defineFeature(feature, test => {
+defineFeature(feature, (test) => {
     let onlineSales: OnlineSales;
     let salesPrice: number | null;
-		
+
     beforeEach(() => {
         onlineSales = new OnlineSales();
     });
 
     test('Selling an item', ({ given, when, then, pending }) => {
-        given(/^I have a\(n\) (.*)$/, item => {
+        given(/^I have a\(n\) (.*)$/, (item) => {
             onlineSales.listItem(item);
         });
 
-        when(/^I sell the (.*)$/, item => {
+        when(/^I sell the (.*)$/, (item) => {
             salesPrice = onlineSales.sellItem(item);
         });
 
-        then(/^I should get \$(\d+)$/, expectedSalesPrice => {
-            expect(salesPrice).toBe(parseInt(expectedSalesPrice));
+        then(/^I should get \$(\d+)$/, (expectedSalesPrice) => {
+            expect(salesPrice).toBe(parseInt(expectedSalesPrice, 10));
         });
-    });    
+    });
 });

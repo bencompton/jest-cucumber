@@ -1,12 +1,13 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
+// tslint:disable-next-line:no-var-requires
 const Gherkin = require('gherkin');
 
 import { getJestCucumberConfiguration } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
-    return <string[]>astDataTableRow.cells.map((col: any) => col.value);
+    return astDataTableRow.cells.map((col: any) => col.value) as string[];
 };
 
 const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
@@ -22,13 +23,13 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
     }
 
     if (bodyRows && bodyRows.length > 0) {
-        return bodyRows.map(nextRow => {
+        return bodyRows.map((nextRow) => {
             const parsedRow = parseDataTableRow(nextRow);
 
             return parsedRow.reduce((rowObj, nextCol, index) => {
                 return {
                     ...rowObj,
-                    [headerRow[index]]: nextCol
+                    [headerRow[index]]: nextCol,
                 };
             }, {});
         });
@@ -53,11 +54,11 @@ const parseStepArgument = (astStepArgument: any) => {
 };
 
 const parseStep = (astStep: any) => {
-    return <ParsedStep>{
+    return {
         stepText: astStep.text,
-        keyword: <string>(astStep.keyword).trim().toLowerCase(),
-        stepArgument: parseStepArgument(astStep.argument)
-    };
+        keyword: (astStep.keyword).trim().toLowerCase() as string,
+        stepArgument: parseStepArgument(astStep.argument),
+    } as ParsedStep;
 };
 
 const parseSteps = (astScenario: any) => {
@@ -66,82 +67,90 @@ const parseSteps = (astScenario: any) => {
 
 const parseTags = (ast: any) => {
     if (!ast.tags) {
-        return <string[]>[];
+        return [] as string[];
     } else {
         return ast.tags.map((tag: any) => tag.name.toLowerCase());
     }
 };
 
 const parseScenario = (astScenario: any) => {
-    return <ParsedScenario>{
+    return {
         title: astScenario.name,
         steps: parseSteps(astScenario),
-        tags: parseTags(astScenario)
-    };
+        tags: parseTags(astScenario),
+    } as ParsedScenario;
 };
 
 const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
-    return scenarioSteps.map(scenarioStep => {
+    return scenarioSteps.map((scenarioStep) => {
         const stepText = Object.keys(exampleTableRow).reduce((processedStepText, nextTableColumn) => {
             return processedStepText.replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
         }, scenarioStep.stepText);
 
         let stepArgument;
-        if(scenarioStep.stepArgument) {
-            stepArgument = (<any>scenarioStep.stepArgument).map((stepArgumentRow: any) => {
+
+        if (scenarioStep.stepArgument) {
+            stepArgument = (scenarioStep.stepArgument as any).map((stepArgumentRow: any) => {
                 const modifiedStepAgrumentRow = {...stepArgumentRow};
+
                 Object.keys(exampleTableRow).forEach((nextTableColumn) => {
-                    for(const prop in modifiedStepAgrumentRow) {
-                        modifiedStepAgrumentRow[prop] = modifiedStepAgrumentRow[prop].replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
-                    }
+                    Object.keys(modifiedStepAgrumentRow).forEach((prop) => {
+                        modifiedStepAgrumentRow[prop] =
+                            modifiedStepAgrumentRow[prop].replace(
+                                `<${nextTableColumn}>`,
+                                exampleTableRow[nextTableColumn],
+                            );
+                    });
                 });
 
                 return modifiedStepAgrumentRow;
             });
         }
 
-        return <ParsedStep>{
+        return {
             ...scenarioStep,
             stepText,
-            stepArgument
-        };
+            stepArgument,
+        } as ParsedStep;
     });
 };
 
 const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
-    return <ParsedScenario>{
+    return {
         title: outlineScenario.title,
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
-        tags: outlineScenario.tags
-    };
+        tags: outlineScenario.tags,
+    } as ParsedScenario;
 };
 
 const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: ParsedScenario) => {
     const exampleTable = parseDataTable(astExampleSet.tableBody, astExampleSet.tableHeader);
 
-    return exampleTable.map(tableRow => parseScenarioOutlineExample(tableRow, outlineScenario));
+    return exampleTable.map((tableRow) => parseScenarioOutlineExample(tableRow, outlineScenario));
 };
 
 const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: ParsedScenario) => {
-    const exampleSets = astExampleSets.map((astExampleSet: any) => parseScenarioOutlineExampleSet(astExampleSet, outlineScenario));
+    const exampleSets = astExampleSets.map((astExampleSet: any) => {
+        return parseScenarioOutlineExampleSet(astExampleSet, outlineScenario);
+    });
 
     return exampleSets.reduce((scenarios: ParsedScenario[], nextExampleSet: ParsedScenario[][]) => {
         return [
             ...scenarios,
-            ...nextExampleSet
+            ...nextExampleSet,
         ];
-    }, <ParsedScenario[]>[]);
+    }, [] as ParsedScenario[]);
 };
 
 const parseScenarioOutline = (astScenarioOutline: any) => {
     const outlineScenario = parseScenario(astScenarioOutline);
 
-    return <ParsedScenarioOutline>{
+    return {
         title: outlineScenario.title,
         scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.examples, outlineScenario),
         tags: outlineScenario.tags,
-        steps: outlineScenario.steps
-    };
+        steps: outlineScenario.steps,
+    } as ParsedScenarioOutline;
 };
 
 const parseScenarios = (astFeature: any) => {
@@ -159,13 +168,13 @@ const parseScenarioOutlines = (astFeature: any) => {
 const parseFeature = (ast: any, options?: Options): ParsedFeature => {
     const astFeature = ast.feature;
 
-    return <ParsedFeature>{
+    return {
         title: astFeature.name,
         scenarios: parseScenarios(astFeature),
         scenarioOutlines: parseScenarioOutlines(astFeature),
         tags: parseTags(astFeature),
-        options
-    };
+        options,
+    } as ParsedFeature;
 };
 
 export const loadFeature = (featureFilePath: string, options?: Options) => {
