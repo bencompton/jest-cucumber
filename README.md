@@ -2,6 +2,8 @@
 
 Execute Gherkin scenarios in Jest
 
+[![Build Status](https://travis-ci.org/bencompton/jest-cucumber.svg?branch=master)](https://travis-ci.org/bencompton/jest-cucumber)
+
 <img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" />
 
 ## Motivation
