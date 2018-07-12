@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "examples/ecmascript/package.json",
+        "package.json"
+      ]
+    }
+  }
+}
