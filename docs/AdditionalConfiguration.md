@@ -56,7 +56,7 @@ In this case with a tag filter and no scenarios defined, jest-cucumber will rais
 
 ## Scenario title templates
 
-In some cases, having control more over the scenario titles is desired. For example, imagine scenarios that are tagged with with issue ids like so:
+In some cases, having more control over the scenario titles is desired. For example, imagine scenarios that are tagged with with issue ids like so:
 
 ```
 Feature: Tagged scenarios
@@ -93,7 +93,7 @@ To avoid repeating the same configuration settings in every step definition file
 
 To enable global configuration, first specify a configuration JavaScript file in your the `setupFiles` section of your Jest configuration like so:
 
-```json
+```javascript
 {
   ...
   "setupFiles": [
