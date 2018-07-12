@@ -94,9 +94,13 @@ To avoid repeating the same configuration settings in every step definition file
 To enable global configuration, first specify a configuration JavaScript file in your the `setupFiles` section of your Jest configuration like so:
 
 ```json
-    "setupFiles": [
-      "./jest-cucumber-config"
-    ],
+{
+  ...
+  "setupFiles": [
+    "./jest-cucumber-config"
+  ],
+  ...
+}
 ```
 
 Your configuration JavaScript file should look like so:
