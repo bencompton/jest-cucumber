@@ -1,4 +1,4 @@
-# Additional Configuration Options
+# Configuration Options
 
 ## Disabling scenario / step definition validation
 
@@ -86,3 +86,30 @@ The following info is available in the `vars` argument:
 * `featureTags` - string[]
 * `scenarioTitle` - string
 * `scenarioTags` - string[]
+
+## Global configuration
+
+To avoid repeating the same configuration settings in every step definition file, it is also possible to specify configuration parameters globally. Note that configuration settings specified in step definition files take precedence over global configuration.
+
+To enable global configuration, first specify a configuration JavaScript file in your the `setupFiles` section of your Jest configuration like so:
+
+```json
+    "setupFiles": [
+      "./jest-cucumber-config"
+    ],
+```
+
+Your configuration JavaScript file should look like so:
+
+```javascript
+//jest-cucumber-config.js
+
+const setJestCucumberConfiguration = require('jest-cucumber').setJestCucumberConfiguration;
+
+setJestCucumberConfiguration({
+    tagFilter: ['@ui'],
+    scenarioNameTemplate: (vars) => {
+        return ` ${vars.featureTitle} - ${vars.scenarioTitle}}`;
+    }
+});
+```
