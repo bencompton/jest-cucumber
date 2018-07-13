@@ -3,6 +3,7 @@
 Execute Gherkin scenarios in Jest
 
 [![Build Status](https://travis-ci.org/bencompton/jest-cucumber.svg?branch=master)](https://travis-ci.org/bencompton/jest-cucumber) [![Greenkeeper badge](https://badges.greenkeeper.io/bencompton/jest-cucumber.svg)](https://greenkeeper.io/)
+[![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
 
 <img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" />
 
