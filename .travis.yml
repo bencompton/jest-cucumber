@@ -3,6 +3,3 @@ node_js:
   - 9
 before_script:
     - npm install -g typescript
-branches:
-  only:
-    - master

@@ -1,4 +1,4 @@
-# Additional Configuration Options
+# Configuration Options
 
 ## Disabling scenario / step definition validation
 
@@ -56,7 +56,7 @@ In this case with a tag filter and no scenarios defined, jest-cucumber will rais
 
 ## Scenario title templates
 
-In some cases, having control more over the scenario titles is desired. For example, imagine scenarios that are tagged with with issue ids like so:
+In some cases, having more control over the scenario titles is desired. For example, imagine scenarios that are tagged with with issue ids like so:
 
 ```
 Feature: Tagged scenarios
@@ -86,3 +86,34 @@ The following info is available in the `vars` argument:
 * `featureTags` - string[]
 * `scenarioTitle` - string
 * `scenarioTags` - string[]
+
+## Global configuration
+
+To avoid repeating the same configuration settings in every step definition file, it is also possible to specify configuration parameters globally. Note that configuration settings specified in step definition files take precedence over global configuration.
+
+To enable global configuration, first specify a configuration JavaScript file in your the `setupFiles` section of your Jest configuration like so:
+
+```javascript
+{
+  ...
+  "setupFiles": [
+    "./jest-cucumber-config"
+  ],
+  ...
+}
+```
+
+Your configuration JavaScript file should look like so:
+
+```javascript
+//jest-cucumber-config.js
+
+const setJestCucumberConfiguration = require('jest-cucumber').setJestCucumberConfiguration;
+
+setJestCucumberConfiguration({
+    tagFilter: ['@ui'],
+    scenarioNameTemplate: (vars) => {
+        return ` ${vars.featureTitle} - ${vars.scenarioTitle}}`;
+    }
+});
+```

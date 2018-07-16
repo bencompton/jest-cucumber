@@ -2,9 +2,14 @@
 
 Execute Gherkin scenarios in Jest
 
-[![Build Status](https://travis-ci.org/bencompton/jest-cucumber.svg?branch=master)](https://travis-ci.org/bencompton/jest-cucumber)
+[![Build Status](https://travis-ci.org/bencompton/jest-cucumber.svg?branch=master)](https://travis-ci.org/bencompton/jest-cucumber) [![Greenkeeper badge](https://badges.greenkeeper.io/bencompton/jest-cucumber.svg)](https://greenkeeper.io/)
+[![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
 
 <img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" />
+
+## Overview
+
+jest-cucumber is an alternative to [Cucumber.js](https://github.com/cucumber/cucumber-js) that runs on top on [Jest](https://jestjs.io). Instead of using `describe` and `it` blocks, you instead write a Jest test for each scenario, and then define `Given`, `When`, and `Then` step definitions inside of your Jest tests. jest-cucumber then allows you to link these Jest tests to your feature files and ensure that they always [stay in sync](https://github.com/bencompton/jest-cucumber/blob/master/docs/AdditionalConfiguration.md#disabling-scenario--step-definition-validation).
 
 ## Motivation
 
