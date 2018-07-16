@@ -180,9 +180,11 @@ export function defineFeature(
         scenarios: [],
     };
 
-    scenariosDefinitionCallback(
-        createDefineScenarioFunction(featureFromDefinedSteps, featureFromFile),
-    );
+    describe(featureFromFile.title, () => {
+        scenariosDefinitionCallback(
+            createDefineScenarioFunction(featureFromDefinedSteps, featureFromFile),
+        );
 
-    checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(featureFromFile, featureFromDefinedSteps);
+        checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(featureFromFile, featureFromDefinedSteps);
+    });
 }
