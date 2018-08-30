@@ -116,8 +116,10 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
 };
 
 const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
+    const exempleTitle = exampleTableRow.title ? exampleTableRow.title : '';
+    const title = `${outlineScenario.title} ${exampleTableRow.title}`.trim();
     return {
-        title: outlineScenario.title,
+        title: title,
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: outlineScenario.tags,
     } as ParsedScenario;
