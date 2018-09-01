@@ -155,7 +155,7 @@ const createDefineScenarioFunction = (
             defineScenario(scenarioTitle, scenarioFromStepDefinitions, parsedScenario);
         } else if (parsedScenarioOutline) {
             parsedScenarioOutline.scenarios.forEach((scenario) => {
-                defineScenario(scenarioTitle, scenarioFromStepDefinitions, scenario);
+                defineScenario((scenario.title || scenarioTitle), scenarioFromStepDefinitions, scenario);
             });
         }
     };

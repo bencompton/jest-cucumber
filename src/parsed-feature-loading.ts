@@ -1,10 +1,10 @@
-import { readFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import {readFileSync, existsSync} from 'fs';
+import {resolve} from 'path';
 // tslint:disable-next-line:no-var-requires
 const Gherkin = require('gherkin');
 
-import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
+import {getJestCucumberConfiguration} from './configuration';
+import {ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options} from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -115,9 +115,21 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
     });
 };
 
+const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
+    const findTitleKey = title.match(/<(.*)>/);
+    return findTitleKey && findTitleKey.length >= 1 ? findTitleKey[1] : '';
+};
+
 const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
+    const outlineScenarioTitle = outlineScenario.title;
+    const exampleKeyTitle = getOutlineDynamicTitle(exampleTableRow, outlineScenarioTitle);
+    const exampleTitle = exampleTableRow[exampleKeyTitle] ? exampleTableRow[exampleKeyTitle] : '';
+    let title = outlineScenarioTitle;
+    if (exampleKeyTitle) {
+        title = outlineScenarioTitle.replace(`<${exampleKeyTitle}>`, exampleTitle);
+    }
     return {
-        title: outlineScenario.title,
+        title,
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: outlineScenario.tags,
     } as ParsedScenario;
