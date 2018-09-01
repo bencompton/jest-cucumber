@@ -1,6 +1,6 @@
 Feature: Online sales
 
-Scenario Outline: Selling an item
+Scenario Outline: Selling an <Item>
     Given I have a(n) <Item>
     When I sell the <Item>
     Then I should get $<Amount>
