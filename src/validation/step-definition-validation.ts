@@ -56,17 +56,6 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
         }
     });
 
-    scenarioFromStepDefinitions.steps.forEach((stepFromStepDefinitions) => {
-        const matches = parsedScenarioSteps.filter((parsedStep) => {
-            return matchSteps(parsedStep.stepText, stepFromStepDefinitions.stepMatcher);
-        });
-
-        if (matches.length > 1) {
-            // tslint:disable-next-line:max-line-length
-            errors.push(`"${stepFromStepDefinitions.stepMatcher.toString()}" matches ${matches.length} steps in the feature file scenario, "${parsedScenario.title}"`);
-        }
-    });
-
     if (errors.length) {
         throw new Error(errors.join('\r\r'));
     }
