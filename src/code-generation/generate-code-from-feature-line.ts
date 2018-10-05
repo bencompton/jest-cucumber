@@ -1,5 +1,4 @@
 import { ParsedFeature } from '../models';
-import { loadFeature } from '../parsed-feature-loading';
 import { generateScenarioCodeWithSeparateStepFunctions, generateScenarioCode } from './scenario-generation';
 import { generateStepCode } from './step-generation';
 
@@ -48,12 +47,10 @@ const findObjectByLineNumber = (
 };
 
 export const generateCodeFromFeatureByLineNumber = (
-    featureFilePath: string,
+    feature: ParsedFeature,
     lineNumber: number,
     stepDefsAsSeparateFunctions = false
 ) => {
-    const feature = loadFeature(featureFilePath);
-
     const objectAtLine = findObjectByLineNumber(feature, lineNumber);
 
     if (objectAtLine === null) {
