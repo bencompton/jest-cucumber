@@ -180,7 +180,8 @@ const parseScenarioOutlines = (astFeature: any) => {
         .map((astScenarioOutline: any) => parseScenarioOutline(astScenarioOutline));
 };
 
-const parseFeature = (ast: any, options?: Options): ParsedFeature => {
+export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
+    const ast = new Gherkin.Parser().parse(featureText);
     const astFeature = ast.feature;
 
     return {
@@ -200,7 +201,6 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
     options = getJestCucumberConfiguration(options || {});
 
     const featureText: string = readFileSync(featureFilePath, 'utf8');
-    const ast = new Gherkin.Parser().parse(featureText);
 
-    return parseFeature(ast, options);
+    return parseFeature(featureText, options);
 };
