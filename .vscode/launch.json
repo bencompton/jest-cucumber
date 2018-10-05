@@ -7,6 +7,13 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch Program",
+            "preLaunchTask": build,            
+            "program": "${workspaceFolder}/dist/code-generation-test.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "TypeScript examples",
             "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
             "args": [
