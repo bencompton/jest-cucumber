@@ -1,14 +1,26 @@
-import { ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
+import { ParsedStep } from '../models';
+import { indent } from './utils';
 
-const scenarioTemplate = (scenarioTitle: string, steps: string) =>
-`test('${scenarioTitle}', ({ given, when, then, pending }) => {
-    ${steps}
-});`;
+const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) => {
+    return `${stepKeyword}(${stepMatcher}, (${stepArgumentVariables.join(', ')}) => {\n\n});`;
+};
 
-const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) =>
-`${stepKeyword}(${stepMatcher}, (${stepArgumentVariables.join(', ')}) => {
-        pending();
-    });`;
+const getStepFunctionWrapperName = (stepKeyword: string, stepText: string) => {
+    return `${stepKeyword}_${stepText.replace(/\s/g, '_').replace(/[^A-Za-z0-9_]/g, '')}`;
+};
+
+const stepWrapperFunctionTemplate = (
+  stepKeyword: string,
+  stepText: string,
+  stepMatcher: string,
+  stepArgumentVariables: string[]
+) => {
+    return `export const ${getStepFunctionWrapperName(stepKeyword, stepText)} = (${stepKeyword}) => {\n${indent(stepTemplate(stepKeyword, stepMatcher, stepArgumentVariables), 1).slice(0, -1)}\n}`
+};
+
+const stepWrapperFunctionCallTemplate = (stepText: string, stepKeyword: string) => {
+    return `${getStepFunctionWrapperName(stepKeyword, stepText)}(${stepKeyword})`;
+};
 
 const stepTextArgumentRegex = /([-+]?[0-9]*\.?[0-9]+|\"(.+)\"|\"?\<(.*)\>\"?)/g;
 
@@ -82,16 +94,22 @@ export const getStepKeyword = (steps: ParsedStep[], stepPosition: number) => {
         }, currentStep.keyword);
 };
 
-export const generateStepCode = (steps: ParsedStep[], stepPosition: number) => {
+export const generateStepCode = (steps: ParsedStep[], stepPosition: number, generateWrapperFunction = false) => {
     const step = steps[stepPosition];
+    const stepKeyword = getStepKeyword(steps, stepPosition);
+    const stepMatcher = getStepMatcher(step);
+    const stepArguments = getStepArguments(step);
 
-    return stepTemplate(getStepKeyword(steps, stepPosition), getStepMatcher(step), getStepArguments(step));
+    if (generateWrapperFunction) {
+        return stepWrapperFunctionTemplate(stepKeyword, step.stepText, stepMatcher, stepArguments);
+    } else {
+        return stepTemplate(stepKeyword, stepMatcher, stepArguments);
+    }
 };
 
-export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
-    let stepsCode: string[];
+export const generateStepFunctionCall = (steps: ParsedStep[], stepPosition: number) => {
+    const step = steps[stepPosition];
+    const stepKeyword = getStepKeyword(steps, stepPosition);
 
-    stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
-
-    return scenarioTemplate(scenario.title, stepsCode.join('\n\n\t'));
+    return stepWrapperFunctionCallTemplate(step.stepText, stepKeyword);
 };

@@ -58,6 +58,7 @@ const parseStep = (astStep: any) => {
         stepText: astStep.text,
         keyword: (astStep.keyword).trim().toLowerCase() as string,
         stepArgument: parseStepArgument(astStep.argument),
+        lineNumber: astStep.location.line
     } as ParsedStep;
 };
 
@@ -78,6 +79,7 @@ const parseScenario = (astScenario: any) => {
         title: astScenario.name,
         steps: parseSteps(astScenario),
         tags: parseTags(astScenario),
+        lineNumber: astScenario.location.line
     } as ParsedScenario;
 };
 
@@ -162,6 +164,7 @@ const parseScenarioOutline = (astScenarioOutline: any) => {
         scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.examples, outlineScenario),
         tags: outlineScenario.tags,
         steps: outlineScenario.steps,
+        lineNumber: astScenarioOutline.location.line
     } as ParsedScenarioOutline;
 };
 

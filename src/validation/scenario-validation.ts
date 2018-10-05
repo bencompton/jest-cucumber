@@ -5,7 +5,7 @@ import {
     ParsedScenario,
     ParsedScenarioOutline,
 } from '../models';
-import { generateScenarioCode } from '../code-generation';
+import { generateScenarioCode } from '../code-generation/scenario-generation';
 
 const findScenarioFromParsedFeature = (
     errors: string[],

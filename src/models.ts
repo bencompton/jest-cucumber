@@ -17,12 +17,14 @@ export type ParsedStep = {
     keyword: string;
     stepText: string;
     stepArgument: string | {};
+    lineNumber: number;
 };
 
 export type ParsedScenario = {
     title: string;
     steps: ParsedStep[];
     tags: string[];
+    lineNumber: number;
 };
 
 export type ParsedScenarioOutline = {
@@ -30,6 +32,7 @@ export type ParsedScenarioOutline = {
     tags: string[];
     scenarios: ParsedScenario[];
     steps: ParsedStep[];
+    lineNumber: number;
 };
 
 export type ParsedFeature = {
