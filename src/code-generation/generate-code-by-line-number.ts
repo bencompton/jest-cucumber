@@ -46,10 +46,9 @@ const findObjectByLineNumber = (
     return found ? { object: found, type } : null;
 };
 
-export const generateCodeFromFeatureByLineNumber = (
+export const generateCodeFromFeature = (
     feature: ParsedFeature,
-    lineNumber: number,
-    stepDefsAsSeparateFunctions = false
+    lineNumber: number,    
 ) => {
     const objectAtLine = findObjectByLineNumber(feature, lineNumber);
 
@@ -59,13 +58,28 @@ export const generateCodeFromFeatureByLineNumber = (
         switch (objectAtLine.type) {
             case ObjectTypeEnum.scenario:
             case ObjectTypeEnum.scenarioOutline:
-                if (stepDefsAsSeparateFunctions) {
-                    return generateScenarioCodeWithSeparateStepFunctions(objectAtLine.object);
-                } else {
-                    return generateScenarioCode(objectAtLine.object)
-                }
+                return generateScenarioCode(objectAtLine.object)
             case ObjectTypeEnum.step:
-                return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, stepDefsAsSeparateFunctions);
+                return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, false);
         }
     }
-};
+}
+
+export const generateCodeWithSeparateFunctionsFromFeature = (
+    feature: ParsedFeature,
+    lineNumber: number,
+) => {
+    const objectAtLine = findObjectByLineNumber(feature, lineNumber);
+
+    if (objectAtLine === null) {
+        return null;
+    } else {
+        switch (objectAtLine.type) {
+            case ObjectTypeEnum.scenario:
+            case ObjectTypeEnum.scenarioOutline:
+                return generateScenarioCodeWithSeparateStepFunctions(objectAtLine.object);
+            case ObjectTypeEnum.step:
+                return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, true);
+        }
+    }
+}
