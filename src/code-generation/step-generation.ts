@@ -6,7 +6,7 @@ const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVari
 };
 
 const getStepFunctionWrapperName = (stepKeyword: string, stepText: string) => {
-    return `${stepKeyword}_${stepText.replace(/\s/g, '_').replace(/[^A-Za-z0-9_]/g, '')}`;
+    return `${stepKeyword}_${stepText.replace(stepTextArgumentRegex, 'X').replace(/\s/g, '_').replace(/[^A-Za-z0-9_]/g, '')}`;
 };
 
 const stepWrapperFunctionTemplate = (
