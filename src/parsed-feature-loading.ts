@@ -181,7 +181,14 @@ const parseScenarioOutlines = (astFeature: any) => {
 };
 
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
-    const ast = new Gherkin.Parser().parse(featureText);
+    let ast: any 
+    
+    try {
+        ast = new Gherkin.Parser().parse(featureText);
+    } catch (err) {
+        throw new Error(`Error parsing feature Gherkin: ${err.message}`);
+    }
+
     const astFeature = ast.feature;
 
     return {
