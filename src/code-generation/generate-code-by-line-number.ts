@@ -5,17 +5,17 @@ import { generateStepCode } from './step-generation';
 export enum ObjectTypeEnum {
     scenario,
     scenarioOutline,
-    step
+    step,
 }
 
 const findObjectByLineNumber = (
-    feature: ParsedFeature, 
-    lineNumber: number
+    feature: ParsedFeature,
+    lineNumber: number,
 ): { object: any, type: ObjectTypeEnum } | null => {
     let found: any = null;
     let type: ObjectTypeEnum = ObjectTypeEnum.scenario;
 
-    feature.scenarioOutlines.forEach(scenarioOutline => {
+    feature.scenarioOutlines.forEach((scenarioOutline) => {
         if (scenarioOutline.lineNumber === lineNumber) {
             found = scenarioOutline;
             type = ObjectTypeEnum.scenarioOutline;
@@ -29,7 +29,7 @@ const findObjectByLineNumber = (
         });
     });
 
-    feature.scenarios.forEach(scenario => {
+    feature.scenarios.forEach((scenario) => {
         if (scenario.lineNumber === lineNumber) {
             found = scenario;
             type = ObjectTypeEnum.scenario;
@@ -48,7 +48,7 @@ const findObjectByLineNumber = (
 
 export const generateCodeFromFeature = (
     feature: ParsedFeature,
-    lineNumber: number,    
+    lineNumber: number,
 ) => {
     const objectAtLine = findObjectByLineNumber(feature, lineNumber);
 
@@ -58,12 +58,12 @@ export const generateCodeFromFeature = (
         switch (objectAtLine.type) {
             case ObjectTypeEnum.scenario:
             case ObjectTypeEnum.scenarioOutline:
-                return generateScenarioCode(objectAtLine.object)
+                return generateScenarioCode(objectAtLine.object);
             case ObjectTypeEnum.step:
                 return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, false);
         }
     }
-}
+};
 
 export const generateCodeWithSeparateFunctionsFromFeature = (
     feature: ParsedFeature,
@@ -82,4 +82,4 @@ export const generateCodeWithSeparateFunctionsFromFeature = (
                 return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, true);
         }
     }
-}
+};

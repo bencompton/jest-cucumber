@@ -4,7 +4,7 @@ import { indent } from './utils';
 
 const scenarioTemplate = (scenarioTitle: string, steps: string) => {
     return `test('${scenarioTitle}', ({ given, when, then }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
-}
+};
 
 export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
     const stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
@@ -17,4 +17,4 @@ export const generateScenarioCodeWithSeparateStepFunctions = (scenario: ParsedSc
     const stepFunctionCalls = scenario.steps.map((step, index) => generateStepFunctionCall(scenario.steps, index));
 
     return `${stepFunctionCode.join('\n\n')}\n\n${scenarioTemplate(scenario.title, stepFunctionCalls.join('\n'))}`;
-}
+};

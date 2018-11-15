@@ -6,6 +6,7 @@ const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVari
 };
 
 const getStepFunctionWrapperName = (stepKeyword: string, stepText: string) => {
+    // tslint:disable-next-line:max-line-length
     return `${stepKeyword}_${stepText.replace(stepTextArgumentRegex, 'X').replace(/\s/g, '_').replace(/[^A-Za-z0-9_]/g, '')}`;
 };
 
@@ -13,9 +14,10 @@ const stepWrapperFunctionTemplate = (
   stepKeyword: string,
   stepText: string,
   stepMatcher: string,
-  stepArgumentVariables: string[]
+  stepArgumentVariables: string[],
 ) => {
-    return `export const ${getStepFunctionWrapperName(stepKeyword, stepText)} = (${stepKeyword}) => {\n${indent(stepTemplate(stepKeyword, stepMatcher, stepArgumentVariables), 1).slice(0, -1)}\n}`
+    // tslint:disable-next-line:max-line-length
+    return `export const ${getStepFunctionWrapperName(stepKeyword, stepText)} = (${stepKeyword}) => {\n${indent(stepTemplate(stepKeyword, stepMatcher, stepArgumentVariables), 1).slice(0, -1)}\n}`;
 };
 
 const stepWrapperFunctionCallTemplate = (stepText: string, stepKeyword: string) => {
