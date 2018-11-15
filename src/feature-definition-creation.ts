@@ -10,6 +10,7 @@ import {
     ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
     matchSteps,
 } from './validation/step-definition-validation';
+import { applyTagFilters } from './tags-filtering';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -174,17 +175,30 @@ const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepD
 
 export function defineFeature(
     featureFromFile: ParsedFeature,
-    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction) {
+    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
+) {
     const featureFromDefinedSteps: FeatureFromStepDefinitions = {
         title: featureFromFile.title,
         scenarios: [],
     };
 
+    const parsedFeatureWithTagFiltersApplied = applyTagFilters(featureFromFile);
+
+    if (
+        parsedFeatureWithTagFiltersApplied.scenarios.length === 0
+            && parsedFeatureWithTagFiltersApplied.scenarioOutlines.length === 0
+    ) {
+        return;
+    }
+
     describe(featureFromFile.title, () => {
         scenariosDefinitionCallback(
-            createDefineScenarioFunction(featureFromDefinedSteps, featureFromFile),
+            createDefineScenarioFunction(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
         );
 
-        checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(featureFromFile, featureFromDefinedSteps);
+        checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(
+            parsedFeatureWithTagFiltersApplied,
+            featureFromDefinedSteps,
+        );
     });
 }
