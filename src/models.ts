@@ -51,7 +51,7 @@ export type ScenarioNameTemplateVars = {
 };
 
 export type Options = {
-    tagFilter?: string[];
+    tagFilter?: string;
     errorOnMissingScenariosAndSteps?: boolean;
     scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
 };

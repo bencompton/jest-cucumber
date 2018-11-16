@@ -10,7 +10,7 @@ import {
     ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
     matchSteps,
 } from './validation/step-definition-validation';
-import { applyTagFilters } from './tags-filtering';
+import { applyTagFilters } from './tag-filtering';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
