@@ -48,9 +48,6 @@
       "js",
       "ts",
       "tsx"
-    ],
-    "setupFiles": [
-      "./jest-cucumber-config"
     ]
   }
 }
