@@ -27,7 +27,7 @@ defineFeature(feature, test => {
       myAccount.deposit(parseInt(accountBalance));
     });
 
-    when(/^I get paid \$(\d+) for writing awesome code$/, amount, => {
+    when(/^I get paid \$(\d+) for writing awesome code$/, amount => {
       myAccount.deposit(parseInt(amount));
     });
 
