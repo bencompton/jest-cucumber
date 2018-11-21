@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@types/jest": "^23.1.5",
-    "@types/node": "^10.5.2",
+    "@types/node": "^10.12.10",
     "gherkin": "^5.0.0",
     "jest": "^23.3.0"
   },
