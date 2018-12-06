@@ -3,7 +3,7 @@ import { generateStepCode, generateStepFunctionCall } from './step-generation';
 import { indent } from './utils';
 
 const scenarioTemplate = (scenarioTitle: string, steps: string) => {
-    return `test('${scenarioTitle}', ({ given, when, then }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
+    return `test('${scenarioTitle}', ({ given, when, then, and }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
 };
 
 export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
