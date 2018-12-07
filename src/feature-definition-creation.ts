@@ -17,6 +17,7 @@ export type StepsDefinitionCallbackOptions = {
     given: DefineStepFunction;
     when: DefineStepFunction;
     then: DefineStepFunction;
+    and: DefineStepFunction;
     pending: () => void;
 };
 
@@ -124,6 +125,7 @@ const createDefineScenarioFunction = (
             given: createDefineStepFunction(scenarioFromStepDefinitions),
             when:  createDefineStepFunction(scenarioFromStepDefinitions),
             then:  createDefineStepFunction(scenarioFromStepDefinitions),
+            and:  createDefineStepFunction(scenarioFromStepDefinitions),
             pending: () => {
                 // Nothing to do
             },
