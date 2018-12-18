@@ -134,8 +134,11 @@ const createDefineScenarioFunction = (
             },
         });
 
-        const parsedScenario = parsedFeature.scenarios.filter((s) => s.title === scenarioTitle)[0];
-        const parsedScenarioOutline = parsedFeature.scenarioOutlines.filter((s) => s.title === scenarioTitle)[0];
+        const parsedScenario = parsedFeature.scenarios
+            .filter((s) => s.title.toLowerCase() === scenarioTitle.toLowerCase())[0];
+
+        const parsedScenarioOutline = parsedFeature.scenarioOutlines
+            .filter((s) => s.title.toLowerCase() === scenarioTitle.toLowerCase())[0];
 
         const options = parsedFeature.options;
 
