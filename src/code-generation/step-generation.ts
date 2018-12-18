@@ -79,21 +79,7 @@ const getStepMatcher = (step: ParsedStep) => {
 };
 
 export const getStepKeyword = (steps: ParsedStep[], stepPosition: number) => {
-    const currentStep = steps[stepPosition];
-
-    const containsConjunction = (keyword: string) => ['but', 'and'].indexOf(keyword) !== -1;
-
-    return steps
-        .slice(0, stepPosition)
-        .map((step) => step.keyword)
-        .reverse()
-        .reduce((previousKeyword, nextKeyword) => {
-            if (!containsConjunction(previousKeyword)) {
-                return previousKeyword;
-            } else {
-                return nextKeyword;
-            }
-        }, currentStep.keyword);
+    return steps[stepPosition].keyword;
 };
 
 export const generateStepCode = (steps: ParsedStep[], stepPosition: number, generateWrapperFunction = false) => {
