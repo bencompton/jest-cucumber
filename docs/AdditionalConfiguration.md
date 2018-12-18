@@ -6,19 +6,24 @@ Cucumber's approach is to start with your feature file and execute the step defi
 
 By default, this step definition / feature file validation is enabled. If you have scenarios that are defined in the feature file, but not in your step definitions for that feature file, jest-cucumber will raise an error (and provide starter code). If you have scenarios defined in your step definitions for that aren't in your feature file, jest-cucumber will also raise an error. Additionally, jest-cucumber also validates that the steps you define within your scenarios match the steps that are defined in the feature file, and are in the same order. 
 
-If you would prefer not to have this validation occur (perhaps you just want to consume Gherkin tables in your feature file, etc.), then validation can be disabled like so:
+If you would prefer not to have more control over what validation occurs the following options are available:
 
 ```javascript
 import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature', {
-  errorOnMissingScenariosAndSteps: false
+  errors: {
+    missingScenarioInStepDefinitions: true, // Error when a scenario is in the feature file, but not in the step definition
+    missingStepInStepDefinitions: true, // Error when a step is in the feature file, but not in the step definitions
+    missingScenarioInFeature: true, // Error when a scenario is in the step definitions, but not in the feature
+    missingStepInFeature: true, // Error when a step is in the step definitions, but not in the feature
+  }
 });
 ```
 
 ## Tag filtering
 
-jest-cucumber has the ability to specify a tag filter. This simply causes jest-cucumber to ignore missing scenarios during validation that do not match the specified tag(s).
+jest-cucumber has the ability to specify a tag filter. Tag filters will cause jest-cucumber to skip any scenario that is filtered out via a tag filter.
 
 For example, consider the following feature file:
 
@@ -32,7 +37,7 @@ Feature: Tagged scenarios
     When I execute my jest-cucumber scenarios
     Then jest-cucumber should show me an error
   
-  @not-included
+  @excluded
   Scenario: Tagged scenario that is not included
     Given my scenario has a tag that is NOT included in my jest-cucumber step definitions tag filter
     But I don't have that scenario defined in my step definitions
@@ -46,13 +51,15 @@ Consider the following step definitions file:
 import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature', {
-  tagFilter: ['@included']
+  tagFilter: '@included and not @excluded'
 });
 
-//No scenarios defined yet
+...
+...
+...
 ```
 
-In this case with a tag filter and no scenarios defined, jest-cucumber will raise an error about the first scenario, and will not raise an error about the second scenario.
+In this case, jest-cucumber will run the scenario tagged `@included`, and will skip the scenario tagged `@excluded`. The tag filtering expressions are very powerful and can include `not`, `and`, `or`, as well as parenthesis.
 
 ## Scenario title templates
 
@@ -111,9 +118,9 @@ Your configuration JavaScript file should look like so:
 const setJestCucumberConfiguration = require('jest-cucumber').setJestCucumberConfiguration;
 
 setJestCucumberConfiguration({
-    tagFilter: ['@ui'],
-    scenarioNameTemplate: (vars) => {
-        return ` ${vars.featureTitle} - ${vars.scenarioTitle}}`;
-    }
+  tagFilter: '@ui and not @slow',
+  scenarioNameTemplate: (vars) => {
+      return ` ${vars.featureTitle} - ${vars.scenarioTitle}}`;
+  }
 });
 ```
