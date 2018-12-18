@@ -72,7 +72,7 @@ const getStepMatcher = (step: ParsedStep) => {
     if (step.stepText.match(stepTextArgumentRegex)) {
         stepMatcher = convertStepTextToRegex(step);
     } else {
-        stepMatcher = `'${step.stepText}'`;
+        stepMatcher = `'${step.stepText.replace(/'+/g, `\\'`)}'`;
     }
 
     return stepMatcher;
