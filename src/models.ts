@@ -25,6 +25,7 @@ export type ParsedScenario = {
     steps: ParsedStep[];
     tags: string[];
     lineNumber: number;
+    skippedViaTagFilter: boolean;
 };
 
 export type ParsedScenarioOutline = {
@@ -33,6 +34,7 @@ export type ParsedScenarioOutline = {
     scenarios: ParsedScenario[];
     steps: ParsedStep[];
     lineNumber: number;
+    skippedViaTagFilter: boolean;
 };
 
 export type ParsedFeature = {
@@ -50,8 +52,15 @@ export type ScenarioNameTemplateVars = {
     featureTags: string[];
 };
 
+export type ErrorOptions = {
+    missingScenarioInStepDefinitions: boolean;
+    missingStepInStepDefinitions: boolean;
+    missingScenarioInFeature: boolean;
+    missingStepInFeature: boolean;
+};
+
 export type Options = {
     tagFilter?: string;
-    errorOnMissingScenariosAndSteps?: boolean;
+    errors?: ErrorOptions | boolean;
     scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
 };

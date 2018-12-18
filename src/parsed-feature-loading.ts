@@ -205,7 +205,7 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
         throw new Error(`Feature file not found (${resolve(featureFilePath)})`);
     }
 
-    options = getJestCucumberConfiguration(options || {});
+    options = getJestCucumberConfiguration(options);
 
     const featureText: string = readFileSync(featureFilePath, 'utf8');
 

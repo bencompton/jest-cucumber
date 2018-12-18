@@ -11,6 +11,7 @@ import {
     matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
+import { parse } from 'path';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -88,7 +89,9 @@ const defineScenario = (
     scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
     parsedScenario: ParsedScenario,
 ) => {
-    test(scenarioTitle, () => {
+    const testFunction = parsedScenario.skippedViaTagFilter ? test.skip : test;
+
+    testFunction(scenarioTitle, () => {
         return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
             const stepArgument = parsedScenario.steps[index].stepArgument;
             const matches = matchSteps(

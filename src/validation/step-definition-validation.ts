@@ -15,7 +15,7 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
     parsedScenario: ParsedScenario | ParsedScenarioOutline,
     scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
 ) => {
-    if (options && options.errorOnMissingScenariosAndSteps === false) {
+    if (options && options.errors === false) {
         return;
     }
 
@@ -42,7 +42,7 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
     const parsedStepCount = parsedScenarioSteps.length;
     const stepDefinitionCount = scenarioFromStepDefinitions.steps.length;
 
-    if (parsedStepCount !== stepDefinitionCount) {
+    if (parsedStepCount !== stepDefinitionCount && options.errors) {
         // tslint:disable-next-line:max-line-length
         errors.push(`Scenario "${parsedScenario.title}" has ${parsedStepCount} step(s) in the feature file, but ${stepDefinitionCount} step definition(s) defined.`);
     }

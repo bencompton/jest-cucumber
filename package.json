@@ -8,7 +8,7 @@
     "build": "tsc",
     "jest": "jest --verbose",
     "test": "npm run build & npm run lint & jest --color",
-    "lint": "tslint -c tslint.json 'src/**/*.ts' 'examples/typescript/**/*.ts'"
+    "lint": "tslint --project ./"
   },
   "repository": {
     "type": "git",
