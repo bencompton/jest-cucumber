@@ -32,7 +32,11 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
 
     try {
         tagFilterFunction = new Function('tags', `return ${newTagFilterExpression};`) as TagFilterFunction;
-        tagFilterFunction([]);
+        const result = tagFilterFunction([]);
+
+        if (result !== true && result !== false) {
+            throw new Error();
+        }
     } catch (error) {
         throw new Error(`Could not parse tag filter "${tagFilterExpression}"`);
     }
@@ -57,7 +61,7 @@ const checkIfScenarioMatchesTagFilter = (
         cachedTagFilterFunctions[tagFilterExpression] = tagFilterFunction;
     }
 
-    return tagFilterFunction(featureAndScenarioTags);
+    return tagFilterFunction(featureAndScenarioTags) === true;
 };
 
 const setScenarioSkipped = (parsedFeature: ParsedFeature, scenario: ParsedScenario) => {
