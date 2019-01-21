@@ -23,9 +23,9 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
         }
     } while (match);
 
-    newTagFilterExpression = newTagFilterExpression.replace(/not/g, '!');
-    newTagFilterExpression = newTagFilterExpression.replace(/or/g, '|');
-    newTagFilterExpression = newTagFilterExpression.replace(/and/g, '&&');
+    newTagFilterExpression = newTagFilterExpression.replace(/[^A-Za-z0-9@]?not[ \t]+/g, '!');
+    newTagFilterExpression = newTagFilterExpression.replace(/[ \t]+or[ \t]+/g, '|');
+    newTagFilterExpression = newTagFilterExpression.replace(/[ \t]+and[ \t]+/g, '&&');
     newTagFilterExpression = newTagFilterExpression.replace(/[ \t\n\r]+/g, '');
 
     let tagFilterFunction: TagFilterFunction;
