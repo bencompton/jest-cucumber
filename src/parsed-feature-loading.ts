@@ -1,5 +1,6 @@
 import {readFileSync, existsSync} from 'fs';
-import {resolve} from 'path';
+import {dirname, resolve} from 'path';
+import callsites from 'callsites';
 // tslint:disable-next-line:no-var-requires
 const Gherkin = require('gherkin');
 
@@ -201,13 +202,17 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
 };
 
 export const loadFeature = (featureFilePath: string, options?: Options) => {
-    if (!existsSync(featureFilePath)) {
-        throw new Error(`Feature file not found (${resolve(featureFilePath)})`);
-    }
-
     options = getJestCucumberConfiguration(options);
 
-    const featureText: string = readFileSync(featureFilePath, 'utf8');
-
-    return parseFeature(featureText, options);
+    const dirOfCaller = dirname(callsites()[1].getFileName() || '');
+    const absoluteFeatureFilePath = resolve(options.loadRelativePath ? dirOfCaller : '', featureFilePath);
+    try {
+        const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
+        return parseFeature(featureText, options);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);
+        }
+        throw err;
+    }
 };

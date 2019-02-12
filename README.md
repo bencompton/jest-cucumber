@@ -59,7 +59,7 @@ const feature = loadFeature('./features/RocketLaunching.feature');
 ```javascript
 //rocket-launching.steps.js
 
-import { defineFeature, loadFeature } from 'jest-cucumber';
+    import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 
