@@ -206,6 +206,7 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
 
     const dirOfCaller = dirname(callsites()[1].getFileName() || '');
     const absoluteFeatureFilePath = resolve(options.loadRelativePath ? dirOfCaller : '', featureFilePath);
+
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
         return parseFeature(featureText, options);
