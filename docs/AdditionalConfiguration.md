@@ -94,6 +94,17 @@ The following info is available in the `vars` argument:
 * `scenarioTitle` - string
 * `scenarioTags` - string[]
 
+## Relative feature file paths
+
+It might feel more natural to load feature files with paths relative to the file loading the feature, instead of relative to the project root. This is possible with help of the `loadRelativePath` flag:
+
+```javascript
+const feature = loadFeature('../features/basic-scenarios.feature', { loadRelativePath: true });
+```
+
+Please note that the path will be relative to the file that calls `loadFeature`, so if you use helper files which call `loadFeature` for you this might lead to unexpected results.
+Like all other flags you can set the flag globally to always use relative imports.
+
 ## Global configuration
 
 To avoid repeating the same configuration settings in every step definition file, it is also possible to specify configuration parameters globally. Note that configuration settings specified in step definition files take precedence over global configuration.
