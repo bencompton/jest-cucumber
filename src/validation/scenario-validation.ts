@@ -80,6 +80,8 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
         return;
     }
 
+    parsedScenarios = parsedScenarios.filter((scenario) => !scenario.skippedViaTagFilter);
+
     if (featureFromStepDefinitions
         && featureFromStepDefinitions.scenarios
         && featureFromStepDefinitions.scenarios.length
