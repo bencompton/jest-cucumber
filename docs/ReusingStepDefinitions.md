@@ -45,3 +45,55 @@ defineFeature(feature, test => {
   });
 });
 ```
+
+If you need to re-use the same step definitions across multiple feature files, a useful approach is to place shared step definitions in a shared module and import them when needed:
+
+```javascript
+// shared-steps.js
+	
+export const givenIHaveXDollarsInMyBankAccount = given => {
+  given(/I have \$(\d+) in my bank account/, balance => {
+    myAccount.deposit(balance);
+  });
+};
+
+export const thenMyBalanceShouldBe = then => {
+  then(/my balance should be \$(\d+)/, balance => {
+    expect(myAccount.balance).toBe(balance);
+  });
+};
+```
+
+```javascript
+// example.steps.js
+
+import { thenMyBalanceShouldBe, givenIHaveXDollarsInMyBankAccount } from './shared-steps';
+
+defineFeature(feature, test => {
+  let myAccount;
+		
+  beforeEach(() => {
+    myAccount = new BankAccount();
+  });
+
+  test('Making a deposit', ({ given, when, then }) => {
+    givenIHaveXDollarsInMyBankAccount(given);
+
+    when(/I deposit \$(\d+)/, deposit => {
+      myAccount.deposit(deposit);
+    });
+
+    thenMyBalanceShouldBe(then);
+  });
+	
+  test('Making a withdrawal', ({ given, when, then }) => {
+    givenIHaveXDollarsInMyBankAccount(given);
+
+    when(/I withdraw \$(\d+)/, withdrawal => {
+      myAccount.withdraw(withdrawal);
+    });		
+
+    thenMyBalanceShouldBe(then);
+  });
+});
+```
