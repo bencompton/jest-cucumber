@@ -84,7 +84,7 @@ export const applyTagFilters = (
     const scenarioOutlines = parsedFeature.scenarioOutlines
         .map((scenarioOutline) => {
             return {
-                ...scenarioOutline,
+                ...setScenarioSkipped(parsedFeature, scenarioOutline),
                 scenarios: scenarioOutline.scenarios.map((scenario) => setScenarioSkipped(parsedFeature, scenario)),
             };
         });
