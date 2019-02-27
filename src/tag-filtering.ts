@@ -23,9 +23,9 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
         }
     } while (match);
 
-    newTagFilterExpression = newTagFilterExpression.replace(/not/g, '!');
-    newTagFilterExpression = newTagFilterExpression.replace(/or/g, '|');
-    newTagFilterExpression = newTagFilterExpression.replace(/and/g, '&&');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+not|not\s+|\s+not\s+)/g, ' ! ');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+or|or\s+|\s+or\s+)/g, ' || ');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+and|and\s+|\s+and\s+)/g, ' && ');
     newTagFilterExpression = newTagFilterExpression.replace(/[ \t\n\r]+/g, '');
 
     let tagFilterFunction: TagFilterFunction;
