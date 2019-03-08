@@ -23,9 +23,9 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
         }
     } while (match);
 
-    newTagFilterExpression = newTagFilterExpression.replace(/[^A-Za-z0-9@]?not[ \t]+/g, '!');
-    newTagFilterExpression = newTagFilterExpression.replace(/[ \t]+or[ \t]+/g, '|');
-    newTagFilterExpression = newTagFilterExpression.replace(/[ \t]+and[ \t]+/g, '&&');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+not|not\s+|\s+not\s+)/g, ' ! ');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+or|or\s+|\s+or\s+)/g, ' || ');
+    newTagFilterExpression = newTagFilterExpression.replace(/(\s+and|and\s+|\s+and\s+)/g, ' && ');
     newTagFilterExpression = newTagFilterExpression.replace(/[ \t\n\r]+/g, '');
 
     let tagFilterFunction: TagFilterFunction;
@@ -88,7 +88,7 @@ export const applyTagFilters = (
     const scenarioOutlines = parsedFeature.scenarioOutlines
         .map((scenarioOutline) => {
             return {
-                ...scenarioOutline,
+                ...setScenarioSkipped(parsedFeature, scenarioOutline),
                 scenarios: scenarioOutline.scenarios.map((scenario) => setScenarioSkipped(parsedFeature, scenario)),
             };
         });

@@ -23,11 +23,19 @@ export type StepsDefinitionCallbackOptions = {
     pending: () => void;
 };
 
-export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenarioFunction) => void;
+export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenarioFunctionWithAliases) => void;
+
 export type DefineScenarioFunction = (
     scenarioTitle: string,
     stepsDefinitionCallback: StepsDefinitionCallbackFunction,
 ) => void;
+
+export type DefineScenarioFunctionWithAliases = DefineScenarioFunction & {
+    skip: DefineScenarioFunction;
+    only: DefineScenarioFunction;
+    concurrent: DefineScenarioFunction;
+};
+
 export type StepsDefinitionCallbackFunction = (options: StepsDefinitionCallbackOptions) => void;
 export type DefineStepFunction = (stepMatcher: string | RegExp, stepDefinitionCallback: (...args: any[]) => any) => any;
 
@@ -85,13 +93,28 @@ const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefin
     return scenarioPending;
 };
 
+const getTestFunction = (skippedViaTagFilter: boolean, only: boolean, skip: boolean, concurrent: boolean) => {
+    if (skip || skippedViaTagFilter) {
+        return test.skip;
+    } else if (only) {
+        return test.only;
+    } else if (concurrent) {
+        return test.concurrent;
+    } else {
+        return test;
+    }
+};
+
 const defineScenario = (
     feature: ParsedFeature,
     scenarioTitle: string,
     scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
     parsedScenario: ParsedScenario,
+    only: boolean = false,
+    skip: boolean = false,
+    concurrent: boolean = false,
 ) => {
-    const testFunction = parsedScenario.skippedViaTagFilter ? test.skip : test;
+    const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
 
     testFunction(scenarioTitle, () => {
         const reportMonitor = new ReportMonitor(feature, scenarioTitle, parsedScenario.lineNumber);
@@ -140,8 +163,14 @@ const defineScenario = (
 const createDefineScenarioFunction = (
     featureFromStepDefinitions: FeatureFromStepDefinitions,
     parsedFeature: ParsedFeature,
+    only: boolean = false,
+    skip: boolean = false,
+    concurrent: boolean = false,
 ) => {
-    return (scenarioTitle: string, stepsDefinitionFunctionCallback: StepsDefinitionCallbackFunction) => {
+    const defineScenarioFunction: DefineScenarioFunction = (
+        scenarioTitle: string,
+        stepsDefinitionFunctionCallback: StepsDefinitionCallbackFunction,
+    ) => {
         const scenarioFromStepDefinitions: ScenarioFromStepDefinitions = {
             title: scenarioTitle,
             steps: [],
@@ -193,6 +222,9 @@ const createDefineScenarioFunction = (
                 scenarioTitle,
                 scenarioFromStepDefinitions,
                 parsedScenario,
+                only,
+                skip,
+                concurrent,
             );
         } else if (parsedScenarioOutline) {
             parsedScenarioOutline.scenarios.forEach((scenario) => {
@@ -201,10 +233,45 @@ const createDefineScenarioFunction = (
                     (scenario.title || scenarioTitle),
                     scenarioFromStepDefinitions,
                     scenario,
+                    only,
+                    skip,
+                    concurrent,
                 );
             });
         }
     };
+
+    return defineScenarioFunction;
+};
+
+const createDefineScenarioFunctionWithAliases = (
+    featureFromStepDefinitions: FeatureFromStepDefinitions,
+    parsedFeature: ParsedFeature,
+) => {
+    const defineScenarioFunctionWithAliases = createDefineScenarioFunction(featureFromStepDefinitions, parsedFeature);
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).only = createDefineScenarioFunction(
+        featureFromStepDefinitions,
+        parsedFeature,
+        true,
+    );
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).skip = createDefineScenarioFunction(
+        featureFromStepDefinitions,
+        parsedFeature,
+        false,
+        true,
+    );
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).concurrent = createDefineScenarioFunction(
+        featureFromStepDefinitions,
+        parsedFeature,
+        false,
+        false,
+        true,
+    );
+
+    return defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases;
 };
 
 const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
@@ -238,7 +305,7 @@ export function defineFeature(
 
     describe(featureFromFile.title, () => {
         scenariosDefinitionCallback(
-            createDefineScenarioFunction(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
+            createDefineScenarioFunctionWithAliases(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
         );
 
         checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(

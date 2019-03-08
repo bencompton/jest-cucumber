@@ -80,8 +80,6 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
         return;
     }
 
-    parsedScenarios = parsedScenarios.filter((scenario) => !scenario.skippedViaTagFilter);
-
     if (featureFromStepDefinitions
         && featureFromStepDefinitions.scenarios
         && featureFromStepDefinitions.scenarios.length
@@ -95,6 +93,8 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
             );
         });
     }
+
+    parsedScenarios = parsedScenarios.filter((scenario) => !scenario.skippedViaTagFilter);
 
     if (parsedScenarios && parsedScenarios.length) {
         parsedScenarios.forEach((parsedScenario) => {
