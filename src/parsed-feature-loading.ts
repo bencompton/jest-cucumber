@@ -40,7 +40,7 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
 };
 
 const parseTableRowLineNumbers = (astDataTable: any) => {
-    return astDataTable && astDataTable.rows
+    return astDataTable && astDataTable
         .map((row: any) => row.location.line);
 };
 
