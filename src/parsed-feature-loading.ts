@@ -1,5 +1,5 @@
-import {readFileSync, existsSync} from 'fs';
-import {dirname, resolve} from 'path';
+import { readFileSync } from 'fs';
+import { dirname, resolve } from 'path';
 import callsites from 'callsites';
 // tslint:disable-next-line:no-var-requires
 const Gherkin = require('gherkin');
@@ -37,6 +37,11 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
     } else {
         return [];
     }
+};
+
+const parseTableRowLineNumbers = (astDataTable: any) => {
+    return astDataTable && astDataTable.rows
+        .map((row: any) => row.location.line);
 };
 
 const parseStepArgument = (astStepArgument: any) => {
@@ -123,25 +128,33 @@ const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
     return findTitleKey && findTitleKey.length >= 1 ? findTitleKey[1] : '';
 };
 
-const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario, lineNumber: number) => {
     const outlineScenarioTitle = outlineScenario.title;
     const exampleKeyTitle = getOutlineDynamicTitle(exampleTableRow, outlineScenarioTitle);
     const exampleTitle = exampleTableRow[exampleKeyTitle] ? exampleTableRow[exampleKeyTitle] : '';
     let title = outlineScenarioTitle;
+
     if (exampleKeyTitle) {
         title = outlineScenarioTitle.replace(`<${exampleKeyTitle}>`, exampleTitle);
     }
+
     return {
         title,
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: outlineScenario.tags,
+        lineNumber,
     } as ParsedScenario;
 };
 
 const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: ParsedScenario) => {
     const exampleTable = parseDataTable(astExampleSet.tableBody, astExampleSet.tableHeader);
+    const rowLineNumbers = parseTableRowLineNumbers(astExampleSet.tableBody);
 
-    return exampleTable.map((tableRow) => parseScenarioOutlineExample(tableRow, outlineScenario));
+    return exampleTable.map((tableRow, index) => parseScenarioOutlineExample(
+        tableRow,
+        outlineScenario,
+        rowLineNumbers[index],
+    ));
 };
 
 const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: ParsedScenario) => {
@@ -181,7 +194,7 @@ const parseScenarioOutlines = (astFeature: any) => {
         .map((astScenarioOutline: any) => parseScenarioOutline(astScenarioOutline));
 };
 
-export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
+export const parseFeature = (featurePath: string, featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
 
     try {
@@ -198,6 +211,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         scenarioOutlines: parseScenarioOutlines(astFeature),
         tags: parseTags(astFeature),
         options,
+        path: featurePath,
     } as ParsedFeature;
 };
 
@@ -209,7 +223,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
 
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
-        return parseFeature(featureText, options);
+
+        return parseFeature(absoluteFeatureFilePath, featureText, options);
     } catch (err) {
         if (err.code === 'ENOENT') {
             throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);

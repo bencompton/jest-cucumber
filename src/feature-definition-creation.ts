@@ -11,7 +11,7 @@ import {
     matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
-import { parse } from 'path';
+import { ReportMonitor } from './reporting/ReportMonitor';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -86,6 +86,7 @@ const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefin
 };
 
 const defineScenario = (
+    feature: ParsedFeature,
     scenarioTitle: string,
     scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
     parsedScenario: ParsedScenario,
@@ -93,12 +94,18 @@ const defineScenario = (
     const testFunction = parsedScenario.skippedViaTagFilter ? test.skip : test;
 
     testFunction(scenarioTitle, () => {
-        return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
+        const reportMonitor = new ReportMonitor(feature, scenarioTitle, parsedScenario.lineNumber);
+
+        const stepsPromise = scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
             const stepArgument = parsedScenario.steps[index].stepArgument;
+            const step = parsedScenario.steps[index];
+            const stepText = step.stepText;
+
             const matches = matchSteps(
-                parsedScenario.steps[index].stepText,
+                stepText,
                 scenarioFromStepDefinitions.steps[index].stepMatcher,
             );
+
             let matchArgs: string[] = [];
 
             if (matches && (matches as RegExpMatchArray).length) {
@@ -107,8 +114,25 @@ const defineScenario = (
 
             const args = [...matchArgs, stepArgument];
 
-            return promiseChain.then(() => nextStep.stepFunction(...args));
+            reportMonitor.startStep(stepText, matchArgs, step.lineNumber);
+
+            let stepPromise: Promise<any>;
+
+            try {
+                stepPromise = promiseChain.then(() => nextStep.stepFunction(...args));
+                reportMonitor.endStep();
+            } catch (error) {
+                reportMonitor.stepError(error);
+                stepPromise = Promise.reject({
+                    message: `An error occurred while executing step "${stepText}": ${error.message}`,
+                    ...error,
+                });
+            }
+
+            return stepPromise;
         }, Promise.resolve());
+
+        return stepsPromise.then(() => reportMonitor.endScenario());
     });
 };
 
@@ -163,10 +187,20 @@ const createDefineScenarioFunction = (
                 // Nothing to do
             }, undefined);
         } else if (parsedScenario) {
-            defineScenario(scenarioTitle, scenarioFromStepDefinitions, parsedScenario);
+            defineScenario(
+                parsedFeature,
+                scenarioTitle,
+                scenarioFromStepDefinitions,
+                parsedScenario,
+            );
         } else if (parsedScenarioOutline) {
             parsedScenarioOutline.scenarios.forEach((scenario) => {
-                defineScenario((scenario.title || scenarioTitle), scenarioFromStepDefinitions, scenario);
+                defineScenario(
+                    parsedFeature,
+                    (scenario.title || scenarioTitle),
+                    scenarioFromStepDefinitions,
+                    scenario,
+                );
             });
         }
     };
