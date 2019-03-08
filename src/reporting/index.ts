@@ -1,10 +1,13 @@
 import { FormatterAdapter } from './FormatterAdapter';
+import { FormatterDiskLogger } from './FormatterDiskLogger';
 
 module.exports = class {
   private formatterAdapter: FormatterAdapter;
+  private formatterLogger: FormatterDiskLogger;
 
   constructor(globalConfig: any, options: any) {
-    this.formatterAdapter = new FormatterAdapter();
+    this.formatterLogger = new FormatterDiskLogger('./report.json');
+    this.formatterAdapter = new FormatterAdapter(this.formatterLogger);
   }
 
   public onTestResult(test: any, results: any) {
@@ -12,6 +15,7 @@ module.exports = class {
   }
 
   public onRunComplete(contexts: any, results: any) {
-    return this.formatterAdapter.onTestRunComplete();
+    this.formatterAdapter.onTestRunComplete();
+    this.formatterLogger.save();
   }
 };

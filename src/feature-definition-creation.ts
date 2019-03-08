@@ -123,6 +123,7 @@ const defineScenario = (
                 reportMonitor.endStep();
             } catch (error) {
                 reportMonitor.stepError(error);
+
                 stepPromise = Promise.reject({
                     message: `An error occurred while executing step "${stepText}": ${error.message}`,
                     ...error,

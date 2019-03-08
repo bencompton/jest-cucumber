@@ -7,8 +7,7 @@ import { IScenarioResult } from './ReportMonitor';
 const getFilePath = (featureTitle: string, scenarioTitle: string) => {
   return path.join(
     os.tmpdir(),
-    'jest-cucumber',
-    'reporting',
+    'jest-cucumber-reporting',
     encodeURIComponent(`${featureTitle}_${scenarioTitle}`),
   );
 };

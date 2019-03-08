@@ -55,6 +55,7 @@
       "tsx"
     ],
     "reporters": [
+      "default",
       "./dist/src/reporting/index.js"
     ]
   }

@@ -1,4 +1,4 @@
-import { saveScenarioResult } from './ScenariResultFileOperations';
+import { saveScenarioResult } from './ScenarioResultFileOperations';
 import { ParsedFeature } from '../models';
 
 export interface IStepResult {

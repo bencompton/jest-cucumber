@@ -7,20 +7,20 @@ const Gherkin = require('gherkin');
 // tslint:disable-next-line:no-var-requires
 const EventDataCollector: any = require('cucumber').formatterHelpers.EventDataCollector;
 
-import { loadScenarioResult } from './ScenariResultFileOperations';
+import { loadScenarioResult } from './ScenarioResultFileOperations';
+import { IFormatterLogger } from './FormatterLogger';
 
 export class FormatterAdapter {
   private eventBroadcaster: EventEmitter;
   private formatter: Formatter;
-  private logs: string[] = [];
 
-  constructor() {
+  constructor(formatterLogger: IFormatterLogger) {
     this.eventBroadcaster = new EventEmitter();
 
     this.formatter = new JsonFormatter({
       eventBroadcaster: this.eventBroadcaster,
       eventDataCollector: new EventDataCollector(this.eventBroadcaster),
-      log: this.log.bind(this),
+      log: formatterLogger.log.bind(formatterLogger),
     });
   }
 
@@ -46,9 +46,9 @@ export class FormatterAdapter {
               scenarioResult.stepResults.forEach((stepResult, index) => {
                 this.eventBroadcaster.emit('test-step-finished', {
                   index,
-                  testCase: { sourceLocation: { uri: scenarioResult.featureFilePath, line: stepResult.lineNumber }},
+                  testCase: { sourceLocation: { uri: scenarioResult.featureFilePath, line: scenarioResult.lineNumber }},
                   result: {
-                    duration: stepResult.endTime ? (stepResult.endTime as number) - stepResult.startTime : 0,
+                    duration: stepResult.endTime ? ((stepResult.endTime as number) - stepResult.startTime) || 1 : 0,
                     status: stepResult.error ? Status.FAILED : Status.PASSED,
                     exception: stepResult.error ? stepResult.error : undefined,
                   },
@@ -57,7 +57,7 @@ export class FormatterAdapter {
 
               this.eventBroadcaster.emit('test-case-finished', {
                 sourceLocation: { uri: scenarioResult.featureFilePath, line: scenarioResult.lineNumber },
-                result: { duration: 1, status: Status.PASSED },
+                result: { duration: testResult.duration, status: testResult.status },
               });
             });
         });
@@ -73,7 +73,6 @@ export class FormatterAdapter {
   private log(logText: string) {
     // tslint:disable-next-line:no-console
     console.log(logText);
-    this.logs.push(logText);
   }
 
   private generateEventsFromFeatureFile(featureFilePath: string) {
