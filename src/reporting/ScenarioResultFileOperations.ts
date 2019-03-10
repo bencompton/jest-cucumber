@@ -20,7 +20,7 @@ export const saveScenarioResult = (scenarioResult: IScenarioResult) => {
   }
 
   return new Promise((resolve, reject) => {
-    writeFile(filePath, JSON.stringify(scenarioResult), (error) => {
+    writeFile(filePath, JSON.stringify(scenarioResult), { encoding: 'utf8', flag: 'w' }, (error) => {
       if (error) {
         reject(error);
       } else {

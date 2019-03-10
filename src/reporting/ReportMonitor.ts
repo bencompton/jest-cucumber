@@ -5,7 +5,7 @@ export interface IStepResult {
   stepText: string;
   stepArguments: string[];
   startTime: number;
-  endTime: number | null;
+  endTime: number;
   error: Error | null;
   lineNumber: number;
 }
@@ -40,7 +40,7 @@ export class ReportMonitor {
       stepText,
       stepArguments,
       startTime: new Date().getTime(),
-      endTime: null,
+      endTime: new Date().getTime(),
       error: null,
       lineNumber,
     });

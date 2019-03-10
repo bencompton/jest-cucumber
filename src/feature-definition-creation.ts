@@ -137,26 +137,35 @@ const defineScenario = (
 
             const args = [...matchArgs, stepArgument];
 
-            reportMonitor.startStep(stepText, matchArgs, step.lineNumber);
+            return promiseChain
+                .then(() => {
+                    reportMonitor.startStep(stepText, matchArgs, step.lineNumber);
 
-            let stepPromise: Promise<any>;
+                    return Promise.resolve()
+                        .then(() => nextStep.stepFunction(...args))
+                        .then(() => reportMonitor.endStep())
+                        .catch((error: Error) => {
+                            reportMonitor.stepError(error);
 
-            try {
-                stepPromise = promiseChain.then(() => nextStep.stepFunction(...args));
-                reportMonitor.endStep();
-            } catch (error) {
-                reportMonitor.stepError(error);
+                            return Promise.reject({
+                                ...error,
+                                message: `An error occurred while executing step "${stepText}": ${error.message}`,
+                            });
+                        });
 
-                stepPromise = Promise.reject({
-                    message: `An error occurred while executing step "${stepText}": ${error.message}`,
-                    ...error,
                 });
-            }
 
-            return stepPromise;
         }, Promise.resolve());
 
-        return stepsPromise.then(() => reportMonitor.endScenario());
+        return stepsPromise
+            .catch((error: Error) => {
+                return reportMonitor
+                    .endScenario()
+                    .then(() => Promise.reject(error));
+            })
+            .then(() => {
+                return reportMonitor.endScenario();
+            });
     });
 };
 

@@ -12,14 +12,16 @@ import { IFormatterLogger } from './FormatterLogger';
 
 export class FormatterAdapter {
   private eventBroadcaster: EventEmitter;
+  private eventDataCollector: any;
   private formatter: Formatter;
 
   constructor(formatterLogger: IFormatterLogger) {
     this.eventBroadcaster = new EventEmitter();
+    this.eventDataCollector = new EventDataCollector(this.eventBroadcaster);
 
     this.formatter = new JsonFormatter({
+      eventDataCollector: this.eventDataCollector,
       eventBroadcaster: this.eventBroadcaster,
-      eventDataCollector: new EventDataCollector(this.eventBroadcaster),
       log: formatterLogger.log.bind(formatterLogger),
     });
   }
@@ -34,23 +36,35 @@ export class FormatterAdapter {
           return this
             .generateEventsFromFeatureFile(scenarioResult.featureFilePath)
             .then(() => {
+              const sourceLocation = { uri: scenarioResult.featureFilePath, line: scenarioResult.lineNumber };
+              const key = this.eventDataCollector.getTestCaseKey(sourceLocation);
+              const pickle = this.eventDataCollector.pickleMap[key];
+
               this.eventBroadcaster.emit('test-case-prepared', {
-                sourceLocation:  { uri: scenarioResult.featureFilePath, line: scenarioResult.lineNumber },
-                steps: scenarioResult.stepResults.map((stepResult) => {
+                sourceLocation,
+                steps: pickle.steps.map((pickleStep: any) => {
+                  const location = pickleStep.locations[pickleStep.locations.length - 1];
+                  const line = location.line;
+
                   return {
-                    sourceLocation: { uri: scenarioResult.featureFilePath, line: stepResult.lineNumber },
+                    sourceLocation: { uri: scenarioResult.featureFilePath, line },
                   };
                 }),
               });
 
-              scenarioResult.stepResults.forEach((stepResult, index) => {
+              pickle.steps.forEach((pickleStep: any, index: number) => {
+                const stepResult = scenarioResult.stepResults[index];
+                const duration = (stepResult) ? (stepResult.endTime - stepResult.startTime) || 1 :  0;
+                const status = stepResult ? stepResult.error ? Status.FAILED : Status.PASSED : Status.SKIPPED;
+                const exception = stepResult && stepResult.error ? stepResult.error : undefined;
+
                 this.eventBroadcaster.emit('test-step-finished', {
                   index,
                   testCase: { sourceLocation: { uri: scenarioResult.featureFilePath, line: scenarioResult.lineNumber }},
                   result: {
-                    duration: stepResult.endTime ? ((stepResult.endTime as number) - stepResult.startTime) || 1 : 0,
-                    status: stepResult.error ? Status.FAILED : Status.PASSED,
-                    exception: stepResult.error ? stepResult.error : undefined,
+                    duration,
+                    status,
+                    exception,
                   },
                 });
               });
