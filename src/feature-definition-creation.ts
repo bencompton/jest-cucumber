@@ -11,7 +11,7 @@ import {
     matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
-import { ReportMonitor } from './reporting/ReportMonitor';
+import { ScenarioResultTracker } from './reporting/scenario-result-tracking/ScenarioResultTracker';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -117,7 +117,7 @@ const defineScenario = (
     const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
 
     testFunction(scenarioTitle, () => {
-        const reportMonitor = new ReportMonitor(feature, scenarioTitle, parsedScenario.lineNumber);
+        const scenarioResultTracker = new ScenarioResultTracker(feature, scenarioTitle, parsedScenario.lineNumber);
 
         const stepsPromise = scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
             const stepArgument = parsedScenario.steps[index].stepArgument;
@@ -139,32 +139,30 @@ const defineScenario = (
 
             return promiseChain
                 .then(() => {
-                    reportMonitor.startStep(stepText, matchArgs, step.lineNumber);
+                    scenarioResultTracker.startStep(stepText, matchArgs, step.lineNumber);
 
                     return Promise.resolve()
                         .then(() => nextStep.stepFunction(...args))
-                        .then(() => reportMonitor.endStep())
+                        .then(() => scenarioResultTracker.endStep())
                         .catch((error: Error) => {
-                            reportMonitor.stepError(error);
+                            scenarioResultTracker.stepError(error);
 
                             return Promise.reject({
                                 ...error,
                                 message: `An error occurred while executing step "${stepText}": ${error.message}`,
                             });
                         });
-
                 });
-
         }, Promise.resolve());
 
         return stepsPromise
             .catch((error: Error) => {
-                return reportMonitor
+                return scenarioResultTracker
                     .endScenario()
                     .then(() => Promise.reject(error));
             })
             .then(() => {
-                return reportMonitor.endScenario();
+                return scenarioResultTracker.endScenario();
             });
     });
 };

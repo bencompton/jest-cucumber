@@ -2,7 +2,7 @@ import { writeFile, readFile, existsSync, mkdirSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { IScenarioResult } from './ReportMonitor';
+import { IScenarioResult } from './ScenarioResultTracker';
 
 const getFilePath = (featureTitle: string, scenarioTitle: string) => {
   return path.join(

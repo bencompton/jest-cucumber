@@ -1,0 +1,284 @@
+[
+  {
+    "keyword": "Feature",
+    "name": "Online sales",
+    "line": 1,
+    "id": "online-sales",
+    "tags": [],
+    "uri": "/git/jest-cucumber/examples/typescript/specs/features/scenario-outlines.feature",
+    "elements": [
+      {
+        "id": "online-sales;selling-an-autographed-neil-degrasse-tyson-book",
+        "keyword": "Scenario",
+        "line": 11,
+        "name": "Selling an Autographed Neil deGrasse Tyson book",
+        "tags": [],
+        "type": "scenario",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "I have a(n) Autographed Neil deGrasse Tyson book",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "I sell the Autographed Neil deGrasse Tyson book",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "I should get $100",
+            "result": {
+              "status": "passed",
+              "duration": 8000000
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "keyword": "Feature",
+    "name": "Todo List",
+    "line": 1,
+    "id": "todo-list",
+    "tags": [],
+    "uri": "/git/jest-cucumber/examples/typescript/specs/features/using-gherkin-tables.feature",
+    "elements": [
+      {
+        "id": "todo-list;adding-an-item-to-my-todo-list",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Adding an item to my todo list",
+        "tags": [],
+        "type": "scenario",
+        "steps": [
+          {
+            "arguments": [
+              {
+                "rows": [
+                  {
+                    "cells": [
+                      "TaskName",
+                      "Priority"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Fix bugs in my code",
+                      "medium"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Document my hours",
+                      "medium"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "my todo list currently looks as follows:",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [
+              {
+                "rows": [
+                  {
+                    "cells": [
+                      "TaskName",
+                      "Priority"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Watch cat videos on YouTube all day",
+                      "high"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "keyword": "When ",
+            "line": 8,
+            "name": "I add the following task:",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [
+              {
+                "rows": [
+                  {
+                    "cells": [
+                      "TaskName",
+                      "Priority"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Watch cat videos on YouTube all day",
+                      "high"
+                    ]
+                  },
+                  {
+                    "cells": [
+                      "Sign up for unemployment",
+                      "high"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "keyword": "Then ",
+            "line": 11,
+            "name": "I should see the following todo list:",
+            "result": {
+              "status": "passed",
+              "duration": 6000000
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "keyword": "Feature",
+    "name": "Getting rich writing software",
+    "line": 1,
+    "id": "getting-rich-writing-software",
+    "tags": [],
+    "uri": "/git/jest-cucumber/examples/typescript/specs/features/using-dynamic-values.feature",
+    "elements": [
+      {
+        "id": "getting-rich-writing-software;depositing-a-paycheck",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Depositing a paycheck",
+        "tags": [],
+        "type": "scenario",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "my account balance is $10",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "I get paid $1000000 for writing some awesome code",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "my account balance should be $1000010",
+            "result": {
+              "status": "passed",
+              "duration": 4000000
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "keyword": "Feature",
+    "name": "Rocket Launching",
+    "line": 1,
+    "id": "rocket-launching",
+    "tags": [],
+    "uri": "/git/jest-cucumber/examples/typescript/specs/features/basic-scenarios.feature",
+    "elements": [
+      {
+        "id": "rocket-launching;launching-a-spacex-rocket",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Launching a SpaceX rocket",
+        "tags": [],
+        "type": "scenario",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "I am Elon Musk attempting to launch a rocket into space",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "I launch the rocket",
+            "result": {
+              "status": "passed",
+              "duration": 1000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "the rocket should end up in space",
+            "result": {
+              "status": "failed",
+              "duration": 10000000,
+              "error_message": "{\"matcherResult\":{\"actual\":true,\"expected\":false,\"name\":\"toBe\",\"pass\":false}}"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 7,
+            "name": "the booster(s) should land back on the launch pad",
+            "result": {
+              "status": "skipped"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 8,
+            "name": "nobody should doubt me ever again",
+            "result": {
+              "status": "skipped"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

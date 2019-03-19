@@ -1,21 +1,19 @@
-import { FormatterAdapter } from './FormatterAdapter';
-import { FormatterDiskLogger } from './FormatterDiskLogger';
+import { ReportEventGenerator } from './report-event-generation/ReportEventGenerator';
+import { ProgressFormatter } from './formatters/ProgressFormatter';
 
 module.exports = class {
-  private formatterAdapter: FormatterAdapter;
-  private formatterLogger: FormatterDiskLogger;
+  private reportEventGenerator: ReportEventGenerator;
 
   constructor(globalConfig: any, options: any) {
-    this.formatterLogger = new FormatterDiskLogger('./report.json');
-    this.formatterAdapter = new FormatterAdapter(this.formatterLogger);
+    this.reportEventGenerator = new ReportEventGenerator();
+    const formatter = new ProgressFormatter(this.reportEventGenerator);
   }
 
   public onTestResult(test: any, results: any) {
-    return this.formatterAdapter.onScenarioComplete(results);
+    return this.reportEventGenerator.onScenarioComplete(results);
   }
 
   public onRunComplete(contexts: any, results: any) {
-    this.formatterAdapter.onTestRunComplete();
-    this.formatterLogger.save();
+    this.reportEventGenerator.onTestRunComplete(results);
   }
 };

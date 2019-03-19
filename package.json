@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "jest": "jest --verbose",
-    "test": "npm run build & npm run lint & jest --color",
+    "test": "npm run build && npm run lint && jest --color",
     "lint": "tslint --project ./"
   },
   "repository": {

@@ -1,5 +1,5 @@
 import { saveScenarioResult } from './ScenarioResultFileOperations';
-import { ParsedFeature } from '../models';
+import { ParsedFeature } from '../../models';
 
 export interface IStepResult {
   stepText: string;
@@ -18,7 +18,7 @@ export interface IScenarioResult {
   lineNumber: number;
 }
 
-export class ReportMonitor {
+export class ScenarioResultTracker {
   private scenarioResult: IScenarioResult;
 
   constructor(feature: ParsedFeature, scenarioTitle: string, lineNumber: number) {

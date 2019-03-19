@@ -1,8 +1,6 @@
 import { writeFileSync } from 'fs';
 
-import { IFormatterLogger } from './FormatterLogger';
-
-export class FormatterDiskLogger implements IFormatterLogger {
+export class FormatterDiskLogger {
     private path: string;
     private logs: string[];
 
