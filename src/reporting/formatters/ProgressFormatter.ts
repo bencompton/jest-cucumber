@@ -9,6 +9,8 @@ export class ProgressFormatter {
   constructor(reportEventGenerator: ReportEventGenerator) {
     const formatterLogger = new FormatterConsoleLogger();
 
+    formatterLogger.log('\n\n');
+
     const cucumberProgressFormatter = new CucumberProgressFormatter({
       eventDataCollector: reportEventGenerator.eventDataCollector,
       eventBroadcaster: reportEventGenerator.eventBroadcaster,
