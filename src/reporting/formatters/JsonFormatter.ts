@@ -4,7 +4,13 @@ import { ReportEventGenerator } from '../report-event-generation/ReportEventGene
 import { FormatterDiskLogger } from './formatter-loggers/FormatterDiskLogger';
 
 export class JsonFormatter {
-  constructor(reportEventGenerator: ReportEventGenerator, outputPath: string = './report.json') {
+  constructor(reportEventGenerator: ReportEventGenerator, options: { path: string }) {
+    let outputPath = './report.json';
+
+    if (options.path) {
+      outputPath = options.path;
+    }
+
     const formatterLogger = new FormatterDiskLogger(outputPath);
 
     const cucumberJsonFormatter = new CucumberJsonFormatter({
