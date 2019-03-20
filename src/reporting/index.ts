@@ -3,7 +3,7 @@ import { ProgressFormatter } from './formatters/ProgressFormatter';
 import { SummaryFormatter } from './formatters/SummaryFormatter';
 import { JsonFormatter } from './formatters/JsonFormatter';
 
-module.exports = class {
+export class Reporter {
   private reportEventGenerator: ReportEventGenerator;
 
   constructor(globalConfig: any, options: any) {
@@ -35,4 +35,4 @@ module.exports = class {
   public onRunComplete(contexts: any, results: any) {
     this.reportEventGenerator.onTestRunComplete(results);
   }
-};
+}
