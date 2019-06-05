@@ -119,20 +119,14 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
 };
 
 const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
-    const findTitleKey = title.match(/<(.*)>/);
-    return findTitleKey && findTitleKey.length >= 1 ? findTitleKey[1] : '';
+    return title.replace(/<(\S*)>/g, (_, firstMatch) => {
+        return exampleTableRow[firstMatch || ''];
+    });
 };
 
 const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
-    const outlineScenarioTitle = outlineScenario.title;
-    const exampleKeyTitle = getOutlineDynamicTitle(exampleTableRow, outlineScenarioTitle);
-    const exampleTitle = exampleTableRow[exampleKeyTitle] ? exampleTableRow[exampleKeyTitle] : '';
-    let title = outlineScenarioTitle;
-    if (exampleKeyTitle) {
-        title = outlineScenarioTitle.replace(`<${exampleKeyTitle}>`, exampleTitle);
-    }
     return {
-        title,
+        title: getOutlineDynamicTitle(exampleTableRow, outlineScenario.title),
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: outlineScenario.tags,
     } as ParsedScenario;
