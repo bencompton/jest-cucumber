@@ -1,5 +1,3 @@
-import { isRegExp, isString } from 'util';
-
 interface GlobalStep {
     stepMatcher: string | RegExp;
     stepFunction: () => any;
@@ -11,22 +9,36 @@ class Steps {
     push(step: GlobalStep) {
         const { stepMatcher } = step;
 
-        if (this.get(stepMatcher)) {
+        const isAlreadyAdded = this.list.some(
+            step => String(step.stepMatcher) === String(stepMatcher),
+        );
+
+        if (isAlreadyAdded) {
             throw new Error(`Existing global step with the name ${stepMatcher}`);
         }
 
         this.list.push(step);
     }
 
-    get(input: GlobalStep["stepMatcher"]) {
-        return this.list.find(item => {
-            if (isRegExp(item.stepMatcher)) {
-                return item.stepMatcher === input;
+    get(title: string) {
+        let params;
+
+        const found = this.list.find((step) => {
+            const matches = title.match(step.stepMatcher);
+
+            if (matches) {
+                params = matches.slice(1);
+                return true;
             }
-            if (isString(item.stepMatcher)) {
-                return item.stepMatcher.match(input);
-            }
+
+            return false;
         });
+
+        if (!found) {
+            throw Error(`${title} : was not defined in Steps file`);
+        }
+
+        return found.stepFunction.bind(this, ...params);
     }
 }
 

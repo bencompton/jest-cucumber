@@ -249,11 +249,10 @@ const createDefineScenarioFunctionWithAliases = (
 
 export const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
     return (stepMatcher: string | RegExp, stepFunction?: () => any) => {
-        const stepDefinition: StepFromStepDefinitions = stepFunction ? {
+        const stepDefinition: StepFromStepDefinitions = {
             stepMatcher,
-            stepFunction,
-        } : globalSteps.get(stepMatcher)!;
-
+            stepFunction: stepFunction || globalSteps.get(stepMatcher as string),
+        };
         scenarioFromStepDefinitions.steps.push(stepDefinition);
     };
 };
