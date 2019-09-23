@@ -1,6 +1,7 @@
 import { globalSteps } from '../global-steps';
 import { ParsedStep } from '../models';
 import { indent } from './utils';
+import { getJestCucumberConfiguration } from '../configuration';
 
 const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) => {
     let template = `${stepKeyword}(${stepMatcher}`;
@@ -74,7 +75,7 @@ const getStepArguments = (step: ParsedStep) => {
 const getStepMatcher = (step: ParsedStep) => {
     let stepMatcher: string = '';
 
-    if (step.stepText.match(stepTextArgumentRegex)) {
+    if (step.stepText.match(stepTextArgumentRegex) && !getJestCucumberConfiguration().disableRegexGeneration) {
         stepMatcher = convertStepTextToRegex(step);
     } else {
         stepMatcher = `'${step.stepText.replace(/'+/g, `\\'`)}'`;
