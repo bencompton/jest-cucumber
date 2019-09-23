@@ -1,8 +1,13 @@
+import { globalSteps } from '../global-steps';
 import { ParsedStep } from '../models';
 import { indent } from './utils';
 
 const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) => {
-    return `${stepKeyword}(${stepMatcher}, (${stepArgumentVariables.join(', ')}) => {\n\n});`;
+    let template = `${stepKeyword}(${stepMatcher}`;
+    if (!globalSteps.get(stepMatcher)) {
+        template = `${template}, (${stepArgumentVariables.join(', ')}) => {\n\n}`;
+    }
+    return `${template});`;
 };
 
 const getStepFunctionWrapperName = (stepKeyword: string, stepText: string) => {
@@ -11,10 +16,10 @@ const getStepFunctionWrapperName = (stepKeyword: string, stepText: string) => {
 };
 
 const stepWrapperFunctionTemplate = (
-  stepKeyword: string,
-  stepText: string,
-  stepMatcher: string,
-  stepArgumentVariables: string[],
+    stepKeyword: string,
+    stepText: string,
+    stepMatcher: string,
+    stepArgumentVariables: string[],
 ) => {
     // tslint:disable-next-line:max-line-length
     return `export const ${getStepFunctionWrapperName(stepKeyword, stepText)} = (${stepKeyword}) => {\n${indent(stepTemplate(stepKeyword, stepMatcher, stepArgumentVariables), 1).slice(0, -1)}\n}`;
