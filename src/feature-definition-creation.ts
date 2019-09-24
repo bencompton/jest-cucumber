@@ -247,7 +247,7 @@ const createDefineScenarioFunctionWithAliases = (
     return defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases;
 };
 
-export const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
+const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
     return (stepMatcher: string | RegExp, stepFunction?: () => any) => {
         const stepDefinition: StepFromStepDefinitions = {
             stepMatcher,
