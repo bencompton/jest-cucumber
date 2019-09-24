@@ -1,12 +1,9 @@
-interface GlobalStep {
-    stepMatcher: string | RegExp;
-    stepFunction: () => any;
-}
+import { StepFromStepDefinitions } from './models';
 
 class Steps {
-    list: GlobalStep[] = [];
+    list: StepFromStepDefinitions[] = [];
 
-    push(step: GlobalStep) {
+    push(step: StepFromStepDefinitions) {
         const { stepMatcher } = step;
 
         const isAlreadyAdded = this.list.some(
@@ -20,15 +17,21 @@ class Steps {
         this.list.push(step);
     }
 
-    get(title: string) {
+    get(title: StepFromStepDefinitions["stepMatcher"]) {
         let params;
 
         const found = this.list.find((step) => {
-            const matches = title.match(step.stepMatcher);
+            if (typeof title === 'string') {
+                const matches = title.match(step.stepMatcher);
 
-            if (matches) {
-                params = matches.slice(1);
-                return true;
+                if (matches) {
+                    params = matches.slice(1);
+                    return true;
+                }
+            }
+
+            if (title instanceof RegExp) {
+                return String(title) === String(step.stepMatcher);
             }
 
             return false;
@@ -44,6 +47,9 @@ class Steps {
 
 export const globalSteps = new Steps();
 
-export function defineGlobalStep(stepMatcher: string | RegExp, stepFunction: () => any) {
+export function defineGlobalStep(
+    stepMatcher: StepFromStepDefinitions["stepMatcher"],
+    stepFunction: StepFromStepDefinitions["stepFunction"]
+) {
     globalSteps.push({ stepMatcher, stepFunction });
 }
