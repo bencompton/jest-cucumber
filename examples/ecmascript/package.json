@@ -4,7 +4,8 @@
   "description": "Execute Gherkin scenarios in Jest",
   "main": "dist/src/index.js",
   "scripts": {
-    "test": "jest --color"
+    "test": "jest --color",
+    "jest": "jest --verbose"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
