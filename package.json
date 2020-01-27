@@ -32,7 +32,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
-    "@types/jest": "^24.0.7",
+    "@types/jest": "^25.1.0",
     "@types/node": "^11.9.4",
     "callsites": "^3.0.0",
     "gherkin": "^5.0.0",
