@@ -27,7 +27,7 @@
   "homepage": "https://github.com/bencompton/jest-cucumber#readme",
   "devDependencies": {
     "babel-jest": "^24.1.0",
-    "ts-jest": "^24.0.0",
+    "ts-jest": "^25.1.0",
     "tslint": "^5.10.0",
     "typescript": "^3.3.3"
   },
