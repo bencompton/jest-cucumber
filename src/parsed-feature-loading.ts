@@ -90,24 +90,40 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
             return processedStepText.replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
         }, scenarioStep.stepText);
 
-        let stepArgument;
+        let stepArgument: string | {} = '';
 
         if (scenarioStep.stepArgument) {
-            stepArgument = (scenarioStep.stepArgument as any).map((stepArgumentRow: any) => {
-                const modifiedStepAgrumentRow = {...stepArgumentRow};
+            if (Array.isArray(scenarioStep.stepArgument)) {
+                stepArgument = (scenarioStep.stepArgument as any).map((stepArgumentRow: any) => {
+                    const modifiedStepArgumentRow = { ...stepArgumentRow };
 
-                Object.keys(exampleTableRow).forEach((nextTableColumn) => {
-                    Object.keys(modifiedStepAgrumentRow).forEach((prop) => {
-                        modifiedStepAgrumentRow[prop] =
-                            modifiedStepAgrumentRow[prop].replace(
-                                `<${nextTableColumn}>`,
-                                exampleTableRow[nextTableColumn],
-                            );
+                    Object.keys(exampleTableRow).forEach((nextTableColumn) => {
+                        Object.keys(modifiedStepArgumentRow).forEach((prop) => {
+                            modifiedStepArgumentRow[prop] =
+                                modifiedStepArgumentRow[prop].replace(
+                                    `<${nextTableColumn}>`,
+                                    exampleTableRow[nextTableColumn],
+                                );
+                        });
                     });
-                });
 
-                return modifiedStepAgrumentRow;
-            });
+                    return modifiedStepArgumentRow;
+                });
+            } else {
+                stepArgument = scenarioStep.stepArgument;
+
+                if (
+                    typeof scenarioStep.stepArgument === 'string' ||
+                    scenarioStep.stepArgument instanceof String
+                ) {
+                    Object.keys(exampleTableRow).forEach((nextTableColumn) => {
+                        stepArgument = (stepArgument as string).replace(
+                            `<${nextTableColumn}>`,
+                            exampleTableRow[nextTableColumn],
+                        );
+                    });
+                }
+            }
         }
 
         return {
