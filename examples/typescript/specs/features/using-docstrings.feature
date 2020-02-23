@@ -1,7 +1,7 @@
 Feature: Certificate manufaturing
 
 Scenario Outline: Print a certificate
-    Given <Titel> <LastName> has achieved a <Score>
+    Given <Title> <LastName> has achieved a <Score>
     When I print the certificate
     Then It prints
         """
