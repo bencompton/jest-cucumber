@@ -12,54 +12,55 @@ defineFeature(feature, test => {
     myAccount = new BankAccount();
   });
 	
-  const givenIHaveXDollarsInMyBankAccount = given => {
+  const givenIHaveXDollarsInMyBankAccount = (given, account) => {
     given(/I have \$(\d+) in my bank account/, balance => {
-      myAccount.deposit(balance);
+      account.deposit(parseInt(balance));
     });
   };
 
-  const thenMyBalanceShouldBe = then => {
+  const thenMyBalanceShouldBe = (then, account) => {
     then(/my balance should be \$(\d+)/, balance => {
-      expect(myAccount.balance).toBe(balance);
+      expect(account.balance).toBe(parseInt(balance));
     });
   };
 
   test('Making a deposit', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given, myAccount);
 
     when(/I deposit \$(\d+)/, deposit => {
-      myAccount.deposit(deposit);
+      myAccount.deposit(parseInt(deposit));
     });
 
-    thenMyBalanceShouldBe(then);
+    thenMyBalanceShouldBe(then, myAccount);
   });
 	
   test('Making a withdrawal', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given, myAccount);
 
     when(/I withdraw \$(\d+)/, withdrawal => {
       myAccount.withdraw(withdrawal);
     });		
 
-    thenMyBalanceShouldBe(then);
+    thenMyBalanceShouldBe(then, myAccount);
   });
 });
 ```
+It may be necessary to manage by yourself the `BeforeEach` step because of the order and timing how this function is called. 
 
 If you need to re-use the same step definitions across multiple feature files, a useful approach is to place shared step definitions in a shared module and import them when needed:
 
 ```javascript
 // shared-steps.js
 	
-export const givenIHaveXDollarsInMyBankAccount = given => {
+export const givenIHaveXDollarsInMyBankAccount = (given, account) => {
   given(/I have \$(\d+) in my bank account/, balance => {
-    myAccount.deposit(balance);
+    account.deposit(balance);
   });
 };
 
-export const thenMyBalanceShouldBe = then => {
+export const thenMyBalanceShouldBe = (then, account) => {
   then(/my balance should be \$(\d+)/, balance => {
-    expect(myAccount.balance).toBe(balance);
+    expect(account.balance).toBe(parseInt(balance));
   });
 };
 ```
@@ -77,23 +78,23 @@ defineFeature(feature, test => {
   });
 
   test('Making a deposit', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given, myAccount);
 
     when(/I deposit \$(\d+)/, deposit => {
       myAccount.deposit(deposit);
     });
 
-    thenMyBalanceShouldBe(then);
+    thenMyBalanceShouldBe(then, myAccount);
   });
 	
   test('Making a withdrawal', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given);
+    givenIHaveXDollarsInMyBankAccount(given, myAccount);
 
     when(/I withdraw \$(\d+)/, withdrawal => {
       myAccount.withdraw(withdrawal);
     });		
 
-    thenMyBalanceShouldBe(then);
+    thenMyBalanceShouldBe(then, myAccount);
   });
 });
 ```
