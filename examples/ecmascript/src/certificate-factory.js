@@ -27,6 +27,6 @@ export class CertificateFactory {
             `For achieving a score of ${this.score}`,
         ];
 
-        return pieces.join('\n').trim();
+        return pieces.join('\n');
     }
 }
