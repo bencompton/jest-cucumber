@@ -19,10 +19,11 @@ export class CertificateFactory {
 
     public printCertificate() {
         const pieces = [
-            'Certificate of Mastery',
+            `Certificate of Mastery`,
             `The title of ${this.rank} is hereby awarded to:`,
             `${this.title} ${this.lastName}`,
-            `For achieving a score of ${this.score}`,
+            `For achieving a score of ${this.score}, ${this.title} ${this.lastName}`,
+            `may henceforth use the title ${this.rank}.`,
         ];
 
         return pieces.join('\n');

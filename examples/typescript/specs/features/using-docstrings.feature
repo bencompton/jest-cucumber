@@ -1,4 +1,4 @@
-Feature: Certificate manufaturing
+Feature: Certificate manufacturing
 
 Scenario Outline: Print a certificate
     Given <Title> <LastName> has achieved a <Score>
@@ -8,7 +8,8 @@ Scenario Outline: Print a certificate
         Certificate of Mastery
         The title of <Rank> is hereby awarded to:
         <Title> <LastName>
-        For achieving a score of <Score>
+        For achieving a score of <Score>, <Title> <LastName>
+        may henceforth use the title <Rank>.
         """
 
     Examples:

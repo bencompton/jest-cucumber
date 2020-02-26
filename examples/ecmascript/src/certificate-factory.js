@@ -21,7 +21,7 @@ export class CertificateFactory {
 
     printCertificate() {
         const pieces = [
-            'Certificate of Mastery',
+            `Certificate of ${this.rank}`,
             `The title of ${this.rank} is hereby awarded to:`,
             `${this.title} ${this.lastName}`,
             `For achieving a score of ${this.score}`,
