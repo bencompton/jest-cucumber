@@ -9,4 +9,9 @@ export class SeriesSolver {
     const series = terms.join(operator);
     return this.solutions[series];
   }
+
+  public add(terms: string[], operator: string, solution: string) {
+    const series = terms.join(operator);
+    this.solutions[series] = solution;
+  }
 }

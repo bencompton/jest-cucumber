@@ -1,4 +1,4 @@
-import { defineFeature, loadFeature } from '../../../../src';
+import { defineFeature, loadFeature, DefineStepFunction } from '../../../../src';
 import { SeriesSolver } from '../../src/series-solver';
 
 const feature = loadFeature('./examples/typescript/specs/features/more-scenario-outlines.feature');
@@ -13,6 +13,18 @@ defineFeature(feature, (test) => {
     solver = new SeriesSolver();
   });
 
+  const whenISolveTheSeries = (when: DefineStepFunction) => {
+    when(/^I solve the series$/, () => {
+      solution = solver.solve(terms, operator);
+    });
+  };
+
+  const thenIShouldGetXAsTheAnswer = (then: DefineStepFunction) => {
+    then(/^I should get (.*) as the answer$/, (expectedSolution) => {
+      expect(solution).toBe(expectedSolution);
+    });
+  };
+
   test('Solving series', ({ given, when, then }) => {
     given(
       /^I have a series (.*) (.*) (.*) (.*) (.*) (.*) \.\.\.$/,
@@ -24,12 +36,23 @@ defineFeature(feature, (test) => {
         terms = [firstTerm, secondTerm, thirdTerm];
       });
 
-    when(/^I solve the series$/, () => {
-      solution = solver.solve(terms, operator);
-    });
+    whenISolveTheSeries(when);
 
-    then(/^I should get (.*) as the answer$/, (expectedSolution) => {
-      expect(solution).toBe(expectedSolution);
-    });
+    thenIShouldGetXAsTheAnswer(then);
+  });
+
+  test('Adding series', ({ given, when, then }) => {
+    given(
+      /^I add the following series:$/,
+      (table: [{ Series: string, Operator: string, Solution: string }]) => {
+        const row = table[0];
+        terms = row.Series.split(` ${row.Operator} `);
+        operator = row.Operator;
+        solver.add(terms, operator, row.Solution);
+      });
+
+    whenISolveTheSeries(when);
+
+    thenIShouldGetXAsTheAnswer(then);
   });
 });
