@@ -27,13 +27,13 @@ defineFeature(feature, (test) => {
 
   test('Solving series', ({ given, when, then }) => {
     given(
-      /^I have a series (.*) (.*) (.*) (.*) (.*) (.*) \.\.\.$/,
-      (firstTerm, firstOperator, secondTerm, secondOperator, thirdTerm, thirdOperator) => {
+      /^I have a series (.*) (.*) (.*) (.*) (.*) (.*) (.*)$/,
+      (firstTerm, firstOperator, secondTerm, secondOperator, thirdTerm, thirdOperator, forthTerm) => {
         expect(firstOperator).toEqual(secondOperator);
         expect(firstOperator).toEqual(thirdOperator);
 
         operator = firstOperator;
-        terms = [firstTerm, secondTerm, thirdTerm];
+        terms = [firstTerm, secondTerm, thirdTerm, forthTerm];
       });
 
     whenISolveTheSeries(when);
