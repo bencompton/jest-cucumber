@@ -38,7 +38,7 @@ Scenario: Launching a SpaceX rocket
 
 ### Add the following to your Jest configuration:
 
-```javascript  
+```javascript
   "testMatch": [
     "**/*.steps.js"
   ],
@@ -59,7 +59,7 @@ const feature = loadFeature('./features/RocketLaunching.feature');
 ```javascript
 //rocket-launching.steps.js
 
-    import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
 const feature = loadFeature('./features/RocketLaunching.feature');
 
@@ -111,6 +111,7 @@ defineFeature(feature, test => {
   * [Gherkin tables](./docs/GherkinTables.md)
   * [Step definition arguments](./docs/StepDefinitionArguments.md)
   * [Scenario outlines](./docs/ScenarioOutlines.md)
-  * [Re-using step definitions](./docs/ReusingStepDefinitions.md)  
+  * [Re-using step definitions](./docs/ReusingStepDefinitions.md)
   * [Configuration options](./docs/AdditionalConfiguration.md)
   * [Running the examples](./docs/RunningTheExamples.md)
+  * [Using Docstrings](./docs/UsingDocstrings.md)
