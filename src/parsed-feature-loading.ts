@@ -87,7 +87,7 @@ const parseScenario = (astScenario: any) => {
 const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
     return scenarioSteps.map((scenarioStep) => {
         const stepText = Object.keys(exampleTableRow).reduce((processedStepText, nextTableColumn) => {
-            return processedStepText.replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
+            return processedStepText.replace(new RegExp(`<${nextTableColumn}>`, 'g'), exampleTableRow[nextTableColumn]);
         }, scenarioStep.stepText);
 
         let stepArgument: string | {} = '';
@@ -101,7 +101,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
                         Object.keys(modifiedStepArgumentRow).forEach((prop) => {
                             modifiedStepArgumentRow[prop] =
                                 modifiedStepArgumentRow[prop].replace(
-                                    `<${nextTableColumn}>`,
+                                    new RegExp(`<${nextTableColumn}>`, 'g'),
                                     exampleTableRow[nextTableColumn],
                                 );
                         });
@@ -118,7 +118,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
                 ) {
                     Object.keys(exampleTableRow).forEach((nextTableColumn) => {
                         stepArgument = (stepArgument as string).replace(
-                            `<${nextTableColumn}>`,
+                            new RegExp(`<${nextTableColumn}>`, 'g'),
                             exampleTableRow[nextTableColumn],
                         );
                     });
