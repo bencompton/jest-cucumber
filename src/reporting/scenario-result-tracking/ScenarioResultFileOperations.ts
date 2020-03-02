@@ -1,14 +1,19 @@
 import { writeFile, readFile, existsSync, mkdirSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { createHash } from 'crypto';
 
 import { IScenarioResult } from './ScenarioResultTracker';
+
+const getHash = (data: string) => {
+  return createHash('sha1').update(data).digest('base64');
+};
 
 const getFilePath = (featureTitle: string, scenarioTitle: string) => {
   return path.join(
     os.tmpdir(),
     'jest-cucumber-reporting',
-    encodeURIComponent(`${featureTitle}_${scenarioTitle}`),
+    getHash(`${featureTitle}_${scenarioTitle}`),
   );
 };
 
