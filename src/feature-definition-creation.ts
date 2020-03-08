@@ -114,7 +114,7 @@ const defineScenario = (
     only: boolean = false,
     skip: boolean = false,
     concurrent: boolean = false,
-    timeout: number,
+    timeout: number = TIMEOUT,
 ) => {
     const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
 
