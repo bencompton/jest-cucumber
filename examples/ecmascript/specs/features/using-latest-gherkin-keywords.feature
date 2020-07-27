@@ -1,7 +1,7 @@
 Feature: Using latest Gherkin keywords
 
     Rule: When a number, a minus sign, a number, and equals is entered into the calculator, 
-          the sum should be calculated displayed
+          the sum should be calculated and displayed
 
         Example: Subtracting two numbers
             Given I have entered "4" as the first operand
