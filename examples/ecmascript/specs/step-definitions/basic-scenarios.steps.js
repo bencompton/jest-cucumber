@@ -1,31 +1,27 @@
-import { loadFeature, defineFeature } from 'jest-cucumber';
-
-import { Rocket } from '../../src/rocket';
+import { defineFeature, loadFeature } from 'jest-cucumber';
+import { PasswordValidator } from '../../src/password-validator';
 
 const feature = loadFeature('./specs/features/basic-scenarios.feature');
 
-defineFeature(feature, test => {
-    test('Launching a SpaceX rocket', ({ given, when, then }) => {
-        let rocket;
-    
-        given('I am Elon Musk attempting to launch a rocket into space', () => {
-            rocket = new Rocket();
+defineFeature(feature, (test) => {
+    let passwordValidator = new PasswordValidator();
+    let accessGranted = false;
+
+    beforeEach(() => {
+        passwordValidator = new PasswordValidator();
+    });
+
+    test('Entering a correct password', ({ given, when, then }) => {
+        given('I have previously created a password', () => {
+            passwordValidator.setPassword('1234');
         });
 
-        when('I launch the rocket', () => {
-            rocket.launch();
+        when('I enter my password correctly', () => {
+            accessGranted = passwordValidator.validatePassword('1234');
         });
 
-        then('the rocket should end up in space', () => {
-            expect(rocket.isInSpace).toBe(true);
-        });        
-
-        then('the booster(s) should land back on the launch pad', () => {
-            expect(rocket.boostersLanded).toBe(true);
-        });
-
-        then('nobody should doubt me ever again', () => {
-            expect('people').not.toBe('haters');
+        then('I should be granted access', () => {
+            expect(accessGranted).toBe(true);
         });
     });
 });

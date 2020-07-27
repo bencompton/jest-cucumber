@@ -1,43 +1,43 @@
-import { loadFeature, defineFeature, DefineStepFunction } from '../../../../src/';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
-import { Calculator, CalculatorOperator } from '../../src/calculator';
+import { Calculator } from '../../src/calculator';
 
-const feature = loadFeature('./examples/typescript/specs/features/using-latest-gherkin-keywords.feature');
+const feature = loadFeature('./specs/features/using-latest-gherkin-keywords.feature');
 
 defineFeature(feature, (test) => {
-    let calculator: Calculator;
-    let output: number | undefined;
+    let calculator;
+    let output;
 
     beforeEach(() => {
         calculator = new Calculator();
     });
 
-    const givenIHaveEnteredXAsTheFirstOperand = (given: DefineStepFunction) => {
-        given(/^I have entered "(\d+)" as the first operand$/, (firstOperand: string) => {
+    const givenIHaveEnteredXAsTheFirstOperand = (given) => {
+        given(/^I have entered "(\d+)" as the first operand$/, (firstOperand) => {
             calculator.setFirstOperand(parseFloat(firstOperand));
         });
     };
 
-    const andIHaveEnteredXAsTheOperator = (and: DefineStepFunction) => {
-        and(/^I have entered "([+-/*])" as the operator$/, (operator: CalculatorOperator) => {
+    const andIHaveEnteredXAsTheOperator = (and) => {
+        and(/^I have entered "([+-/*])" as the operator$/, (operator) => {
             calculator.setCalculatorOperator(operator);
         });
     };
 
-    const andIHaveEnteredXAsTheSecondOperand = (and: DefineStepFunction) => {
-        and(/^I have entered "(\d+)" as the second operand$/, (secondOperand: string) => {
+    const andIHaveEnteredXAsTheSecondOperand = (and) => {
+        and(/^I have entered "(\d+)" as the second operand$/, (secondOperand) => {
             calculator.setSecondOperand(parseFloat(secondOperand));
         });
     };
 
-    const whenIPressTheEnterKey = (when: DefineStepFunction) => {
+    const whenIPressTheEnterKey = (when) => {
         when('I press the equals key', () => {
             output = calculator.computeOutput();
         });
     };
 
-    const thenTheOutputOfXShouldBeDisplayed = (then: DefineStepFunction) => {
-        then(/^the output of "(\d+)" should be displayed$/, (expectedOutput: string) => {
+    const thenTheOutputOfXShouldBeDisplayed = (then) => {
+        then(/^the output of "(\d+)" should be displayed$/, (expectedOutput) => {
             if (!expectedOutput) {
                 expect(output).toBeFalsy();
             } else {

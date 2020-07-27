@@ -1,8 +1,6 @@
-Feature: Rocket Launching
+Feature: Logging in
 
-Scenario: Launching a SpaceX rocket
-    Given I am Elon Musk attempting to launch a rocket into space
-    When I launch the rocket
-    Then the rocket should end up in space
-    And the booster(s) should land back on the launch pad
-    And nobody should doubt me ever again
+Scenario: Entering a correct password
+    Given I have previously created a password
+    When I enter my password correctly
+    Then I should be granted access
