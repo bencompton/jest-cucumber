@@ -1,11 +1,12 @@
 import {readFileSync, existsSync} from 'fs';
 import {dirname, resolve} from 'path';
 import callsites from 'callsites';
-// tslint:disable-next-line:no-var-requires
-const Gherkin = require('gherkin');
+import Parser from 'gherkin/dist/src/Parser';
+import AstBuilder from 'gherkin/dist/src/AstBuilder';
+import { v4 as uuidv4 } from 'uuid';
 
-import {getJestCucumberConfiguration} from './configuration';
-import {ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options} from './models';
+import { getJestCucumberConfiguration } from './configuration';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -39,13 +40,13 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
     }
 };
 
-const parseStepArgument = (astStepArgument: any) => {
-    if (astStepArgument) {
-        switch (astStepArgument.type) {
-            case 'DataTable':
-                return parseDataTable(astStepArgument);
-            case 'DocString':
-                return astStepArgument.content;
+const parseStepArgument = (astStep: any) => {
+    if (astStep) {
+        switch (astStep.argument) {
+            case 'dataTable':
+                return parseDataTable(astStep.dataTable);
+            case 'docString':
+                return astStep.docString.content;
             default:
                 return null;
         }
@@ -58,7 +59,7 @@ const parseStep = (astStep: any) => {
     return {
         stepText: astStep.text,
         keyword: (astStep.keyword).trim().toLowerCase() as string,
-        stepArgument: parseStepArgument(astStep.argument),
+        stepArgument: parseStepArgument(astStep),
         lineNumber: astStep.location.line,
     } as ParsedStep;
 };
@@ -168,39 +169,63 @@ const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: P
 };
 
 const parseScenarioOutline = (astScenarioOutline: any) => {
-    const outlineScenario = parseScenario(astScenarioOutline);
+    const outlineScenario = parseScenario(astScenarioOutline.scenario);
 
     return {
         title: outlineScenario.title,
-        scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.examples, outlineScenario),
+        scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.scenario.examples, outlineScenario),
         tags: outlineScenario.tags,
         steps: outlineScenario.steps,
-        lineNumber: astScenarioOutline.location.line,
+        lineNumber: astScenarioOutline.scenario.location.line,
     } as ParsedScenarioOutline;
 };
 
 const parseScenarios = (astFeature: any) => {
     return astFeature.children
-        .filter((child: any) => child.type === 'Scenario')
-        .map((astScenario: any) => parseScenario(astScenario));
+        .filter((child: any) => {
+            const keywords = ['Scenario Outline', 'Scenario Template'];
+
+            return child.scenario && keywords.indexOf(child.scenario.keyword) === -1;
+        })
+        .map((astScenario: any) => parseScenario(astScenario.scenario));
 };
 
 const parseScenarioOutlines = (astFeature: any) => {
     return astFeature.children
-        .filter((child: any) => child.type === 'ScenarioOutline')
+        .filter((child: any) => {
+            const keywords = ['Scenario Outline', 'Scenario Template'];
+
+            return child.scenario && keywords.indexOf(child.scenario.keyword) !== -1;
+        })
         .map((astScenarioOutline: any) => parseScenarioOutline(astScenarioOutline));
+};
+
+const collapseRules = (astFeature: any) => {
+    const children = astFeature.children.reduce((newChildren: [], nextChild: any) => {
+        if (nextChild.rule) {
+            return [...newChildren, ...nextChild.rule.children];
+        } else {
+            return [...newChildren, nextChild];
+        }
+    }, []);
+
+    return {
+        ...astFeature,
+        children,
+    };
 };
 
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
 
     try {
-        ast = new Gherkin.Parser().parse(featureText);
+        const builder = new AstBuilder(uuidv4 as any);
+        ast = new Parser(builder).parse(featureText);
     } catch (err) {
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
 
-    const astFeature = ast.feature;
+    const astFeature = collapseRules(ast.feature);
 
     return {
         title: astFeature.name,
@@ -226,6 +251,7 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
         if (err.code === 'ENOENT') {
             throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);
         }
+
         throw err;
     }
 };
