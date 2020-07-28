@@ -1,5 +1,9 @@
 # Scenario outlines
 
+Jest Cucumber allows you to create scenario outlines by adding placeholders to your steps and titles. Placeholders are written as `<PLACEHOLDER>` where `PLACEHOLDER` is a reference to a column heading in the `Examples:` table. Jest Cucumber will run the scenario once for each row in the `Examples:` table, replacing the placeholder with the value of the referenced column of the current row.
+
+Placeholders are allowed in the scenario's title, its steps, gherkin tables and docstrings.
+
 ```gherkin
 Feature: Online sales
 
@@ -25,7 +29,7 @@ const feature = loadFeature('./features/OnlineSales.feature');
 defineFeature(feature, test => {
   let onlineSales;
   let salesPrice;
-		
+
   beforeEach(() => {
     onlineSales = new OnlineSales();
   });

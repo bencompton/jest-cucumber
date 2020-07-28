@@ -11,7 +11,7 @@ defineFeature(feature, test => {
         onlineSales = new OnlineSales();
     });
 
-    test('Selling an item', ({ given, when, then, pending }) => {
+    test('Selling an <Item> at $<Amount>', ({ given, when, then, pending }) => {
         given(/^I have a\(n\) (.*)$/, item => {
             onlineSales.listItem(item);
         });

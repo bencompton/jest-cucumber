@@ -26,19 +26,17 @@ npm install jest-cucumber --save-dev
 ### Add a Feature file:
 
 ```gherkin
-Feature: Rocket Launching
+Feature: Logging in
 
-Scenario: Launching a SpaceX rocket
-  Given I am Elon Musk attempting to launch a rocket into space
-  When I launch the rocket
-  Then the rocket should end up in space
-  And the booster(s) should land back on the launch pad
-  And nobody should doubt me ever again
+Scenario: Entering a correct password
+    Given I have previously created a password
+    When I enter my password correctly
+    Then I should be granted access
 ```
 
 ### Add the following to your Jest configuration:
 
-```javascript  
+```javascript
   "testMatch": [
     "**/*.steps.js"
   ],
@@ -47,24 +45,24 @@ Scenario: Launching a SpaceX rocket
 ### Add a step definition file that links to your feature file:
 
 ```javascript
-//rocket-launching.steps.js
+// logging-in.steps.js
 
 import { defineFeature, loadFeature } from 'jest-cucumber';
 
-const feature = loadFeature('./features/RocketLaunching.feature');
+const feature = loadFeature('./features/LoggingIn.feature');
 ```
 
 ### Add a Jest test for each scenario into your step definition file:
 
 ```javascript
-//rocket-launching.steps.js
+// logging-in.steps.js
 
-    import { defineFeature, loadFeature } from 'jest-cucumber';
+import { defineFeature, loadFeature } from 'jest-cucumber';
 
-const feature = loadFeature('./features/RocketLaunching.feature');
+const feature = loadFeature('./features/LoggingIn.feature');
 
 defineFeature(feature, test => {
-  test('Launching a SpaceX rocket', ({ given, when, then }) => {
+  test('Entering a correct password', ({ given, when, then }) => {
 
   });
 });
@@ -73,44 +71,43 @@ defineFeature(feature, test => {
 ### Add step definitions to your scenario Jest tests:
 
 ```javascript
-//rocket-launching.steps.js
+// logging-in.steps.js
 
-import { defineFeature, loadFeature } from 'jest-cucumber';
-import Rocket from '../Rocket';
+import { loadFeature, defineFeature } from '../../../../src/';
+import { PasswordValidator } from '../../src/password-validator';
 
-const feature = loadFeature('./features/RocketLaunching.feature');
+const feature = loadFeature('./examples/typescript/specs/features/basic-scenarios.feature');
 
-defineFeature(feature, test => {
-  test('Launching a SpaceX rocket', ({ given, when, then }) => {
-    let rocket;
+defineFeature(feature, (test) => {
+  let passwordValidator = new PasswordValidator();
+  let accessGranted = false;
 
-    given('I am Elon Musk attempting to launch a rocket into space', () => {
-      rocket = new Rocket();
+  beforeEach(() => {
+    passwordValidator = new PasswordValidator();
+  });
+
+  test('Entering a correct password', ({ given, when, then }) => {
+    given('I have previously created a password', () => {
+      passwordValidator.setPassword('1234');
     });
 
-    when('I launch the rocket', () => {
-      rocket.launch();
+    when('I enter my password correctly', () => {
+      accessGranted = passwordValidator.validatePassword('1234');
     });
 
-    then('the rocket should end up in space', () => {
-      expect(rocket.isInSpace).toBe(true);
-    });
-
-    then('the booster(s) should land back on the launch pad', () => {
-      expect(rocket.boostersLanded).toBe(true);
-    });
-
-    then('nobody should doubt me ever again', () => {
-      expect('people').not.toBe('haters');
+    then('I should be granted access', () => {
+      expect(accessGranted).toBe(true);
     });
   });
 });
 ```
+
 ## Additional Documentation
 
   * [Gherkin tables](./docs/GherkinTables.md)
   * [Step definition arguments](./docs/StepDefinitionArguments.md)
   * [Scenario outlines](./docs/ScenarioOutlines.md)
-  * [Re-using step definitions](./docs/ReusingStepDefinitions.md)  
+  * [Re-using step definitions](./docs/ReusingStepDefinitions.md)
   * [Configuration options](./docs/AdditionalConfiguration.md)
   * [Running the examples](./docs/RunningTheExamples.md)
+  * [Using Docstrings](./docs/UsingDocstrings.md)

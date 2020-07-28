@@ -39,8 +39,9 @@
     "callsites": "^3.0.0",
     "cucumber": "^5.1.0",
     "events": "^3.0.0",
-    "gherkin": "^5.0.0",
-    "jest": "^24.1.0"
+    "jest": "^24.1.0",
+    "gherkin": "^9.0.0",
+    "uuid": "^8.2.0"
   },
   "jest": {
     "transform": {
@@ -53,10 +54,6 @@
       "js",
       "ts",
       "tsx"
-    ],
-    "reporters": [
-      "default",
-      "./dist/src/reporting/index.js"
     ]
   }
 }

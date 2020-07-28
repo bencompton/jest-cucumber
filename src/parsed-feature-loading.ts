@@ -1,11 +1,12 @@
 import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-// tslint:disable-next-line:no-var-requires
-const Gherkin = require('gherkin');
+import Parser from 'gherkin/dist/src/Parser';
+import AstBuilder from 'gherkin/dist/src/AstBuilder';
+import { v4 as uuidv4 } from 'uuid';
 
-import {getJestCucumberConfiguration} from './configuration';
-import {ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options} from './models';
+import { getJestCucumberConfiguration } from './configuration';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -44,13 +45,13 @@ const parseTableRowLineNumbers = (astDataTable: any) => {
         .map((row: any) => row.location.line);
 };
 
-const parseStepArgument = (astStepArgument: any) => {
-    if (astStepArgument) {
-        switch (astStepArgument.type) {
-            case 'DataTable':
-                return parseDataTable(astStepArgument);
-            case 'DocString':
-                return astStepArgument.content;
+const parseStepArgument = (astStep: any) => {
+    if (astStep) {
+        switch (astStep.argument) {
+            case 'dataTable':
+                return parseDataTable(astStep.dataTable);
+            case 'docString':
+                return astStep.docString.content;
             default:
                 return null;
         }
@@ -63,7 +64,7 @@ const parseStep = (astStep: any) => {
     return {
         stepText: astStep.text,
         keyword: (astStep.keyword).trim().toLowerCase() as string,
-        stepArgument: parseStepArgument(astStep.argument),
+        stepArgument: parseStepArgument(astStep),
         lineNumber: astStep.location.line,
     } as ParsedStep;
 };
@@ -92,27 +93,43 @@ const parseScenario = (astScenario: any) => {
 const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
     return scenarioSteps.map((scenarioStep) => {
         const stepText = Object.keys(exampleTableRow).reduce((processedStepText, nextTableColumn) => {
-            return processedStepText.replace(`<${nextTableColumn}>`, exampleTableRow[nextTableColumn]);
+            return processedStepText.replace(new RegExp(`<${nextTableColumn}>`, 'g'), exampleTableRow[nextTableColumn]);
         }, scenarioStep.stepText);
 
-        let stepArgument;
+        let stepArgument: string | {} = '';
 
         if (scenarioStep.stepArgument) {
-            stepArgument = (scenarioStep.stepArgument as any).map((stepArgumentRow: any) => {
-                const modifiedStepAgrumentRow = {...stepArgumentRow};
+            if (Array.isArray(scenarioStep.stepArgument)) {
+                stepArgument = (scenarioStep.stepArgument as any).map((stepArgumentRow: any) => {
+                    const modifiedStepArgumentRow = { ...stepArgumentRow };
 
-                Object.keys(exampleTableRow).forEach((nextTableColumn) => {
-                    Object.keys(modifiedStepAgrumentRow).forEach((prop) => {
-                        modifiedStepAgrumentRow[prop] =
-                            modifiedStepAgrumentRow[prop].replace(
-                                `<${nextTableColumn}>`,
-                                exampleTableRow[nextTableColumn],
-                            );
+                    Object.keys(exampleTableRow).forEach((nextTableColumn) => {
+                        Object.keys(modifiedStepArgumentRow).forEach((prop) => {
+                            modifiedStepArgumentRow[prop] =
+                                modifiedStepArgumentRow[prop].replace(
+                                    new RegExp(`<${nextTableColumn}>`, 'g'),
+                                    exampleTableRow[nextTableColumn],
+                                );
+                        });
                     });
-                });
 
-                return modifiedStepAgrumentRow;
-            });
+                    return modifiedStepArgumentRow;
+                });
+            } else {
+                stepArgument = scenarioStep.stepArgument;
+
+                if (
+                    typeof scenarioStep.stepArgument === 'string' ||
+                    scenarioStep.stepArgument instanceof String
+                ) {
+                    Object.keys(exampleTableRow).forEach((nextTableColumn) => {
+                        stepArgument = (stepArgument as string).replace(
+                            new RegExp(`<${nextTableColumn}>`, 'g'),
+                            exampleTableRow[nextTableColumn],
+                        );
+                    });
+                }
+            }
         }
 
         return {
@@ -124,8 +141,9 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
 };
 
 const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
-    const findTitleKey = title.match(/<(.*)>/);
-    return findTitleKey && findTitleKey.length >= 1 ? findTitleKey[1] : '';
+    return title.replace(/<(\S*)>/g, (_, firstMatch) => {
+        return exampleTableRow[firstMatch || ''];
+    });
 };
 
 const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario, lineNumber: number) => {
@@ -139,7 +157,7 @@ const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: Pars
     }
 
     return {
-        title,
+        title: getOutlineDynamicTitle(exampleTableRow, outlineScenario.title),
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: outlineScenario.tags,
         lineNumber,
@@ -171,39 +189,63 @@ const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: P
 };
 
 const parseScenarioOutline = (astScenarioOutline: any) => {
-    const outlineScenario = parseScenario(astScenarioOutline);
+    const outlineScenario = parseScenario(astScenarioOutline.scenario);
 
     return {
         title: outlineScenario.title,
-        scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.examples, outlineScenario),
+        scenarios: parseScenarioOutlineExampleSets(astScenarioOutline.scenario.examples, outlineScenario),
         tags: outlineScenario.tags,
         steps: outlineScenario.steps,
-        lineNumber: astScenarioOutline.location.line,
+        lineNumber: astScenarioOutline.scenario.location.line,
     } as ParsedScenarioOutline;
 };
 
 const parseScenarios = (astFeature: any) => {
     return astFeature.children
-        .filter((child: any) => child.type === 'Scenario')
-        .map((astScenario: any) => parseScenario(astScenario));
+        .filter((child: any) => {
+            const keywords = ['Scenario Outline', 'Scenario Template'];
+
+            return child.scenario && keywords.indexOf(child.scenario.keyword) === -1;
+        })
+        .map((astScenario: any) => parseScenario(astScenario.scenario));
 };
 
 const parseScenarioOutlines = (astFeature: any) => {
     return astFeature.children
-        .filter((child: any) => child.type === 'ScenarioOutline')
+        .filter((child: any) => {
+            const keywords = ['Scenario Outline', 'Scenario Template'];
+
+            return child.scenario && keywords.indexOf(child.scenario.keyword) !== -1;
+        })
         .map((astScenarioOutline: any) => parseScenarioOutline(astScenarioOutline));
+};
+
+const collapseRules = (astFeature: any) => {
+    const children = astFeature.children.reduce((newChildren: [], nextChild: any) => {
+        if (nextChild.rule) {
+            return [...newChildren, ...nextChild.rule.children];
+        } else {
+            return [...newChildren, nextChild];
+        }
+    }, []);
+
+    return {
+        ...astFeature,
+        children,
+    };
 };
 
 export const parseFeature = (featurePath: string, featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
 
     try {
-        ast = new Gherkin.Parser().parse(featureText);
+        const builder = new AstBuilder(uuidv4 as any);
+        ast = new Parser(builder).parse(featureText);
     } catch (err) {
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
 
-    const astFeature = ast.feature;
+    const astFeature = collapseRules(ast.feature);
 
     return {
         title: astFeature.name,
@@ -218,7 +260,9 @@ export const parseFeature = (featurePath: string, featureText: string, options?:
 export const loadFeature = (featureFilePath: string, options?: Options) => {
     options = getJestCucumberConfiguration(options);
 
-    const dirOfCaller = dirname(callsites()[1].getFileName() || '');
+    const callSite = callsites()[1];
+    const fileOfCaller = callSite && callSite.getFileName() || '';
+    const dirOfCaller = dirname(fileOfCaller);
     const absoluteFeatureFilePath = resolve(options.loadRelativePath ? dirOfCaller : '', featureFilePath);
 
     try {
@@ -229,6 +273,7 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
         if (err.code === 'ENOENT') {
             throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);
         }
+
         throw err;
     }
 };
