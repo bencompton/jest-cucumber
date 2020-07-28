@@ -6,7 +6,7 @@ import { createHash } from 'crypto';
 import { IScenarioResult } from './ScenarioResultTracker';
 
 const getHash = (data: string) => {
-  return createHash('sha1').update(data).digest('base64');
+  return createHash('sha1').update(data).digest('hex');
 };
 
 const getFilePath = (featureTitle: string, scenarioTitle: string) => {
