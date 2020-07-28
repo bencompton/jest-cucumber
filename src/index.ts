@@ -5,3 +5,4 @@ export {
   generateCodeFromFeature,
   generateCodeWithSeparateFunctionsFromFeature,
 } from './code-generation/generate-code-by-line-number';
+export { defineGlobalStep } from './global-steps';

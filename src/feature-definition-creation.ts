@@ -11,6 +11,7 @@ import {
     matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
+import { globalSteps } from './global-steps';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -247,12 +248,11 @@ const createDefineScenarioFunctionWithAliases = (
 };
 
 const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
-    return (stepMatcher: string | RegExp, stepFunction: () => any) => {
+    return (stepMatcher: string | RegExp, stepFunction?: () => any) => {
         const stepDefinition: StepFromStepDefinitions = {
             stepMatcher,
-            stepFunction,
+            stepFunction: stepFunction || globalSteps.get(stepMatcher as string),
         };
-
         scenarioFromStepDefinitions.steps.push(stepDefinition);
     };
 };
@@ -270,7 +270,7 @@ export function defineFeature(
 
     if (
         parsedFeatureWithTagFiltersApplied.scenarios.length === 0
-            && parsedFeatureWithTagFiltersApplied.scenarioOutlines.length === 0
+        && parsedFeatureWithTagFiltersApplied.scenarioOutlines.length === 0
     ) {
         return;
     }

@@ -10,6 +10,7 @@ const defaultErrorSettings = {
 const defaultConfiguration: Options = {
     tagFilter: undefined,
     scenarioNameTemplate: undefined,
+    disableRegexGeneration: undefined,
     errors: defaultErrorSettings,
 };
 
