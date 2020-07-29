@@ -104,11 +104,12 @@ defineFeature(feature, (test) => {
 
 ## Additional Documentation
 
-  * [Gherkin tables](./docs/GherkinTables.md)
-  * [Step definition arguments](./docs/StepDefinitionArguments.md)
-  * [Scenario outlines](./docs/ScenarioOutlines.md)
-  * [Re-using step definitions](./docs/ReusingStepDefinitions.md)
-  * [Configuration options](./docs/AdditionalConfiguration.md)
-  * [Running the examples](./docs/RunningTheExamples.md)
-  * [Using Docstrings](./docs/UsingDocstrings.md)
-  * [Asynchronous Steps](./docs/AsynchronousSteps.md)
+* [Gherkin tables](./docs/GherkinTables.md)
+* [Step definition arguments](./docs/StepDefinitionArguments.md)
+* [Scenario outlines](./docs/ScenarioOutlines.md)
+* [Re-using step definitions](./docs/ReusingStepDefinitions.md)
+* [Configuration options](./docs/AdditionalConfiguration.md)
+* [Running the examples](./docs/RunningTheExamples.md)
+* [Using Docstrings](./docs/UsingDocstrings.md)
+* [Asynchronous steps](./docs/AsynchronousSteps.md)
+* [Automatic step Binding](./docs/AutomaticStepBinding.md)

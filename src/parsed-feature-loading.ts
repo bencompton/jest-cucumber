@@ -1,5 +1,6 @@
-import {readFileSync, existsSync} from 'fs';
-import {dirname, resolve} from 'path';
+import { readFileSync } from 'fs';
+import { sync as globSync } from 'glob';
+import { dirname, resolve } from 'path';
 import callsites from 'callsites';
 import Parser from 'gherkin/dist/src/Parser';
 import AstBuilder from 'gherkin/dist/src/AstBuilder';
@@ -254,4 +255,10 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
 
         throw err;
     }
+};
+
+export const loadFeatures = (globPattern: string, options?: Options) => {
+    const featureFiles = globSync(globPattern);
+
+    return featureFiles.map((featureFilePath) => loadFeature(featureFilePath, options));
 };
