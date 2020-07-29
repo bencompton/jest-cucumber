@@ -57,6 +57,6 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
     });
 
     if (errors.length) {
-        throw new Error(errors.join('\r\r'));
+        throw new Error(errors.join('\n\n'));
     }
 };
