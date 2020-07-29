@@ -111,3 +111,4 @@ defineFeature(feature, (test) => {
   * [Configuration options](./docs/AdditionalConfiguration.md)
   * [Running the examples](./docs/RunningTheExamples.md)
   * [Using Docstrings](./docs/UsingDocstrings.md)
+  * [Asynchronous Steps](./docs/AsynchronousSteps.md)
