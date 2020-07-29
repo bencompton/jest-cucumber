@@ -12,8 +12,6 @@ import {
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
 
-const TIMEOUT = 5000;
-
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
     given: DefineStepFunction;
@@ -114,7 +112,7 @@ const defineScenario = (
     only: boolean = false,
     skip: boolean = false,
     concurrent: boolean = false,
-    timeout: number = TIMEOUT,
+    timeout: number | undefined = undefined,
 ) => {
     const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
 
@@ -144,11 +142,11 @@ const createDefineScenarioFunction = (
     only: boolean = false,
     skip: boolean = false,
     concurrent: boolean = false,
-    timeout: number = TIMEOUT,
 ) => {
     const defineScenarioFunction: DefineScenarioFunction = (
         scenarioTitle: string,
         stepsDefinitionFunctionCallback: StepsDefinitionCallbackFunction,
+        timeout?: number,
     ) => {
         const scenarioFromStepDefinitions: ScenarioFromStepDefinitions = {
             title: scenarioTitle,
@@ -226,7 +224,6 @@ const createDefineScenarioFunction = (
 const createDefineScenarioFunctionWithAliases = (
     featureFromStepDefinitions: FeatureFromStepDefinitions,
     parsedFeature: ParsedFeature,
-    timeout: number = TIMEOUT,
 ) => {
     const defineScenarioFunctionWithAliases = createDefineScenarioFunction(featureFromStepDefinitions, parsedFeature);
 
@@ -236,7 +233,6 @@ const createDefineScenarioFunctionWithAliases = (
         true,
         false,
         false,
-        timeout,
     );
 
     (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).skip = createDefineScenarioFunction(
@@ -245,7 +241,6 @@ const createDefineScenarioFunctionWithAliases = (
         false,
         true,
         false,
-        timeout,
     );
 
     (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).concurrent = createDefineScenarioFunction(
@@ -254,7 +249,6 @@ const createDefineScenarioFunctionWithAliases = (
         false,
         false,
         true,
-        timeout,
     );
 
     return defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases;
