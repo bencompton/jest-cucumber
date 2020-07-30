@@ -142,18 +142,24 @@ const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
     });
 };
 
-const parseScenarioOutlineExample = (exampleTableRow: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExample = (
+    exampleTableRow: any,
+    outlineScenario: ParsedScenario,
+    exampleSetTags: string[],
+) => {
     return {
         title: getOutlineDynamicTitle(exampleTableRow, outlineScenario.title),
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
-        tags: outlineScenario.tags,
+        tags: Array.from(new Set<string>([...outlineScenario.tags, ...exampleSetTags])),
     } as ParsedScenario;
 };
 
 const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: ParsedScenario) => {
     const exampleTable = parseDataTable(astExampleSet.tableBody, astExampleSet.tableHeader);
 
-    return exampleTable.map((tableRow) => parseScenarioOutlineExample(tableRow, outlineScenario));
+    return exampleTable.map(
+        (tableRow) => parseScenarioOutlineExample(tableRow, outlineScenario, parseTags(astExampleSet)),
+    );
 };
 
 const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: ParsedScenario) => {
