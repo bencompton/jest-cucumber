@@ -1,4 +1,6 @@
 import { ParsedScenario, ParsedScenarioOutline, ScenarioFromStepDefinitions, Options, ParsedStep } from '../models';
+import { generateScenarioCode } from '../code-generation/scenario-generation';
+import { generateStepCode } from '../code-generation/step-generation';
 
 export const matchSteps = (stepFromFeatureFile: string, stepMatcher: string | RegExp) => {
     if (typeof stepMatcher === 'string') {
@@ -44,7 +46,7 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
 
     if (parsedStepCount !== stepDefinitionCount && options.errors) {
         // tslint:disable-next-line:max-line-length
-        errors.push(`Scenario "${parsedScenario.title}" has ${parsedStepCount} step(s) in the feature file, but ${stepDefinitionCount} step definition(s) defined.`);
+        errors.push(`Scenario "${parsedScenario.title}" has ${parsedStepCount} step(s) in the feature file, but ${stepDefinitionCount} step definition(s) defined. Try adding the following code:\n\n${generateScenarioCode(parsedScenario)}`);
     }
 
     parsedScenarioSteps.forEach((parsedStep, index) => {
@@ -52,7 +54,7 @@ export const ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps = (
 
         if (!stepFromStepDefinitions || !matchSteps(parsedStep.stepText, stepFromStepDefinitions.stepMatcher)) {
             // tslint:disable-next-line:max-line-length
-            errors.push(`Expected step #${index + 1} in scenario "${parsedScenario.title}" to match "${parsedStep.stepText}"`);
+            errors.push(`Expected step #${index + 1} in scenario "${parsedScenario.title}" to match "${parsedStep.stepText}". Try adding the following code:\n\n${generateStepCode(parsedScenario.steps, index)}`);
         }
     });
 
