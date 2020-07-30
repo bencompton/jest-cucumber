@@ -1,7 +1,12 @@
 Feature: Beverage vending machine
 
-    Scenario: Purchasing a beverage
-        Given the vending machine has "Pepsi" in stock
+    Scenario Outline: Purchasing a beverage
+        Given the vending machine has "<beverage>" in stock
         And I have inserted the correct amount of money
-        When I purchase "Pepsi"
-        Then my "Pepsi" should be dispensed
+        When I purchase "<beverage>"
+        Then my "<beverage>" should be dispensed
+
+        Examples:
+        | beverage   |
+        | Cola       |
+        | Ginger ale |
