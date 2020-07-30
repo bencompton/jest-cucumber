@@ -212,16 +212,16 @@ const collapseBackgrounds = (astChildren: any[], backgrounds: any[]) => {
         .reduce((allBackgroundSteps, nextBackground) => {
             return [
                 ...allBackgroundSteps,
-                ...nextBackground.steps
+                ...nextBackground.steps,
             ];
         }, []);
 
     astChildren.forEach((child) => {
         if (child.scenario) {
-            child.scenario.steps = [...backgroundSteps, ...child.scenario.steps]
+            child.scenario.steps = [...backgroundSteps, ...child.scenario.steps];
         }
     });
-    
+
     return astChildren;
 };
 
@@ -242,7 +242,7 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
 
                 return [
                     ...newChildren,
-                    ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds])
+                    ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds]),
                 ];
             } else {
                 return [...newChildren, nextChild];
