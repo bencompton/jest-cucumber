@@ -24,7 +24,7 @@ const stepWrapperFunctionCallTemplate = (stepText: string, stepKeyword: string) 
     return `${getStepFunctionWrapperName(stepKeyword, stepText)}(${stepKeyword})`;
 };
 
-const stepTextArgumentRegex = /([-+]?[0-9]*\.?[0-9]+)|\"([^"<]+)\"|\"?\<([^"<]*)\>\"?/g
+const stepTextArgumentRegex = /([-+]?[0-9]*\.?[0-9]+)|\"([^"<]+)\"|\"?\<([^"<]*)\>\"?/g;
 
 const escapeRegexCharacters = (text: string) => {
     return text
@@ -34,16 +34,17 @@ const escapeRegexCharacters = (text: string) => {
 };
 
 const convertStepTextToRegex = (step: ParsedStep) => {
-    let stepText = escapeRegexCharacters(step.stepText);
+    const stepText = escapeRegexCharacters(step.stepText);
     let matches: RegExpExecArray | null;
     let finalStepText = stepText;
 
     while (matches = stepTextArgumentRegex.exec(stepText)) {
-        const [fullMatch, numberMatch, stringMatch, outlineMatch] = matches;
-        const normalMatch = [numberMatch, stringMatch].filter(Boolean)[0];
+        const [fullMatch, numberMatch, stringMatch] = matches;
 
-        if (normalMatch) {
-            finalStepText = finalStepText.replace(normalMatch, `(${normalMatch})`);
+        if (numberMatch) {
+            finalStepText = finalStepText.replace(numberMatch, '(\\d+)');
+        } else if (stringMatch) {
+            finalStepText = finalStepText.replace(stringMatch, '(.*)');
         } else {
             finalStepText = finalStepText.replace(fullMatch, '(.*)');
         }
