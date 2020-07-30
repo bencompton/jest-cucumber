@@ -207,14 +207,47 @@ const parseScenarioOutlines = (astFeature: any) => {
         .map((astScenarioOutline: any) => parseScenarioOutline(astScenarioOutline));
 };
 
-const collapseRules = (astFeature: any) => {
-    const children = astFeature.children.reduce((newChildren: [], nextChild: any) => {
-        if (nextChild.rule) {
-            return [...newChildren, ...nextChild.rule.children];
-        } else {
-            return [...newChildren, nextChild];
+const collapseBackgrounds = (astChildren: any[], backgrounds: any[]) => {
+    const backgroundSteps = backgrounds
+        .reduce((allBackgroundSteps, nextBackground) => {
+            return [
+                ...allBackgroundSteps,
+                ...nextBackground.steps
+            ];
+        }, []);
+
+    astChildren.forEach((child) => {
+        if (child.scenario) {
+            child.scenario.steps = [...backgroundSteps, ...child.scenario.steps]
         }
-    }, []);
+    });
+    
+    return astChildren;
+};
+
+const parseBackgrounds = (ast: any) => {
+    return ast.children
+        .filter((child: any) => child.background)
+        .map((child: any) => child.background);
+};
+
+const collapseRulesAndBackgrounds = (astFeature: any) => {
+    const featureBackgrounds = parseBackgrounds(astFeature);
+
+    const children = collapseBackgrounds(astFeature.children, featureBackgrounds)
+        .reduce((newChildren: [], nextChild: any) => {
+            if (nextChild.rule) {
+                const rule = nextChild.rule;
+                const ruleBackgrounds = parseBackgrounds(rule);
+
+                return [
+                    ...newChildren,
+                    ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds])
+                ];
+            } else {
+                return [...newChildren, nextChild];
+            }
+        }, []);
 
     return {
         ...astFeature,
@@ -232,7 +265,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
 
-    const astFeature = collapseRules(ast.feature);
+    const astFeature = collapseRulesAndBackgrounds(ast.feature);
 
     return {
         title: astFeature.name,
