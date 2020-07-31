@@ -49,7 +49,7 @@ Scenario: Entering a correct password
 
 import { defineFeature, loadFeature } from 'jest-cucumber';
 
-const feature = loadFeature('./features/LoggingIn.feature');
+const feature = loadFeature('features/LoggingIn.feature');
 ```
 
 ### Add a Jest test for each scenario into your step definition file:
@@ -59,7 +59,7 @@ const feature = loadFeature('./features/LoggingIn.feature');
 
 import { defineFeature, loadFeature } from 'jest-cucumber';
 
-const feature = loadFeature('./features/LoggingIn.feature');
+const feature = loadFeature('features/LoggingIn.feature');
 
 defineFeature(feature, test => {
   test('Entering a correct password', ({ given, when, then }) => {
@@ -73,10 +73,10 @@ defineFeature(feature, test => {
 ```javascript
 // logging-in.steps.js
 
-import { loadFeature, defineFeature } from '../../../../src/';
-import { PasswordValidator } from '../../src/password-validator';
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import { PasswordValidator } from 'src/password-validator';
 
-const feature = loadFeature('./examples/typescript/specs/features/basic-scenarios.feature');
+const feature = loadFeature('specs/features/basic-scenarios.feature');
 
 defineFeature(feature, (test) => {
   let passwordValidator = new PasswordValidator();
