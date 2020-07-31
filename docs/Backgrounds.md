@@ -119,4 +119,4 @@ Again, Jest Cucumber will throw errors if step definitions are not defined for y
 
 ## Reducing duplicated code
 
-Since the same background steps are repeated in every scenario, and since Jest Cucumber expects the background step definitions to be repeated in every `test` block in the correct order, this could potentially result in a lot of duplicate code. Therefore, the techniques described in ["Reusing Step Definitions"](./docs/ReusingStepDefinitions.md) should be leveraged heavily. See the example [background step definitions](../examples/typescript/specs/step-definitions/backgrounds.steps.ts) for a more concrete illustration.
+Since the same background steps are repeated in every scenario, and since Jest Cucumber expects the background step definitions to be repeated in every `test` block in the correct order, this could potentially result in a lot of duplicate code. Therefore, the techniques described in ["Reusing Step Definitions"](./ReusingStepDefinitions.md) should be leveraged heavily. See the example [background step definitions](../examples/typescript/specs/step-definitions/backgrounds.steps.ts) for a more concrete illustration.
