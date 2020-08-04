@@ -93,7 +93,7 @@ If you wanted to use only the auto binding approach in your project and have Jes
     ],
 ```
 
-If you are using `autoBindSteps` with just a subset of your feature files, you could place your `loadFeatures` and `autoBindSteps` code into any `.steps.ts` file and use the typical Jest Cucumber `testMatch` configuration:
+If you are using `autoBindSteps` with just a subset of your feature files (as demonstrated in the [examples](https://github.com/bencompton/jest-cucumber/blob/master/examples/typescript/specs/step-definitions/auto-step-binding.steps.ts)), you could place your `loadFeatures` and `autoBindSteps` code into any `.steps.ts` file and use the typical Jest Cucumber `testMatch` configuration:
 
 ```javascript
   "jest": {
