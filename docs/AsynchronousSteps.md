@@ -67,8 +67,8 @@ defineFeature(feature, test => {
     });
 
     ...
-  });
-}, 1000);
+  }, 1000);
+});
 ```
 
 In addition, you can set a [default timeout](https://jestjs.io/docs/en/configuration.html#testtimeout-number) for all of your asynchronous tests in your Jest configuration.
