@@ -273,6 +273,9 @@ const translateKeywords = (astFeature: any) => {
             for (const step of child.scenario.steps) {
                 step.keyword = translationMap[step.keyword] || step.keyword;
             }
+            for (const example of child.scenario.examples) {
+                example.keyword = translationMap[example.keyword] || example.keyword;
+            }
         }
     }
 
