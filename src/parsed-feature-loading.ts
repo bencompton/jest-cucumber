@@ -263,16 +263,19 @@ const translateKeywords = (astFeature: any) => {
 
     astFeature.language = 'en';
     astFeature.keyword = translationMap[astFeature.keyword] || astFeature.keyword;
-    for(const child of astFeature.children){
-        if(child.background) {
+
+    for (const child of astFeature.children) {
+        if (child.background) {
             child.background.keyword = translationMap[child.background.keyword] || child.background.keyword;
         }
 
-        if(child.scenario) {
+        if (child.scenario) {
             child.scenario.keyword = translationMap[child.scenario.keyword] || child.scenario.keyword;
+
             for (const step of child.scenario.steps) {
                 step.keyword = translationMap[step.keyword] || step.keyword;
             }
+
             for (const example of child.scenario.examples) {
                 example.keyword = translationMap[example.keyword] || example.keyword;
             }
@@ -283,25 +286,39 @@ const translateKeywords = (astFeature: any) => {
 };
 
 const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = Gherkins.dialects()['en'];
+    const englishDialect = Gherkins.dialects().en;
     const translationMap: {[word: string]: string} = {};
 
-    const props: (keyof Dialect)[] = ['and', 'background', 'but', 'examples', 'feature', 'given', 'scenario', 'scenarioOutline', 'then', 'when', 'rule'];
-    for(const prop of props) {
+    const props: Array<keyof Dialect> = [
+        'and',
+        'background',
+        'but',
+        'examples',
+        'feature',
+        'given',
+        'scenario',
+        'scenarioOutline',
+        'then',
+        'when',
+        'rule',
+    ];
+
+    for (const prop of props) {
         const dialectWords = translateDialect[prop];
         const translationWords = englishDialect[prop];
         let index = 0;
-        for(const dialectWord of dialectWords){
-            if(dialectWord.indexOf('*') !== 0) {
+
+        for (const dialectWord of dialectWords) {
+            if (dialectWord.indexOf('*') !== 0) {
                 translationMap[dialectWord] = translationWords[index];
             }
+
             index++;
         }
     }
 
     return translationMap;
-}
-
+};
 
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
@@ -314,7 +331,8 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
     }
 
     let astFeature = collapseRulesAndBackgrounds(ast.feature);
-    if(astFeature.language !== 'en') {
+
+    if (astFeature.language !== 'en') {
         astFeature = translateKeywords(astFeature);
     }
 

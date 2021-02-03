@@ -32,7 +32,7 @@ defineFeature(feature, (test) => {
 
     describe('scenario-outlines', () => {
         test('Verkoop <Artikel> voor €<Bedrag>', ({ given, when, then }) => {
-            let onlineSales = new OnlineSales();
+            const onlineSales = new OnlineSales();
             let salesPrice: number | null;
 
             given(/^ik heb een (.*)$/, (item) => {
@@ -50,7 +50,7 @@ defineFeature(feature, (test) => {
     });
 
     describe('using-dynamic-values', () => {
-       let myAccount: BankAccount;
+        let myAccount: BankAccount;
 
         beforeEach(() => {
             myAccount = new BankAccount();
@@ -104,5 +104,5 @@ defineFeature(feature, (test) => {
                 });
             });
         });
-    })
+    });
 });
