@@ -8,7 +8,7 @@ import AstBuilder from 'gherkin/dist/src/AstBuilder';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options, ScenarioGroup} from './models';
 import Dialect from 'gherkin/dist/src/Dialect';
 
 const parseDataTableRow = (astDataTableRow: any) => {
@@ -87,6 +87,15 @@ const parseScenario = (astScenario: any) => {
         lineNumber: astScenario.location.line,
     } as ParsedScenario;
 };
+
+const parseRule = (astRule: any) => {
+    return {
+      title: astRule.name,
+      scenarios: parseScenarios(astRule),
+      scenarioOutlines: parseScenarioOutlines(astRule),
+      tags: parseTags(astRule),
+    } as ScenarioGroup;
+}
 
 const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
     return scenarioSteps.map((scenarioStep) => {
@@ -199,6 +208,12 @@ const parseScenarios = (astFeature: any) => {
         .map((astScenario: any) => parseScenario(astScenario.scenario));
 };
 
+const parseRules = (astFeature: any) => {
+    return astFeature.children
+        .filter((child: any) => child.rule)
+        .map((astRule: any) => parseRule(astRule.rule));
+};
+
 const parseScenarioOutlines = (astFeature: any) => {
     return astFeature.children
         .filter((child: any) => {
@@ -233,7 +248,7 @@ const parseBackgrounds = (ast: any) => {
         .map((child: any) => child.background);
 };
 
-const collapseRulesAndBackgrounds = (astFeature: any) => {
+const parseAndCollapseBackgrounds = (astFeature: any) => {
     const featureBackgrounds = parseBackgrounds(astFeature);
 
     const children = collapseBackgrounds(astFeature.children, featureBackgrounds)
@@ -242,13 +257,10 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
                 const rule = nextChild.rule;
                 const ruleBackgrounds = parseBackgrounds(rule);
 
-                return [
-                    ...newChildren,
-                    ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds]),
-                ];
-            } else {
-                return [...newChildren, nextChild];
+                rule.children = [...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds])]
             }
+
+            return [...newChildren, nextChild];
         }, []);
 
     return {
@@ -256,6 +268,21 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
         children,
     };
 };
+
+const collapseRules = (astFeature: any) => {
+    const children = astFeature.children.reduce((newChildren: [], nextChild:any) => {
+      if(nextChild.rule) {
+        return [...newChildren, ...nextChild.rule.children];
+      }
+      else {
+        return [...newChildren, nextChild];
+      }
+    }, [])
+    return {
+      ...astFeature,
+      children,
+    }
+}
 
 const translateKeywords = (astFeature: any) => {
     const languageDialect = Gherkins.dialects()[astFeature.language];
@@ -330,7 +357,11 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
 
-    let astFeature = collapseRulesAndBackgrounds(ast.feature);
+    let astFeature = parseAndCollapseBackgrounds(ast.feature);
+
+    if(options?.collapseRules) {
+        astFeature = collapseRules(astFeature);
+    }
 
     if (astFeature.language !== 'en') {
         astFeature = translateKeywords(astFeature);
@@ -340,6 +371,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         title: astFeature.name,
         scenarios: parseScenarios(astFeature),
         scenarioOutlines: parseScenarioOutlines(astFeature),
+        rules: parseRules(astFeature),
         tags: parseTags(astFeature),
         options,
     } as ParsedFeature;

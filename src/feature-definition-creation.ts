@@ -5,6 +5,7 @@ import {
     StepFromStepDefinitions,
     ParsedFeature, ParsedScenario,
     Options, ParsedScenarioOutline,
+    ScenarioGroup
 } from './models';
 import {
     ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
@@ -24,6 +25,13 @@ export type StepsDefinitionCallbackOptions = {
 
 export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenarioFunctionWithAliases) => void;
 
+export type RulesDefinitionCallbackFunction = (defineRule: DefineRuleFunction) => void;
+
+export type DefineRuleFunction = (
+    ruleTitle: string,
+    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction
+) => void;
+
 export type DefineScenarioFunction = (
     scenarioTitle: string,
     stepsDefinitionCallback: StepsDefinitionCallbackFunction,
@@ -41,18 +49,18 @@ export type DefineStepFunction = (stepMatcher: string | RegExp, stepDefinitionCa
 
 const processScenarioTitleTemplate = (
     scenarioTitle: string,
-    parsedFeature: ParsedFeature,
+    group: ScenarioGroup,
     options: Options,
     parsedScenario: ParsedScenario,
     parsedScenarioOutline: ParsedScenarioOutline,
 ) => {
     if (options && options.scenarioNameTemplate) {
         try {
-            return options && options.scenarioNameTemplate({
-                featureTitle: parsedFeature.title,
+            return  options && options.scenarioNameTemplate({
+                featureTitle: group.title,
                 scenarioTitle: scenarioTitle.toString(),
-                featureTags: parsedFeature.tags,
-                scenarioTags: (parsedScenario || parsedScenarioOutline).tags,
+                featureTags: group.tags,
+                scenarioTags: (parsedScenario || parsedScenarioOutline).tags
             });
         } catch (err) {
             throw new Error(
@@ -121,7 +129,7 @@ const defineScenario = (
             const stepArgument = parsedScenario.steps[index].stepArgument;
             const matches = matchSteps(
                 parsedScenario.steps[index].stepText,
-                scenarioFromStepDefinitions.steps[index].stepMatcher,
+                scenarioFromStepDefinitions.steps[index].stepMatcher
             );
             let matchArgs: string[] = [];
 
@@ -129,7 +137,7 @@ const defineScenario = (
                 matchArgs = (matches as RegExpMatchArray).slice(1);
             }
 
-            const args = [...matchArgs, stepArgument];
+            const args = [ ...matchArgs, stepArgument ];
 
             return promiseChain.then(() => nextStep.stepFunction(...args));
         }, Promise.resolve());
@@ -138,7 +146,8 @@ const defineScenario = (
 
 const createDefineScenarioFunction = (
     featureFromStepDefinitions: FeatureFromStepDefinitions,
-    parsedFeature: ParsedFeature,
+    parsedFeature: ScenarioGroup,
+    options: Options,
     only: boolean = false,
     skip: boolean = false,
     concurrent: boolean = false,
@@ -164,7 +173,7 @@ const createDefineScenarioFunction = (
             but: createDefineStepFunction(scenarioFromStepDefinitions),
             pending: () => {
                 // Nothing to do
-            },
+            }
         });
 
         const parsedScenario = parsedFeature.scenarios
@@ -172,8 +181,6 @@ const createDefineScenarioFunction = (
 
         const parsedScenarioOutline = parsedFeature.scenarioOutlines
             .filter((s) => s.title.toLowerCase() === scenarioTitle.toLowerCase())[0];
-
-        const options = parsedFeature.options;
 
         scenarioTitle = processScenarioTitleTemplate(
             scenarioTitle,
@@ -191,7 +198,7 @@ const createDefineScenarioFunction = (
 
         if (checkForPendingSteps(scenarioFromStepDefinitions)) {
             xtest(scenarioTitle, () => {
-                // Nothing to do
+                    // Nothing to do
             }, undefined);
         } else if (parsedScenario) {
             defineScenario(
@@ -223,13 +230,19 @@ const createDefineScenarioFunction = (
 
 const createDefineScenarioFunctionWithAliases = (
     featureFromStepDefinitions: FeatureFromStepDefinitions,
-    parsedFeature: ParsedFeature,
+    group: ScenarioGroup,
+    options: Options
 ) => {
-    const defineScenarioFunctionWithAliases = createDefineScenarioFunction(featureFromStepDefinitions, parsedFeature);
+    const defineScenarioFunctionWithAliases = createDefineScenarioFunction(
+        featureFromStepDefinitions,
+        group,
+        options
+    );
 
     (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).only = createDefineScenarioFunction(
         featureFromStepDefinitions,
-        parsedFeature,
+        group,
+        options,
         true,
         false,
         false,
@@ -237,7 +250,8 @@ const createDefineScenarioFunctionWithAliases = (
 
     (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).skip = createDefineScenarioFunction(
         featureFromStepDefinitions,
-        parsedFeature,
+        group,
+        options,
         false,
         true,
         false,
@@ -245,7 +259,8 @@ const createDefineScenarioFunctionWithAliases = (
 
     (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).concurrent = createDefineScenarioFunction(
         featureFromStepDefinitions,
-        parsedFeature,
+        group,
+        options,
         false,
         false,
         true,
@@ -265,16 +280,17 @@ const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepD
     };
 };
 
-export function defineFeature(
-    featureFromFile: ParsedFeature,
+const defineScenarioGroup = (
+    group: ScenarioGroup,
     scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
-) {
+    options: Options,
+) => {
     const featureFromDefinedSteps: FeatureFromStepDefinitions = {
-        title: featureFromFile.title,
+        title: group.title,
         scenarios: [],
     };
 
-    const parsedFeatureWithTagFiltersApplied = applyTagFilters(featureFromFile);
+    const parsedFeatureWithTagFiltersApplied = applyTagFilters(group, options.tagFilter);
 
     if (
         parsedFeatureWithTagFiltersApplied.scenarios.length === 0
@@ -283,14 +299,42 @@ export function defineFeature(
         return;
     }
 
-    describe(featureFromFile.title, () => {
-        scenariosDefinitionCallback(
-            createDefineScenarioFunctionWithAliases(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
-        );
+    scenariosDefinitionCallback(
+        createDefineScenarioFunctionWithAliases(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied, options)
+    );
 
-        checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(
-            parsedFeatureWithTagFiltersApplied,
-            featureFromDefinedSteps,
-        );
+    checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(
+        parsedFeatureWithTagFiltersApplied,
+        featureFromDefinedSteps,
+        options
+    );
+};
+
+export function defineFeature(
+    featureFromFile: ParsedFeature,
+    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction
+) {
+    describe(featureFromFile.title, () => {
+        defineScenarioGroup(featureFromFile, scenariosDefinitionCallback, featureFromFile.options);
+    });
+}
+
+export function defineRuleBasedFeature(
+    featureFromFile: ParsedFeature,
+    rulesDefinitionCallback: RulesDefinitionCallbackFunction
+) {
+    describe(featureFromFile.title, () => {
+        rulesDefinitionCallback((ruleText: string, callback: ScenariosDefinitionCallbackFunction) => {
+            const matchingRules = featureFromFile.rules.filter(
+                (rule) => rule.title.toLocaleLowerCase() === ruleText.toLocaleLowerCase()
+            );
+            if (matchingRules.length != 1) {
+                throw new Error(`No matching rule found for '${ruleText}'"`);
+            }
+
+            describe(ruleText, () => {
+                defineScenarioGroup(matchingRules[0], callback, featureFromFile.options);
+            })
+        });
     });
 }

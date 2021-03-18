@@ -5,6 +5,8 @@ import {
     ParsedScenario,
     ParsedScenarioOutline,
     ErrorOptions,
+    ScenarioGroup,
+    Options,
 } from '../models';
 import { generateScenarioCode } from '../code-generation/scenario-generation';
 
@@ -61,8 +63,9 @@ const findScenarioFromStepDefinitions = (
 };
 
 export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
-    parsedFeature: ParsedFeature,
+    parsedFeature: ScenarioGroup,
     featureFromStepDefinitions: FeatureFromStepDefinitions,
+    options: Options
 ) => {
     const errors: string[] = [];
 
@@ -76,7 +79,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
         parsedScenarios = parsedScenarios.concat(parsedFeature.scenarioOutlines);
     }
 
-    if (parsedFeature.options && parsedFeature.options.errors === false) {
+    if (options && options.errors === false) {
         return;
     }
 
@@ -89,7 +92,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
                 errors,
                 parsedScenarios,
                 scenarioFromStepDefinitions.title,
-                parsedFeature.options.errors as ErrorOptions,
+                options.errors as ErrorOptions,
             );
         });
     }
@@ -102,7 +105,7 @@ export const checkThatFeatureFileAndStepDefinitionsHaveSameScenarios = (
                 errors,
                 featureFromStepDefinitions && featureFromStepDefinitions.scenarios,
                 parsedScenario,
-                parsedFeature.options.errors as ErrorOptions,
+                options.errors as ErrorOptions,
             );
         });
     }

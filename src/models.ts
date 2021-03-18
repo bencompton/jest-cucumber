@@ -37,12 +37,16 @@ export type ParsedScenarioOutline = {
     skippedViaTagFilter: boolean;
 };
 
-export type ParsedFeature = {
+export type ScenarioGroup = {
     title: string;
     scenarios: ParsedScenario[];
     scenarioOutlines: ParsedScenarioOutline[];
-    options: Options;
     tags: string[];
+}
+
+export interface ParsedFeature extends ScenarioGroup {
+    rules: ScenarioGroup[];
+    options: Options;
 };
 
 export type ScenarioNameTemplateVars = {
@@ -62,6 +66,7 @@ export type ErrorOptions = {
 export type Options = {
     loadRelativePath?: boolean;
     tagFilter?: string;
+    collapseRules?: boolean;
     errors?: ErrorOptions | boolean;
     scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
 };

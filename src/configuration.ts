@@ -10,6 +10,7 @@ const defaultErrorSettings = {
 const defaultConfiguration: Options = {
     tagFilter: undefined,
     scenarioNameTemplate: undefined,
+    collapseRules: true,
     errors: defaultErrorSettings,
 };
 
