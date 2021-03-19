@@ -2,14 +2,11 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import Parser from 'gherkin/dist/src/Parser';
-import { default as Gherkins } from 'gherkin';
-import AstBuilder from 'gherkin/dist/src/AstBuilder';
+import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
-import Dialect from 'gherkin/dist/src/Dialect';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -258,7 +255,7 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
 };
 
 const translateKeywords = (astFeature: any) => {
-    const languageDialect = Gherkins.dialects()[astFeature.language];
+    const languageDialect = dialects[astFeature.language];
     const translationMap = createTranslationMap(languageDialect);
 
     astFeature.language = 'en';
@@ -286,7 +283,7 @@ const translateKeywords = (astFeature: any) => {
 };
 
 const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = Gherkins.dialects().en;
+    const englishDialect = dialects.en;
     const translationMap: { [word: string]: string } = {};
 
     const props: Array<keyof Dialect> = [
