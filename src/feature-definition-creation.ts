@@ -118,9 +118,10 @@ const defineScenario = (
 
     testFunction(scenarioTitle, () => {
         return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
-            const stepArgument = parsedScenario.steps[index].stepArgument;
+            const parsedStep = parsedScenario.steps[index];
+            const stepArgument = parsedStep.stepArgument;
             const matches = matchSteps(
-                parsedScenario.steps[index].stepText,
+                parsedStep.stepText,
                 scenarioFromStepDefinitions.steps[index].stepMatcher,
             );
             let matchArgs: string[] = [];
@@ -131,7 +132,14 @@ const defineScenario = (
 
             const args = [...matchArgs, stepArgument];
 
-            return promiseChain.then(() => nextStep.stepFunction(...args));
+            return promiseChain.then(() => {
+              return Promise.resolve()
+                .then(() => nextStep.stepFunction(...args))
+                .catch((error) => {
+                    error.message = `jest-cucumber: ${parsedStep.stepText} (line ${parsedStep.lineNumber})\n\n${error.message}`;
+                    throw error;
+                });
+            });
         }, Promise.resolve());
     }, timeout);
 };
