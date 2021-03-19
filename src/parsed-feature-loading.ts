@@ -284,7 +284,7 @@ const translateKeywords = (astFeature: any) => {
 
 const createTranslationMap = (translateDialect: Dialect) => {
     const englishDialect = dialects.en;
-    const translationMap: {[word: string]: string} = {};
+    const translationMap: { [word: string]: string } = {};
 
     const props: Array<keyof Dialect> = [
         'and',
@@ -304,10 +304,25 @@ const createTranslationMap = (translateDialect: Dialect) => {
         const dialectWords = translateDialect[prop];
         const translationWords = englishDialect[prop];
         let index = 0;
+        let defaultWordIndex: number | null = null;
 
         for (const dialectWord of dialectWords) {
+            // skip "* " word
             if (dialectWord.indexOf('*') !== 0) {
-                translationMap[dialectWord] = translationWords[index];
+                if (translationWords[index] !== undefined) {
+                    translationMap[dialectWord] = translationWords[index];
+                    if (defaultWordIndex === null) {
+                        // set default when non is set yet
+                        defaultWordIndex = index;
+                    }
+                } else {
+                    // index has undefined value, translate to default word
+                    if (defaultWordIndex !== null) {
+                        translationMap[dialectWord] = translationWords[defaultWordIndex];
+                    } else {
+                        throw new Error('No translation found for ' + dialectWord);
+                    }
+                }
             }
 
             index++;
