@@ -2,14 +2,11 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import Parser from 'gherkin/dist/src/Parser';
-import { default as Gherkins } from 'gherkin';
-import AstBuilder from 'gherkin/dist/src/AstBuilder';
+import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options, ScenarioGroup} from './models';
-import Dialect from 'gherkin/dist/src/Dialect';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -285,7 +282,7 @@ const collapseRules = (astFeature: any) => {
 }
 
 const translateKeywords = (astFeature: any) => {
-    const languageDialect = Gherkins.dialects()[astFeature.language];
+    const languageDialect = dialects[astFeature.language];
     const translationMap = createTranslationMap(languageDialect);
 
     astFeature.language = 'en';
@@ -313,8 +310,8 @@ const translateKeywords = (astFeature: any) => {
 };
 
 const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = Gherkins.dialects().en;
-    const translationMap: {[word: string]: string} = {};
+    const englishDialect = dialects.en;
+    const translationMap: { [word: string]: string } = {};
 
     const props: Array<keyof Dialect> = [
         'and',
@@ -334,10 +331,25 @@ const createTranslationMap = (translateDialect: Dialect) => {
         const dialectWords = translateDialect[prop];
         const translationWords = englishDialect[prop];
         let index = 0;
+        let defaultWordIndex: number | null = null;
 
         for (const dialectWord of dialectWords) {
+            // skip "* " word
             if (dialectWord.indexOf('*') !== 0) {
-                translationMap[dialectWord] = translationWords[index];
+                if (translationWords[index] !== undefined) {
+                    translationMap[dialectWord] = translationWords[index];
+                    if (defaultWordIndex === null) {
+                        // set default when non is set yet
+                        defaultWordIndex = index;
+                    }
+                } else {
+                    // index has undefined value, translate to default word
+                    if (defaultWordIndex !== null) {
+                        translationMap[dialectWord] = translationWords[defaultWordIndex];
+                    } else {
+                        throw new Error('No translation found for ' + dialectWord);
+                    }
+                }
             }
 
             index++;
