@@ -2,8 +2,7 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import Parser from 'gherkin/dist/src/Parser';
-import AstBuilder from 'gherkin/dist/src/AstBuilder';
+import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 import { translateKeywords } from './translation';
 

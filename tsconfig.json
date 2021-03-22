@@ -10,7 +10,8 @@
         "rootDir": ".",
         "lib": [
             "esnext"
-        ]
+        ],
+        "resolveJsonModule": true
     },
     "exclude": [
         "node_modules",

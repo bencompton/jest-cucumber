@@ -1,5 +1,4 @@
-import { default as Gherkins } from 'gherkin';
-import Dialect from 'gherkin/dist/src/Dialect';
+import { Dialect, dialects } from '@cucumber/gherkin';
 import { translateKeywords } from './translation';
 
 const StepKeywords: (keyof Dialect)[] = ['and', 'but', 'given', 'then', 'when'];
@@ -7,12 +6,12 @@ const StepKeywords: (keyof Dialect)[] = ['and', 'but', 'given', 'then', 'when'];
 describe('translations', () => {
     describe('translateKeywords', () => {
 
-        const languages = Object.keys(Gherkins.dialects())
+        const languages = Object.keys(dialects)
             .filter(language => language !== 'en')
             .map(language => [language]);
 
         test.each(languages)('when the language is %s', (languageCode) => {
-            const language = Gherkins.dialects()[languageCode];
+            const language = dialects[languageCode];
 
             const languageStepKeywords = Array.from(new Set(StepKeywords.map((keyword) => (language[keyword])).flat()));
             let astFeature = {

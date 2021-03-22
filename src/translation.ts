@@ -1,8 +1,7 @@
-import { default as Gherkins } from 'gherkin';
-import Dialect from 'gherkin/dist/src/Dialect';
+import { Dialect, dialects } from '@cucumber/gherkin';
 
 const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = Gherkins.dialects().en;
+    const englishDialect = dialects.en;
     const translationMap: { [word: string]: string } = {};
 
     const props: Array<keyof Dialect> = [
@@ -40,7 +39,7 @@ const getDefaultTranslation = (translationWords: string[]): string => {
 };
 
 export const translateKeywords = (astFeature: any) => {
-    const languageDialect = Gherkins.dialects()[astFeature.language];
+    const languageDialect = dialects[astFeature.language];
     const translationMap = createTranslationMap(languageDialect);
 
     // replace language
