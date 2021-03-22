@@ -1,8 +1,10 @@
 import { Dialect, dialects } from '@cucumber/gherkin';
+const englishDialect = dialects.en
 
-const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = dialects.en;
-    const translationMap: { [word: string]: string } = {};
+type TranslationMap = { [word: string]: string };
+
+const createTranslationMap = (translateDialect: Dialect): TranslationMap => {
+    const translationMap: TranslationMap = {};
 
     const props: Array<keyof Dialect> = [
         'and',
@@ -21,13 +23,17 @@ const createTranslationMap = (translateDialect: Dialect) => {
     for (const prop of props) {
         const dialectWords = translateDialect[prop];
         const translationWords = englishDialect[prop];
+
+        // it does not matter where the word is translated to,
+        // just get the first non-'*' word
         const defaultTranslation = getDefaultTranslation(translationWords as string[]);
 
         for (const dialectWord of dialectWords) {
             // don't translate *
-            if (dialectWord.indexOf('*') !== 0) {
-                translationMap[dialectWord] = defaultTranslation;
+            if (dialectWord.indexOf('*') === 0) {
+                continue;
             }
+            translationMap[dialectWord] = defaultTranslation;
         }
     }
 

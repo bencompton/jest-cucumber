@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "jest": "jest --verbose",
+    "jest:unit": "jest **/*.spec.ts --verbose",
     "test": "npm run build & npm run lint & jest --color",
     "lint": "tslint --project ./"
   },
