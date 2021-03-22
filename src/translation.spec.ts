@@ -22,31 +22,41 @@ describe('translation', () => {
 
             const languageStepKeywords = Array.from(new Set(StepKeywords.map((keyword) => (language[keyword])).flat()));
 
+            // test per feature keyword
             for (const feature of language.feature) {
+                const backgroundChildren = language.background.map((background) => ({
+                    background: {
+                        keyword: background,
+                    },
+                    scenario: {
+                        keyword: language.scenario[0],
+                        steps: [],
+                        examples: [],
+                    }
+                }));
+                const scenarioChildren = language.scenario.map((scenario) => ({
+                    scenario: {
+                        keyword: scenario,
+                        steps: languageStepKeywords.map((stepKeyword) => ({
+                            keyword: stepKeyword
+                        })),
+                        examples: language.examples.map((example) => ({ keyword: example, })),
+                    },
+                }));
+
                 let astFeature = {
                     language: languageCode,
                     keyword: feature,
                     children: [
-                        {
-                            background: {
-                                keyword: language.background[0],// TODO: all background keywords
-                            },
-                            scenario: {
-                                // TODO: add rule
-                                keyword: language.scenario[0],// TODO: all scenario keywords
-                                steps: languageStepKeywords.map((stepKeyword) => ({
-                                    keyword: stepKeyword
-                                })),
-                                examples: language.examples.map((example) => ({ keyword: example, })),
-                            },
-                        },
+                        ...scenarioChildren,
                         ...language.scenarioOutline.map((scenarioOutline) => ({
                             scenario: {
                                 keyword: scenarioOutline,
                                 steps: [],
                                 examples: [],
                             },
-                        }))
+                        })),
+                        ...backgroundChildren,
                     ],
                 }
 
