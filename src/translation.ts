@@ -1,4 +1,7 @@
 import { Dialect, dialects } from '@cucumber/gherkin';
+
+// only translation props 
+type DialectTranslationProps = keyof Pick<Dialect, 'and' | 'background' | 'but' | 'examples' | 'feature' | 'given' | 'scenario' | 'scenarioOutline' | 'then' | 'when' | 'rule'>;
 const englishDialect = dialects.en
 
 type TranslationMap = { [word: string]: string };
@@ -6,7 +9,7 @@ type TranslationMap = { [word: string]: string };
 const createTranslationMap = (translateDialect: Dialect): TranslationMap => {
     const translationMap: TranslationMap = {};
 
-    const props: Array<keyof Dialect> = [
+    const props: DialectTranslationProps[] = [
         'and',
         'background',
         'but',
@@ -22,11 +25,9 @@ const createTranslationMap = (translateDialect: Dialect): TranslationMap => {
 
     for (const prop of props) {
         const dialectWords = translateDialect[prop];
-        const translationWords = englishDialect[prop];
-
         // it does not matter where the word is translated to,
         // just get the first non-'*' word
-        const defaultTranslation = getDefaultTranslation(translationWords as string[]);
+        const defaultTranslation = getDefaultTranslation(englishDialect[prop]);
 
         for (const dialectWord of dialectWords) {
             // don't translate *
@@ -40,7 +41,7 @@ const createTranslationMap = (translateDialect: Dialect): TranslationMap => {
     return translationMap;
 };
 
-const getDefaultTranslation = (translationWords: string[]): string => {
+const getDefaultTranslation = (translationWords: readonly string[]): string => {
     return translationWords.find(word => !word.includes('*'))!;
 };
 

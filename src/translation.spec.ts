@@ -1,4 +1,4 @@
-import { Dialect, dialects } from '@cucumber/gherkin';
+import { Dialect, dialects, Parser } from '@cucumber/gherkin';
 import { translateKeywords } from './translation';
 
 const StepKeywords: (keyof Dialect)[] = ['and', 'but', 'given', 'then', 'when'];
@@ -21,48 +21,58 @@ describe('translation', () => {
             const language = dialects[languageCode];
 
             const languageStepKeywords = Array.from(new Set(StepKeywords.map((keyword) => (language[keyword])).flat()));
-            let astFeature = {
-                language: languageCode,
-                keyword: language.feature[0],// TODO: all feature keywords
-                children: [
-                    {
-                        background: {
-                            keyword: language.background[0],// TODO: all background keywords
-                        },
-                        scenario: {
-                            // TODO: add rule
-                            keyword: language.scenario[0],// TODO: all scenario keywords
-                            steps: languageStepKeywords.map((stepKeyword) => ({
-                                keyword: stepKeyword
-                            })),
-                            examples: [{
-                                keyword: language.examples[0],
-                            }],
-                        },
-                    },
-                    {
-                        scenario: {
-                            keyword: language.scenarioOutline[0],// TODO: all scenarioOutline keywords
-                            steps: [],
-                            examples: [],
-                        },
-                    },
-                ],
-            }
 
-            astFeature = translateKeywords(astFeature);
+            for (const feature of language.feature) {
+                let astFeature = {
+                    language: languageCode,
+                    keyword: feature,
+                    children: [
+                        {
+                            background: {
+                                keyword: language.background[0],// TODO: all background keywords
+                            },
+                            scenario: {
+                                // TODO: add rule
+                                keyword: language.scenario[0],// TODO: all scenario keywords
+                                steps: languageStepKeywords.map((stepKeyword) => ({
+                                    keyword: stepKeyword
+                                })),
+                                examples: language.examples.map((example) => ({ keyword: example, })),
+                            },
+                        },
+                        ...language.scenarioOutline.map((scenarioOutline) => ({
+                            scenario: {
+                                keyword: scenarioOutline,
+                                steps: [],
+                                examples: [],
+                            },
+                        }))
+                    ],
+                }
 
-            expect(astFeature.keyword).toEqual('Feature');
-            expect(astFeature.children[0].background?.keyword).toEqual('Background');
-            const translatedStepKeywords = Array.from(new Set((astFeature.children[0].scenario.steps as []).map((step: { keyword: string; }) => step.keyword)));
-            const expectedStepKeywords = ['* ', 'And ', 'But ', 'Given ', 'Then ', 'When '];
-            if (languageCode === 'sl') {
-                // exception for 'sl' language, this don't have '*' set
-                // See also https://github.com/cucumber/cucumber/issues/1325
-                expectedStepKeywords.shift();
+                astFeature = translateKeywords(astFeature);
+
+                expect(astFeature.keyword).toEqual('Feature');
+
+                astFeature.children.filter((child) => 'background' in child)
+                    .forEach((child: any) => expect(child.background!.keyword).toEqual('Background'));
+
+                const translatedScenarioKeywords = astFeature.children.map((child) => child.scenario.keyword);
+                expect(translatedScenarioKeywords).toContain('Example');
+                expect(translatedScenarioKeywords).toContain('Scenario Outline');
+
+                const translatedStepKeywords = Array.from(new Set((astFeature.children[0].scenario.steps as []).map((step: { keyword: string; }) => step.keyword)));
+                const expectedStepKeywords = ['* ', 'And ', 'But ', 'Given ', 'Then ', 'When '];
+                if (languageCode === 'sl') {
+                    // exception for 'sl' language, this don't have '*' set
+                    expectedStepKeywords.shift();
+                }
+                expect(translatedStepKeywords).toEqual(expect.arrayContaining(expectedStepKeywords));
+
+                astFeature.children[0].scenario.examples.forEach((example: { keyword: string }) => {
+                    expect(example.keyword).toEqual('Examples');
+                });
             }
-            expect(translatedStepKeywords).toEqual(expect.arrayContaining(expectedStepKeywords));
-            expect(astFeature.children[0].scenario.examples[0].keyword).toEqual('Examples');//TODO: all examples keywords
         });
 
         skipLanguages.forEach((skipLanguage) => {
