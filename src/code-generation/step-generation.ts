@@ -1,4 +1,4 @@
-import { ParsedStep } from '../models';
+import { Step } from '../models';
 import { indent } from './utils';
 
 const stepTemplate = (stepKeyword: string, stepMatcher: string, stepArgumentVariables: string[]) => {
@@ -33,7 +33,7 @@ const escapeRegexCharacters = (text: string) => {
         .replace(/\)/g, '\\)');
 };
 
-const convertStepTextToRegex = (step: ParsedStep) => {
+const convertStepTextToRegex = (step: Step) => {
     const stepText = escapeRegexCharacters(step.stepText);
     let matches: RegExpExecArray | null;
     let finalStepText = stepText;
@@ -53,7 +53,7 @@ const convertStepTextToRegex = (step: ParsedStep) => {
     return `/^${finalStepText}$/`;
 };
 
-const getStepArguments = (step: ParsedStep) => {
+const getStepArguments = (step: Step) => {
     const stepArgumentVariables: string[] = [];
 
     let match: RegExpExecArray | null;
@@ -75,7 +75,7 @@ const getStepArguments = (step: ParsedStep) => {
     return stepArgumentVariables;
 };
 
-const getStepMatcher = (step: ParsedStep) => {
+const getStepMatcher = (step: Step) => {
     let stepMatcher: string = '';
 
     if (step.stepText.match(stepTextArgumentRegex)) {
@@ -87,13 +87,12 @@ const getStepMatcher = (step: ParsedStep) => {
     return stepMatcher;
 };
 
-export const getStepKeyword = (steps: ParsedStep[], stepPosition: number) => {
-    return steps[stepPosition].keyword;
+export const getStepKeyword = (step: Step) => {
+    return step.keyword;
 };
 
-export const generateStepCode = (steps: ParsedStep[], stepPosition: number, generateWrapperFunction = false) => {
-    const step = steps[stepPosition];
-    const stepKeyword = getStepKeyword(steps, stepPosition);
+export const generateStepCode = (step: Step, generateWrapperFunction = false) => {
+    const stepKeyword = getStepKeyword(step);
     const stepMatcher = getStepMatcher(step);
     const stepArguments = getStepArguments(step);
 
@@ -104,9 +103,8 @@ export const generateStepCode = (steps: ParsedStep[], stepPosition: number, gene
     }
 };
 
-export const generateStepFunctionCall = (steps: ParsedStep[], stepPosition: number) => {
-    const step = steps[stepPosition];
-    const stepKeyword = getStepKeyword(steps, stepPosition);
+export const generateStepFunctionCall = (step: Step) => {
+    const stepKeyword = getStepKeyword(step);
 
     return stepWrapperFunctionCallTemplate(step.stepText, stepKeyword);
 };

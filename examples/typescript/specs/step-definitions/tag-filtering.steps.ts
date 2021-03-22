@@ -2,9 +2,9 @@ import { loadFeature, defineFeature} from '../../../../src';
 import { DefineStepFunction } from '../../../../src/feature-definition-creation';
 import { VendingMachine } from '../../src/vending-machine';
 
-const feature = loadFeature(
-  './examples/typescript/specs/features/extended-rules-definition.feature', {
-    collapseRules: false,
+const feature = loadFeature('./examples/typescript/specs/features/tag-filtering.feature', {
+  collapseRules: false,
+  tagFilter: '@included and not @excluded',
 });
 
 defineFeature(feature, ({rule}) => {
@@ -60,23 +60,9 @@ defineFeature(feature, ({rule}) => {
             whenISelectX(when);
             thenXShouldBeDespensed(then);
         });
-
-        test('Selecting a beverage', ({ given, when, then }) => {
-            givenTheVendingMachineHasXInStock(given);
-            givenIHaveInsertedTheCorrectAmountOfMoney(given);
-            whenISelectX(when);
-            thenXShouldBeDespensed(then);
-        });
     });
 
     rule('Returns my money if item is out of stock', (test) => {
-
-        test('Selecting a snack', ({ given, when, then }) => {
-            givenTheVendingMachineHasNoXInStock(given);
-            givenIHaveInsertedTheCorrectAmountOfMoney(given);
-            whenISelectX(when);
-            thenMyMoneyShouldBeReturned(then);
-        });
 
         test('Selecting a beverage', ({ given, when, then }) => {
             givenTheVendingMachineHasNoXInStock(given);

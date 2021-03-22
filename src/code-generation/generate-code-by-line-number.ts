@@ -1,4 +1,4 @@
-import { ParsedFeature } from '../models';
+import { Feature } from '../models';
 import { generateScenarioCodeWithSeparateStepFunctions, generateScenarioCode } from './scenario-generation';
 import { generateStepCode } from './step-generation';
 
@@ -9,7 +9,7 @@ export enum ObjectTypeEnum {
 }
 
 const findObjectByLineNumber = (
-    feature: ParsedFeature,
+    feature: Feature,
     lineNumber: number,
 ): { object: any, type: ObjectTypeEnum } | null => {
     let found: any = null;
@@ -47,7 +47,7 @@ const findObjectByLineNumber = (
 };
 
 export const generateCodeFromFeature = (
-    feature: ParsedFeature,
+    feature: Feature,
     lineNumber: number,
 ) => {
     const objectAtLine = findObjectByLineNumber(feature, lineNumber);
@@ -60,13 +60,13 @@ export const generateCodeFromFeature = (
             case ObjectTypeEnum.scenarioOutline:
                 return generateScenarioCode(objectAtLine.object);
             case ObjectTypeEnum.step:
-                return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, false);
+                return generateStepCode(objectAtLine.object.steps[objectAtLine.object.index], false);
         }
     }
 };
 
 export const generateCodeWithSeparateFunctionsFromFeature = (
-    feature: ParsedFeature,
+    feature: Feature,
     lineNumber: number,
 ) => {
     const objectAtLine = findObjectByLineNumber(feature, lineNumber);
@@ -79,7 +79,7 @@ export const generateCodeWithSeparateFunctionsFromFeature = (
             case ObjectTypeEnum.scenarioOutline:
                 return generateScenarioCodeWithSeparateStepFunctions(objectAtLine.object);
             case ObjectTypeEnum.step:
-                return generateStepCode(objectAtLine.object.steps, objectAtLine.object.index, true);
+                return generateStepCode(objectAtLine.object.steps[objectAtLine.object.index], true);
         }
     }
 };

@@ -1,51 +1,45 @@
-export type StepFromStepDefinitions = {
-    stepMatcher: string | RegExp;
-    stepFunction(stepArguments?: any): void | PromiseLike<any>;
-};
-
-export type ScenarioFromStepDefinitions = {
-    title: string;
-    steps: StepFromStepDefinitions[];
-};
-
-export type FeatureFromStepDefinitions = {
-    title: string;
-    scenarios: ScenarioFromStepDefinitions[];
-};
-
-export type ParsedStep = {
+export type Step = {
     keyword: string;
     stepText: string;
     stepArgument: string | {};
     lineNumber: number;
+    stepMatcher: string | RegExp;
+    stepFunction(stepArguments?: any): void | PromiseLike<any>;
 };
 
-export type ParsedScenario = {
+export type Scenario = {
     title: string;
-    steps: ParsedStep[];
+    steps: Step[];
     tags: string[];
     lineNumber: number;
+    stepDefinitionsAvailable: boolean;
     skippedViaTagFilter: boolean;
 };
 
-export type ParsedScenarioOutline = {
+export type ScenarioOutline = {
     title: string;
     tags: string[];
-    scenarios: ParsedScenario[];
-    steps: ParsedStep[];
+    scenarios: Scenario[];
+    steps: Step[];
     lineNumber: number;
+    stepDefinitionsAvailable: boolean;
     skippedViaTagFilter: boolean;
 };
 
-export type ScenarioGroup = {
+export type Rule = {
     title: string;
-    scenarios: ParsedScenario[];
-    scenarioOutlines: ParsedScenarioOutline[];
+    scenarios: Scenario[];
+    scenarioOutlines: ScenarioOutline[];
+    ruleDefinitionAvailable: boolean;
     tags: string[];
-}
+};
 
-export interface ParsedFeature extends ScenarioGroup {
-    rules: ScenarioGroup[];
+export type Feature = {
+    title: string;
+    scenarios: Scenario[];
+    scenarioOutlines: ScenarioOutline[];
+    tags: string[];
+    rules: Rule[];
     options: Options;
 };
 

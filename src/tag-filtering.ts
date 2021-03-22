@@ -1,4 +1,4 @@
-import { ParsedFeature, ParsedScenario, ParsedScenarioOutline, ScenarioGroup } from './models';
+import { Feature, Scenario, ScenarioOutline } from './models';
 
 type TagFilterFunction = (tags: string[]) => boolean;
 
@@ -42,8 +42,8 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
 
 const checkIfScenarioMatchesTagFilter = (
     tagFilterExpression: string,
-    feature: ScenarioGroup,
-    scenario: ParsedScenario | ParsedScenarioOutline,
+    feature: Feature,
+    scenario: Scenario | ScenarioOutline,
 ) => {
     const featureAndScenarioTags = [
         ...scenario.tags.map((tag) => tag.toLowerCase()),
@@ -60,10 +60,10 @@ const checkIfScenarioMatchesTagFilter = (
     return tagFilterFunction(featureAndScenarioTags);
 };
 
-const setScenarioSkipped = (parsedFeature: ScenarioGroup, scenario: ParsedScenario, tagFilter: string) => {
+const setScenarioSkipped = (feature: Feature, scenario: Scenario) => {
     const skippedViaTagFilter = !checkIfScenarioMatchesTagFilter(
-        tagFilter,
-        parsedFeature,
+        feature.options.tagFilter!,
+        feature,
         scenario,
     );
 
@@ -74,25 +74,36 @@ const setScenarioSkipped = (parsedFeature: ScenarioGroup, scenario: ParsedScenar
 };
 
 export const applyTagFilters = (
-    group: ScenarioGroup,
-    tagFilter: string | undefined
+    feature: Feature,
 ) => {
-    if (tagFilter === undefined) {
-        return group;
+    if (feature.options.tagFilter === undefined) {
+        return feature;
     }
 
-    const scenarios = group.scenarios.map((scenario) => setScenarioSkipped(group, scenario, tagFilter));
-    const scenarioOutlines = group.scenarioOutlines
+    const scenarios = feature.scenarios.map((scenario) => setScenarioSkipped(feature, scenario));
+    const scenarioOutlines = feature.scenarioOutlines
         .map((scenarioOutline) => {
             return {
-                ...setScenarioSkipped(group, scenarioOutline, tagFilter),
-                scenarios: scenarioOutline.scenarios.map((scenario) => setScenarioSkipped(group, scenario, tagFilter)),
+                ...setScenarioSkipped(feature, scenarioOutline),
+                scenarios: scenarioOutline.scenarios.map((scenario) => setScenarioSkipped(feature, scenario)),
             };
         });
+    const rules = feature.rules.map((rule) => ({
+      ...rule,
+      scenarios: rule.scenarios.map((scenario) => setScenarioSkipped(feature, scenario)),
+      scenarioOutlines: rule.scenarioOutlines
+        .map((scenarioOutline) => {
+            return {
+                ...setScenarioSkipped(feature, scenarioOutline),
+                scenarios: scenarioOutline.scenarios.map((scenario) => setScenarioSkipped(feature, scenario)),
+            };
+        }),
+    }));
 
     return {
-        ...group,
+        ...feature,
+        rules,
         scenarios,
         scenarioOutlines,
-    } as ParsedFeature;
+    } as Feature;
 };

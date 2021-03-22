@@ -37,11 +37,11 @@ defineFeature(feature, (test) => {
     };
 
     const thenTheOutputOfXShouldBeDisplayed = (then: DefineStepFunction) => {
-        then(/^the output of "(\d+)" should be displayed$/, (expectedOutput: string) => {
+        then(/^the output of "(\d+|undefined)" should be displayed$/, (expectedOutput: string) => {
             if (!expectedOutput) {
                 expect(output).toBeFalsy();
             } else {
-                expect(output).toBe(parseFloat(expectedOutput));
+                expect(output).toBe(expectedOutput === 'undefined' ? undefined : parseFloat(expectedOutput));
             }
         });
     };

@@ -6,7 +6,7 @@ import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options, ScenarioGroup} from './models';
+import { Feature, Scenario, Step, ScenarioOutline, Options, Rule} from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -61,7 +61,7 @@ const parseStep = (astStep: any) => {
         keyword: (astStep.keyword).trim().toLowerCase() as string,
         stepArgument: parseStepArgument(astStep),
         lineNumber: astStep.location.line,
-    } as ParsedStep;
+    } as Step;
 };
 
 const parseSteps = (astScenario: any) => {
@@ -82,7 +82,7 @@ const parseScenario = (astScenario: any) => {
         steps: parseSteps(astScenario),
         tags: parseTags(astScenario),
         lineNumber: astScenario.location.line,
-    } as ParsedScenario;
+    } as Scenario;
 };
 
 const parseRule = (astRule: any) => {
@@ -91,10 +91,10 @@ const parseRule = (astRule: any) => {
       scenarios: parseScenarios(astRule),
       scenarioOutlines: parseScenarioOutlines(astRule),
       tags: parseTags(astRule),
-    } as ScenarioGroup;
-}
+    } as Rule;
+};
 
-const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
+const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: Step[]) => {
     return scenarioSteps.map((scenarioStep) => {
         const stepText = Object.keys(exampleTableRow).reduce((processedStepText, nextTableColumn) => {
             return processedStepText.replace(new RegExp(`<${nextTableColumn}>`, 'g'), exampleTableRow[nextTableColumn]);
@@ -140,7 +140,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
             ...scenarioStep,
             stepText,
             stepArgument,
-        } as ParsedStep;
+        } as Step;
     });
 };
 
@@ -152,17 +152,17 @@ const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
 
 const parseScenarioOutlineExample = (
     exampleTableRow: any,
-    outlineScenario: ParsedScenario,
+    outlineScenario: Scenario,
     exampleSetTags: string[],
 ) => {
     return {
         title: getOutlineDynamicTitle(exampleTableRow, outlineScenario.title),
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: Array.from(new Set<string>([...outlineScenario.tags, ...exampleSetTags])),
-    } as ParsedScenario;
+    } as Scenario;
 };
 
-const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: Scenario) => {
     const exampleTable = parseDataTable(astExampleSet.tableBody, astExampleSet.tableHeader);
 
     return exampleTable.map(
@@ -170,17 +170,17 @@ const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: Par
     );
 };
 
-const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: Scenario) => {
     const exampleSets = astExampleSets.map((astExampleSet: any) => {
         return parseScenarioOutlineExampleSet(astExampleSet, outlineScenario);
     });
 
-    return exampleSets.reduce((scenarios: ParsedScenario[], nextExampleSet: ParsedScenario[][]) => {
+    return exampleSets.reduce((scenarios: Scenario[], nextExampleSet: Scenario[][]) => {
         return [
             ...scenarios,
             ...nextExampleSet,
         ];
-    }, [] as ParsedScenario[]);
+    }, [] as Scenario[]);
 };
 
 const parseScenarioOutline = (astScenarioOutline: any) => {
@@ -192,7 +192,7 @@ const parseScenarioOutline = (astScenarioOutline: any) => {
         tags: outlineScenario.tags,
         steps: outlineScenario.steps,
         lineNumber: astScenarioOutline.scenario.location.line,
-    } as ParsedScenarioOutline;
+    } as ScenarioOutline;
 };
 
 const parseScenarios = (astFeature: any) => {
@@ -254,7 +254,9 @@ const parseAndCollapseBackgrounds = (astFeature: any) => {
                 const rule = nextChild.rule;
                 const ruleBackgrounds = parseBackgrounds(rule);
 
-                rule.children = [...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds])]
+                rule.children = [
+                  ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds]),
+                ];
             }
 
             return [...newChildren, nextChild];
@@ -267,19 +269,18 @@ const parseAndCollapseBackgrounds = (astFeature: any) => {
 };
 
 const collapseRules = (astFeature: any) => {
-    const children = astFeature.children.reduce((newChildren: [], nextChild:any) => {
-      if(nextChild.rule) {
+    const children = astFeature.children.reduce((newChildren: [], nextChild: any) => {
+      if (nextChild.rule) {
         return [...newChildren, ...nextChild.rule.children];
-      }
-      else {
+      } else {
         return [...newChildren, nextChild];
       }
-    }, [])
+    }, []);
     return {
       ...astFeature,
       children,
-    }
-}
+    };
+};
 
 const translateKeywords = (astFeature: any) => {
     const languageDialect = dialects[astFeature.language];
@@ -359,7 +360,7 @@ const createTranslationMap = (translateDialect: Dialect) => {
     return translationMap;
 };
 
-export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
+export const parseFeature = (featureText: string, options?: Options): Feature => {
     let ast: any;
 
     try {
@@ -371,7 +372,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
 
     let astFeature = parseAndCollapseBackgrounds(ast.feature);
 
-    if(options?.collapseRules) {
+    if (options?.collapseRules) {
         astFeature = collapseRules(astFeature);
     }
 
@@ -386,7 +387,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         rules: parseRules(astFeature),
         tags: parseTags(astFeature),
         options,
-    } as ParsedFeature;
+    } as Feature;
 };
 
 export const loadFeature = (featureFilePath: string, options?: Options) => {
