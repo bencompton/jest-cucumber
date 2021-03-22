@@ -8,11 +8,14 @@
         "outDir": "dist",
         "strict": true,
         "rootDir": ".",
-        "lib": ["esnext"]
+        "lib": [
+            "esnext"
+        ]
     },
     "exclude": [
         "node_modules",
         "examples/ecmascript",
-        "dist"
+        "dist",
+        "*.spec.ts"
     ]
 }

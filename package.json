@@ -46,7 +46,8 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/*.steps.ts"
+      "**/*.steps.ts",
+      "**/*.spec.ts"
     ],
     "moduleFileExtensions": [
       "js",
