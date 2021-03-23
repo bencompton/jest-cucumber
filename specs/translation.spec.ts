@@ -1,10 +1,10 @@
-import { Dialect, dialects, Parser } from '@cucumber/gherkin';
-import { translateKeywords } from './translation';
+import { Dialect, dialects } from '@cucumber/gherkin';
+import { translateKeywords } from '../src/translation';
 
 const StepKeywords: (keyof Dialect)[] = ['and', 'but', 'given', 'then', 'when'];
 
 describe('translation', () => {
-    // don't test languages that have duplicate keywords
+    // skip test languages that have duplicate keywords
     // See also: https://github.com/cucumber/cucumber/issues/1325
     const skipLanguages = ['uz'];
 
@@ -65,7 +65,7 @@ describe('translation', () => {
                 expect(astFeature.keyword).toEqual('Feature');
 
                 astFeature.children.filter((child) => 'background' in child)
-                    .forEach((child: any) => expect(child.background!.keyword).toEqual('Background'));
+                    .forEach((child: any) => expect(child.background.keyword).toEqual('Background'));
 
                 const translatedScenarioKeywords = astFeature.children.map((child) => child.scenario.keyword);
                 expect(translatedScenarioKeywords).toContain('Example');

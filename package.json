@@ -6,8 +6,9 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "jest": "jest --verbose",
-    "jest:unit": "jest **/*.spec.ts --verbose",
+    "jest": "npm run jest:unit & npm run jest:cucumber",
+    "jest:cucumber": "jest .*.steps.ts --verbose",
+    "jest:unit": "jest .*.spec.ts --verbose",
     "test": "npm run build & npm run lint & jest --color",
     "lint": "tslint --project ./"
   },

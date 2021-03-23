@@ -15,8 +15,8 @@
     },
     "exclude": [
         "node_modules",
-        "examples/ecmascript",
+        "examples",
         "dist",
-        "*.spec.ts"
+        "specs"
     ]
 }
