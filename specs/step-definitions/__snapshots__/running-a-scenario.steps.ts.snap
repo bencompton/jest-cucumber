@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Running a scenario Scenario missing a step 1`] = `
+"Scenario \\"Doing some stuff\\" has 3 step(s) in the feature file, but 2 step definition(s) defined. Try adding the following code:
+
+test('Doing some stuff', ({ given, when, then }) => {
+	given('I did some stuff', () => {
+
+	});
+
+	when('I do some stuff', () => {
+
+	});
+
+	then('I should have done some stuff', () => {
+
+	});
+});
+
+Expected step #3 in scenario \\"Doing some stuff\\" to match \\"I should have done some stuff\\". Try adding the following code:
+
+then('I should have done some stuff', () => {
+
+});"
+`;
