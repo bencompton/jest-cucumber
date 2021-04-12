@@ -5,6 +5,8 @@ import {
     emptyStepDefinitions,
     featureWithMultipleScenarios,
     featureWithSingleScenario,
+    featureWithSteplessScenario,
+    steplessStepDefinitions,
     stepsForfeatureWithMultipleScenarios,
     stepsWithMismatchedSecondStep,
     stepsWithMissingStep,
@@ -233,6 +235,18 @@ defineFeature(feature, (test) => {
     test('Disabled and a step in the step definitions doesn\'t match the step in the feature', ({ given, and, when, then }) => {
         givenStepsMustMatchFeatureFileIsDisabled(given);
         andIHaveAScenarioWhereTheStepMatcherForTheSecondStepDoesntMatchTheStep(and);
+        whenIRunMyJestCucumberTests(when);
+        thenIShouldNotSeeAValidationErrorAndGeneratedCode(then);
+    });
+
+    test('Scenario with no steps', ({ given, and, when, then }) => {
+        givenStepsMustMatchFeatureFileIsDisabled(given);
+
+        and('I have a scenario with no steps', () => {
+            featureFile = featureWithSteplessScenario;
+            stepDefinitions = steplessStepDefinitions;
+        });
+
         whenIRunMyJestCucumberTests(when);
         thenIShouldNotSeeAValidationErrorAndGeneratedCode(then);
     });

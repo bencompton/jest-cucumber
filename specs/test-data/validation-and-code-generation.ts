@@ -27,6 +27,12 @@ Feature: Test
 
 `;
 
+export const featureWithSteplessScenario = `
+Feature: Test
+
+    Scenario: Doing nothing at all
+`;
+
 export const emptyStepDefinitions: MockStepDefinitions = (
     mockFeature: ParsedFeature,
     defineMockFeature: DefineFeatureFunction,
@@ -161,6 +167,17 @@ export const stepsWithMismatchedSecondStep: MockStepDefinitions = (
             then('I should have done some stuff', () => {
                 // Nothing to do here
             });
+        });
+    });
+};
+
+export const steplessStepDefinitions: MockStepDefinitions = (
+    mockFeature: ParsedFeature,
+    defineMockFeature: DefineFeatureFunction,
+) => {
+    defineMockFeature(mockFeature, (test) => {
+        test('Doing nothing at all', ({ given, when, then }) => {
+            // No steps to define
         });
     });
 };

@@ -84,6 +84,13 @@ Feature: Validation and code generation
       When I run my Jest Cucumber tests
       Then I should not see a validation error / generated code
 
+    # Use case described in #111
+    Scenario: Scenario with no steps
+      Given `stepsMustMatchFeatureFile` is disabled 
+      And I have a scenario with no steps
+      When I run my Jest Cucumber tests
+      Then I should not see a validation error / generated code
+
   Rule: If `allowScenariosNotInFeatureFile` is enabled, the step definitions can have scenarios not in the feature file
 
     Scenario: Enabled and step definitions have an extra scenario
