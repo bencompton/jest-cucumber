@@ -4,9 +4,9 @@ import {
     ParsedFeature,
     ParsedScenario,
     ParsedScenarioOutline,
-    ErrorOptions,
 } from '../models';
 import { generateScenarioCode } from '../code-generation/scenario-generation';
+import { ErrorOptions } from '../configuration';
 
 const findScenarioFromParsedFeature = (
     errors: string[],
@@ -21,11 +21,11 @@ const findScenarioFromParsedFeature = (
             .filter((parsedScenario) => parsedScenario.title.toLowerCase() === scenarioTitle.toLowerCase());
     }
 
-    if (matchingScenarios.length === 0 && errorOptions.missingScenarioInFeature) {
+    if (matchingScenarios.length === 0 && !errorOptions.allowScenariosNotInFeatureFile) {
         errors.push(`No scenarios found in feature file that match scenario title "${scenarioTitle}."`);
 
         return null;
-    } else if (matchingScenarios.length > 1 && errorOptions.missingStepInFeature) {
+    } else if (matchingScenarios.length > 1 && errorOptions.scenariosMustMatchFeatureFile) {
         errors.push(`More than one scenario found in feature file that match scenario title "${scenarioTitle}"`);
 
         return null;
@@ -46,12 +46,12 @@ const findScenarioFromStepDefinitions = (
             return scenarioFromStepDefinitions.title.toLocaleLowerCase() === scenarioTitle.toLocaleLowerCase();
         });
 
-    if (matchingScenarios.length === 0 && errorOptions.missingScenarioInStepDefinitions) {
+    if (matchingScenarios.length === 0 && errorOptions.scenariosMustMatchFeatureFile) {
         // tslint:disable-next-line:max-line-length
         errors.push(`Feature file has a scenario titled "${scenarioTitle}", but no match found in step definitions. Try adding the following code:\n\n${generateScenarioCode(scenario)}`);
 
         return null;
-    } else if (matchingScenarios.length > 1 && errorOptions.missingScenarioInStepDefinitions) {
+    } else if (matchingScenarios.length > 1 && errorOptions.scenariosMustMatchFeatureFile) {
         errors.push(`More than one scenario found in step definitions matching scenario title "${scenarioTitle}"`);
 
         return null;

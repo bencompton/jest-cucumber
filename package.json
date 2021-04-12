@@ -8,6 +8,7 @@
     "build": "tsc",
     "jest": "jest --verbose",
     "test": "npm run build & npm run lint & jest --color",
+    "update-snapshots": "jest --updateSnapshot",
     "lint": "tslint --project ./"
   },
   "repository": {

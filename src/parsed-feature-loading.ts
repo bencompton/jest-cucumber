@@ -5,8 +5,8 @@ import callsites from 'callsites';
 import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
+import { getJestCucumberConfiguration, Options } from './configuration';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];

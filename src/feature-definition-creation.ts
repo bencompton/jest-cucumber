@@ -3,14 +3,16 @@ import {
     ScenarioFromStepDefinitions,
     FeatureFromStepDefinitions,
     StepFromStepDefinitions,
-    ParsedFeature, ParsedScenario,
-    Options, ParsedScenarioOutline,
+    ParsedFeature,
+    ParsedScenario,
+    ParsedScenarioOutline,
 } from './models';
 import {
     ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
     matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
+import { Options } from './configuration';
 
 export type StepsDefinitionCallbackOptions = {
     defineStep: DefineStepFunction;
@@ -134,6 +136,7 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
                     parsedStep.stepText,
                     scenarioFromStepDefinitions.steps[index].stepMatcher,
                 );
+
                 let matchArgs: string[] = [];
 
                 if (matches && (matches as RegExpMatchArray).length) {
@@ -146,7 +149,7 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
                   return Promise.resolve()
                     .then(() => nextStep.stepFunction(...args))
                     .catch((error) => {
-                        error.message = `jest-cucumber: ${parsedStep.stepText} (line ${parsedStep.lineNumber})\n\n${error.message}`;
+                        error.message = `Failing step: "${parsedStep.stepText}"\n\nStep arguments: ${JSON.stringify(args)}\n\nError: ${error.message}`;
                         throw error;
                     });
                 });
