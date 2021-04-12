@@ -143,7 +143,11 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
                     matchArgs = (matches as RegExpMatchArray).slice(1);
                 }
 
-                const args = [...matchArgs, stepArgument];
+                const args = [...matchArgs];
+
+                if (stepArgument !== undefined && stepArgument !== null) {
+                    args.push(stepArgument as string);
+                }
 
                 return promiseChain.then(() => {
                   return Promise.resolve()
