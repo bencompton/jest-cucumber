@@ -5,11 +5,10 @@ import { generateStepCode } from './code-generation/step-generation';
 
 const globalSteps: Array<{ stepMatcher: string | RegExp, stepFunction: () => any }> = [];
 
-const registerStep = (stepMatcher: string | RegExp, stepFunction: () => any) => {
-    globalSteps.push({ stepMatcher, stepFunction });
-};
+export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[], registerStepsGlobally: boolean = true) => {
+    const steps = registerStepsGlobally? globalSteps : [];
+    const registerStep = (stepMatcher: string | RegExp, stepFunction: () => any) => steps.push({ stepMatcher, stepFunction });
 
-export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
     stepDefinitions.forEach((stepDefinitionCallback) => {
         stepDefinitionCallback({
             defineStep: registerStep,
@@ -36,7 +35,7 @@ export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsD
             scenarios.forEach((scenario) => {
                 test(scenario.title, (options) => {
                     scenario.steps.forEach((step, stepIndex) => {
-                        const matches = globalSteps
+                        const matches = steps
                             .filter((globalStep) => matchSteps(step.stepText, globalStep.stepMatcher));
 
                         if (matches.length === 1) {
