@@ -1,6 +1,6 @@
 {
   "name": "jest-cucumber",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Execute Gherkin scenarios in Jest",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/bencompton/jest-cucumber#readme",
   "devDependencies": {
     "babel-jest": "^24.1.0",
+    "chalk": "^4.1.2",
     "ts-jest": "^26.1.4",
     "tslint": "^5.10.0",
     "typescript": "^3.3.3"
