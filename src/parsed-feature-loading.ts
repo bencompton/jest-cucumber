@@ -6,7 +6,7 @@ import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
+import { Feature, Scenario, Step, ScenarioOutline, Options, Rule} from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -61,7 +61,7 @@ const parseStep = (astStep: any) => {
         keyword: (astStep.keyword).trim().toLowerCase() as string,
         stepArgument: parseStepArgument(astStep),
         lineNumber: astStep.location.line,
-    } as ParsedStep;
+    } as Step;
 };
 
 const parseSteps = (astScenario: any) => {
@@ -82,10 +82,19 @@ const parseScenario = (astScenario: any) => {
         steps: parseSteps(astScenario),
         tags: parseTags(astScenario),
         lineNumber: astScenario.location.line,
-    } as ParsedScenario;
+    } as Scenario;
 };
 
-const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: ParsedStep[]) => {
+const parseRule = (astRule: any) => {
+    return {
+      title: astRule.name,
+      scenarios: parseScenarios(astRule),
+      scenarioOutlines: parseScenarioOutlines(astRule),
+      tags: parseTags(astRule),
+    } as Rule;
+};
+
+const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: Step[]) => {
     return scenarioSteps.map((scenarioStep) => {
         const stepText = Object.keys(exampleTableRow).reduce((processedStepText, nextTableColumn) => {
             return processedStepText.replace(new RegExp(`<${nextTableColumn}>`, 'g'), exampleTableRow[nextTableColumn]);
@@ -131,7 +140,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
             ...scenarioStep,
             stepText,
             stepArgument,
-        } as ParsedStep;
+        } as Step;
     });
 };
 
@@ -143,17 +152,17 @@ const getOutlineDynamicTitle = (exampleTableRow: any, title: string) => {
 
 const parseScenarioOutlineExample = (
     exampleTableRow: any,
-    outlineScenario: ParsedScenario,
+    outlineScenario: Scenario,
     exampleSetTags: string[],
 ) => {
     return {
         title: getOutlineDynamicTitle(exampleTableRow, outlineScenario.title),
         steps: parseScenarioOutlineExampleSteps(exampleTableRow, outlineScenario.steps),
         tags: Array.from(new Set<string>([...outlineScenario.tags, ...exampleSetTags])),
-    } as ParsedScenario;
+    } as Scenario;
 };
 
-const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: Scenario) => {
     const exampleTable = parseDataTable(astExampleSet.tableBody, astExampleSet.tableHeader);
 
     return exampleTable.map(
@@ -161,17 +170,17 @@ const parseScenarioOutlineExampleSet = (astExampleSet: any, outlineScenario: Par
     );
 };
 
-const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: ParsedScenario) => {
+const parseScenarioOutlineExampleSets = (astExampleSets: any, outlineScenario: Scenario) => {
     const exampleSets = astExampleSets.map((astExampleSet: any) => {
         return parseScenarioOutlineExampleSet(astExampleSet, outlineScenario);
     });
 
-    return exampleSets.reduce((scenarios: ParsedScenario[], nextExampleSet: ParsedScenario[][]) => {
+    return exampleSets.reduce((scenarios: Scenario[], nextExampleSet: Scenario[][]) => {
         return [
             ...scenarios,
             ...nextExampleSet,
         ];
-    }, [] as ParsedScenario[]);
+    }, [] as Scenario[]);
 };
 
 const parseScenarioOutline = (astScenarioOutline: any) => {
@@ -183,7 +192,7 @@ const parseScenarioOutline = (astScenarioOutline: any) => {
         tags: outlineScenario.tags,
         steps: outlineScenario.steps,
         lineNumber: astScenarioOutline.scenario.location.line,
-    } as ParsedScenarioOutline;
+    } as ScenarioOutline;
 };
 
 const parseScenarios = (astFeature: any) => {
@@ -194,6 +203,12 @@ const parseScenarios = (astFeature: any) => {
             return child.scenario && keywords.indexOf(child.scenario.keyword) === -1;
         })
         .map((astScenario: any) => parseScenario(astScenario.scenario));
+};
+
+const parseRules = (astFeature: any) => {
+    return astFeature.children
+        .filter((child: any) => child.rule)
+        .map((astRule: any) => parseRule(astRule.rule));
 };
 
 const parseScenarioOutlines = (astFeature: any) => {
@@ -230,7 +245,7 @@ const parseBackgrounds = (ast: any) => {
         .map((child: any) => child.background);
 };
 
-const collapseRulesAndBackgrounds = (astFeature: any) => {
+const parseAndCollapseBackgrounds = (astFeature: any) => {
     const featureBackgrounds = parseBackgrounds(astFeature);
 
     const children = collapseBackgrounds(astFeature.children, featureBackgrounds)
@@ -239,18 +254,31 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
                 const rule = nextChild.rule;
                 const ruleBackgrounds = parseBackgrounds(rule);
 
-                return [
-                    ...newChildren,
-                    ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds]),
+                rule.children = [
+                  ...collapseBackgrounds(rule.children, [...featureBackgrounds, ...ruleBackgrounds]),
                 ];
-            } else {
-                return [...newChildren, nextChild];
             }
+
+            return [...newChildren, nextChild];
         }, []);
 
     return {
         ...astFeature,
         children,
+    };
+};
+
+const collapseRules = (astFeature: any) => {
+    const children = astFeature.children.reduce((newChildren: [], nextChild: any) => {
+      if (nextChild.rule) {
+        return [...newChildren, ...nextChild.rule.children];
+      } else {
+        return [...newChildren, nextChild];
+      }
+    }, []);
+    return {
+      ...astFeature,
+      children,
     };
 };
 
@@ -332,7 +360,7 @@ const createTranslationMap = (translateDialect: Dialect) => {
     return translationMap;
 };
 
-export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
+export const parseFeature = (featureText: string, options?: Options): Feature => {
     let ast: any;
 
     try {
@@ -342,7 +370,11 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
 
-    let astFeature = collapseRulesAndBackgrounds(ast.feature);
+    let astFeature = parseAndCollapseBackgrounds(ast.feature);
+
+    if (options?.collapseRules) {
+        astFeature = collapseRules(astFeature);
+    }
 
     if (astFeature.language !== 'en') {
         astFeature = translateKeywords(astFeature);
@@ -352,9 +384,10 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         title: astFeature.name,
         scenarios: parseScenarios(astFeature),
         scenarioOutlines: parseScenarioOutlines(astFeature),
+        rules: parseRules(astFeature),
         tags: parseTags(astFeature),
         options,
-    } as ParsedFeature;
+    } as Feature;
 };
 
 export const loadFeature = (featureFilePath: string, options?: Options) => {

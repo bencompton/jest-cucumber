@@ -1,4 +1,4 @@
-import { ParsedScenario, ParsedScenarioOutline } from '../models';
+import { Scenario, ScenarioOutline } from '../models';
 import { generateStepCode, generateStepFunctionCall } from './step-generation';
 import { indent } from './utils';
 
@@ -7,7 +7,7 @@ const scenarioTemplate = (scenarioTitle: string, steps: string, stepKeywords: st
     return `test('${scenarioTitle.replace(/'+/g, `\\'`)}', ({ ${stepKeywords.join(', ')} }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
 };
 
-const getStepKeywords = (scenario: ParsedScenario | ParsedScenarioOutline) => {
+const getStepKeywords = (scenario: Scenario | ScenarioOutline) => {
     const stepKeywords: string[] = [];
 
     scenario.steps.forEach((step) => {
@@ -19,16 +19,16 @@ const getStepKeywords = (scenario: ParsedScenario | ParsedScenarioOutline) => {
     return stepKeywords;
 };
 
-export const generateScenarioCode = (scenario: ParsedScenario | ParsedScenarioOutline) => {
-    const stepsCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index));
+export const generateScenarioCode = (scenario: Scenario | ScenarioOutline) => {
+    const stepsCode = scenario.steps.map((step) => generateStepCode(step));
     const stepKeywords = getStepKeywords(scenario);
 
     return scenarioTemplate(scenario.title, stepsCode.join('\n\n'), stepKeywords);
 };
 
-export const generateScenarioCodeWithSeparateStepFunctions = (scenario: ParsedScenario | ParsedScenarioOutline) => {
-    const stepFunctionCode = scenario.steps.map((step, index) => generateStepCode(scenario.steps, index, true));
-    const stepFunctionCalls = scenario.steps.map((step, index) => generateStepFunctionCall(scenario.steps, index));
+export const generateScenarioCodeWithSeparateStepFunctions = (scenario: Scenario | ScenarioOutline) => {
+    const stepFunctionCode = scenario.steps.map((step) => generateStepCode(step, true));
+    const stepFunctionCalls = scenario.steps.map((step) => generateStepFunctionCall(step));
     const stepKeywords = getStepKeywords(scenario);
 
     // tslint:disable-next-line:max-line-length
