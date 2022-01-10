@@ -9,7 +9,7 @@ const registerStep = (stepMatcher: string | RegExp, stepFunction: () => any) => 
     globalSteps.push({ stepMatcher, stepFunction });
 };
 
-export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[], concurrent = false) => {
     stepDefinitions.forEach((stepDefinitionCallback) => {
         stepDefinitionCallback({
             defineStep: registerStep,
@@ -34,7 +34,8 @@ export const autoBindSteps = (features: ParsedFeature[], stepDefinitions: StepsD
             const scenarios = [...feature.scenarios, ...scenarioOutlineScenarios];
 
             scenarios.forEach((scenario) => {
-                test(scenario.title, (options) => {
+                const testExecution = concurrent ? test.concurrent : test
+                testExecution(scenario.title, (options) => {
                     scenario.steps.forEach((step, stepIndex) => {
                         const matches = globalSteps
                             .filter((globalStep) => matchSteps(step.stepText, globalStep.stepMatcher));
