@@ -115,7 +115,7 @@ With Jest, you can use `test.concurrent('test run concurrently', () => { ... })`
 
 
 ```javascript
-  "jest": {
     ...
     autoBindSteps(features, [ countDownSteps ], true);
+    ...
 ```
