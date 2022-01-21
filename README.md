@@ -116,7 +116,7 @@ defineFeature(feature, (test) => {
 
 ## FAQ
 
-* Why doesn't this library work exactly like Cucumber and how do I avoid duplicated step code?
+#### Why doesn't this library work exactly like Cucumber and how do I avoid duplicated step code?
 
 If you prefer an experience more like Cucumber with global step matching and the ability to define steps exactly once that can be matched to multiple steps across multiple feature files, then Jest Cucumber does accommodate this preference with [autoBindSteps](./docs/AutomaticStepBinding.md).
 
