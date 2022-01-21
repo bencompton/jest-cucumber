@@ -45,7 +45,7 @@ defineFeature(feature, test => {
   });
 });
 ```
-It may be necessary to manage by yourself the `BeforeEach` step because of the order and timing how this function is called. 
+It may be necessary to manage by yourself the `beforeEach` step because of the order and timing how this function is called. 
 
 If you need to re-use the same step definitions across multiple feature files, a useful approach is to place shared step definitions in a shared module and import them when needed:
 
