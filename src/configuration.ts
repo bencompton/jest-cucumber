@@ -1,13 +1,30 @@
-import { Options } from './models';
-
-const defaultErrorSettings = {
-    missingScenarioInStepDefinitions: true,
-    missingStepInStepDefinitions: true,
-    missingScenarioInFeature: true,
-    missingStepInFeature: true,
+export type ErrorOptions = {
+    scenariosMustMatchFeatureFile: boolean;
+    stepsMustMatchFeatureFile: boolean;
+    allowScenariosNotInFeatureFile: boolean;
 };
 
-const defaultConfiguration: Options = {
+export type Options = {
+    loadRelativePath?: boolean;
+    tagFilter?: string;
+    errors?: ErrorOptions | boolean;
+    scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
+};
+
+export type ScenarioNameTemplateVars = {
+    featureTitle: string;
+    scenarioTitle: string;
+    scenarioTags: string[];
+    featureTags: string[];
+};
+
+export const defaultErrorSettings = {
+    scenariosMustMatchFeatureFile: true,
+    stepsMustMatchFeatureFile: true,
+    allowScenariosNotInFeatureFile: false,
+};
+
+export const defaultConfiguration: Options = {
     tagFilter: undefined,
     scenarioNameTemplate: undefined,
     errors: defaultErrorSettings,

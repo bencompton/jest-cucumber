@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Validation and code generation Disabled and step definitions have an extra scenario 1`] = `"No scenarios found in feature file that match scenario title \\"Doing some more stuff.\\""`;
+
+exports[`Validation and code generation Enabled and a step in the step definitions doesn't match the step in the feature 1`] = `
+"Expected step #2 in scenario \\"Doing some stuff\\" to match \\"I do some stuff\\". Try adding the following code:
+
+when('I do some stuff', () => {
+
+});"
+`;
+
+exports[`Validation and code generation Enabled and scenario missing step definitions 1`] = `
+"Feature file has a scenario titled \\"Doing some stuff\\", but no match found in step definitions. Try adding the following code:
+
+test('Doing some stuff', ({ given, when, then }) => {
+	given('I did some stuff', () => {
+
+	});
+
+	when('I do some stuff', () => {
+
+	});
+
+	then('I should have done some stuff', () => {
+
+	});
+});"
+`;
+
+exports[`Validation and code generation Enabled and step count is different 1`] = `
+"Scenario \\"Doing some stuff\\" has 3 step(s) in the feature file, but 2 step definition(s) defined. Try adding the following code:
+
+test('Doing some stuff', ({ given, when, then }) => {
+	given('I did some stuff', () => {
+
+	});
+
+	when('I do some stuff', () => {
+
+	});
+
+	then('I should have done some stuff', () => {
+
+	});
+});"
+`;
+
+exports[`Validation and code generation Enabled and step order is different 1`] = `
+"Expected step #2 in scenario \\"Doing some stuff\\" to match \\"I do some stuff\\". Try adding the following code:
+
+when('I do some stuff', () => {
+
+});
+
+Expected step #3 in scenario \\"Doing some stuff\\" to match \\"I should have done some stuff\\". Try adding the following code:
+
+then('I should have done some stuff', () => {
+
+});"
+`;
