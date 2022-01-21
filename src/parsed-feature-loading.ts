@@ -2,8 +2,9 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
+import { Parser, AstBuilder } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
+import { translateKeywords } from './translation';
 
 import { getJestCucumberConfiguration } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
@@ -252,84 +253,6 @@ const collapseRulesAndBackgrounds = (astFeature: any) => {
         ...astFeature,
         children,
     };
-};
-
-const translateKeywords = (astFeature: any) => {
-    const languageDialect = dialects[astFeature.language];
-    const translationMap = createTranslationMap(languageDialect);
-
-    astFeature.language = 'en';
-    astFeature.keyword = translationMap[astFeature.keyword] || astFeature.keyword;
-
-    for (const child of astFeature.children) {
-        if (child.background) {
-            child.background.keyword = translationMap[child.background.keyword] || child.background.keyword;
-        }
-
-        if (child.scenario) {
-            child.scenario.keyword = translationMap[child.scenario.keyword] || child.scenario.keyword;
-
-            for (const step of child.scenario.steps) {
-                step.keyword = translationMap[step.keyword] || step.keyword;
-            }
-
-            for (const example of child.scenario.examples) {
-                example.keyword = translationMap[example.keyword] || example.keyword;
-            }
-        }
-    }
-
-    return astFeature;
-};
-
-const createTranslationMap = (translateDialect: Dialect) => {
-    const englishDialect = dialects.en;
-    const translationMap: { [word: string]: string } = {};
-
-    const props: Array<keyof Dialect> = [
-        'and',
-        'background',
-        'but',
-        'examples',
-        'feature',
-        'given',
-        'scenario',
-        'scenarioOutline',
-        'then',
-        'when',
-        'rule',
-    ];
-
-    for (const prop of props) {
-        const dialectWords = translateDialect[prop];
-        const translationWords = englishDialect[prop];
-        let index = 0;
-        let defaultWordIndex: number | null = null;
-
-        for (const dialectWord of dialectWords) {
-            // skip "* " word
-            if (dialectWord.indexOf('*') !== 0) {
-                if (translationWords[index] !== undefined) {
-                    translationMap[dialectWord] = translationWords[index];
-                    if (defaultWordIndex === null) {
-                        // set default when non is set yet
-                        defaultWordIndex = index;
-                    }
-                } else {
-                    // index has undefined value, translate to default word
-                    if (defaultWordIndex !== null) {
-                        translationMap[dialectWord] = translationWords[defaultWordIndex];
-                    } else {
-                        throw new Error('No translation found for ' + dialectWord);
-                    }
-                }
-            }
-
-            index++;
-        }
-    }
-
-    return translationMap;
 };
 
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {

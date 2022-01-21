@@ -8,12 +8,15 @@
         "outDir": "dist",
         "strict": true,
         "rootDir": ".",
-        "lib": ["esnext"],
+        "lib": [
+            "esnext"
+        ],
         "resolveJsonModule": true
     },
     "exclude": [
         "node_modules",
-        "examples/ecmascript",
-        "dist"
+        "examples",
+        "dist",
+        "specs"
     ]
 }
