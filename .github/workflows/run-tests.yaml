@@ -1,4 +1,4 @@
-name: Run All Jest Cucumber Tests
+name: Tests
 
 on: [push, pull_request]
 
