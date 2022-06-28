@@ -5,8 +5,8 @@ import callsites from 'callsites';
 import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getJestCucumberConfiguration } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, Options } from './models';
+import { getJestCucumberConfiguration, Options } from './configuration';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -334,6 +334,7 @@ const createTranslationMap = (translateDialect: Dialect) => {
 
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
+    options = getJestCucumberConfiguration(options);
 
     try {
         const builder = new AstBuilder(uuidv4 as any);
@@ -358,12 +359,10 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
 };
 
 export const loadFeature = (featureFilePath: string, options?: Options) => {
-    options = getJestCucumberConfiguration(options);
-
     const callSite = callsites()[1];
     const fileOfCaller = callSite && callSite.getFileName() || '';
     const dirOfCaller = dirname(fileOfCaller);
-    const absoluteFeatureFilePath = resolve(options.loadRelativePath ? dirOfCaller : '', featureFilePath);
+    const absoluteFeatureFilePath = resolve(options && options.loadRelativePath ? dirOfCaller : '', featureFilePath);
 
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');

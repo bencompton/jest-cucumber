@@ -2,8 +2,7 @@
 
 Execute Gherkin scenarios in Jest
 
-[![Build Status](https://travis-ci.org/bencompton/jest-cucumber.svg?branch=master)](https://travis-ci.org/bencompton/jest-cucumber) [![Greenkeeper badge](https://badges.greenkeeper.io/bencompton/jest-cucumber.svg)](https://greenkeeper.io/)
-[![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
+[![Build Status](https://github.com/bencompton/jest-cucumber/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/bencompton/jest-cucumber/actions/runs/1726741929) [![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
 
 <img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" />
 
@@ -114,3 +113,11 @@ defineFeature(feature, (test) => {
 * [Scenario outlines](./docs/ScenarioOutlines.md)
 * [Step definition arguments](./docs/StepDefinitionArguments.md)
 * [Using Docstrings](./docs/UsingDocstrings.md)
+
+## FAQ
+
+#### Why doesn't this library work exactly like Cucumber and how do I avoid duplicated step code?
+
+If you prefer an experience more like Cucumber with global step matching and the ability to define steps exactly once that can be matched to multiple steps across multiple feature files, then Jest Cucumber does accommodate this preference with [autoBindSteps](./docs/AutomaticStepBinding.md).
+
+However, the default mode in Jest Cucumber can be thought of as Cucumber reimagined for Jest, and is designed for writing Jest tests that are kept in sync with Gherkin feature files. The goal is that your Jest tests (i.e., step definitions) are perfectly readable by themselves without jumping back and forth between step definitions and feature files. Another goal is to avoid global step matching, which many people find problematic and difficult to maintain as a codebase grows. By default, Jest Cucumber expects that your step definitions and feature files match exactly, and will report errors / generate suggested code when they are out of sync. To avoid duplicated step code, you can use the techniques described [here](./docs/ReusingStepDefinitions.md).
