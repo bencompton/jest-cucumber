@@ -28,7 +28,8 @@ defineFeature(feature, (test) => {
 
                 await mockTestRunner.execute();
             } catch (err) {
-                errorMessage = err.message;
+                const error = err as Error;
+                errorMessage = error.message;
             }
         });
     };

@@ -67,7 +67,8 @@ defineFeature(feature, (test) => {
                     options,
                 );
             } catch (err) {
-                errorMessage = err.message;
+                const error = err as Error;
+                errorMessage = error.message;
             }
         });
     };
