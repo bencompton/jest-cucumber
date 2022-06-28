@@ -9,10 +9,10 @@ const registerStep = (stepMatcher: string | RegExp, stepFunction: () => any) => 
     globalSteps.push({ stepMatcher, stepFunction });
 };
 
-export const createAutoBindSteps = (jestLike: IJestLike, concurrent = false) => {
+export const createAutoBindSteps = (jestLike: IJestLike) => {
     const defineFeature = createDefineFeature(jestLike);
 
-    return (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+    return (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[], concurrent=false) => {
         stepDefinitions.forEach((stepDefinitionCallback) => {
             stepDefinitionCallback({
                 defineStep: registerStep,
