@@ -340,7 +340,7 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
         const builder = new AstBuilder(uuidv4 as any);
         ast = new Parser(builder).parse(featureText);
     } catch (err) {
-        throw new Error(`Error parsing feature Gherkin: ${err.message}`);
+        throw new Error(`Error parsing feature Gherkin: ${(err as Error).message}`);
     }
 
     let astFeature = collapseRulesAndBackgrounds(ast.feature);
@@ -368,7 +368,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
         return parseFeature(featureText, options);
     } catch (err) {
-        if (err.code === 'ENOENT') {
+        const error = err as { code: string };
+        if (error.code === 'ENOENT') {
             throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);
         }
 

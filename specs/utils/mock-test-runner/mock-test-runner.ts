@@ -2,6 +2,8 @@ import { IJestLike } from '../../../src/feature-definition-creation';
 import { MockDescribeBlock } from './mock-describe-block';
 import { MockTest } from './mock-test';
 
+type TestPromises =  Array<void | undefined | Promise<unknown> | Promise<Array<Awaited<any>>>>;
+
 export class MockTestRunner implements IJestLike {
     public rootDescribeBlock: MockDescribeBlock;
     private currentDescribeBlock: MockDescribeBlock;
@@ -95,13 +97,8 @@ export class MockTestRunner implements IJestLike {
             }
         });
 
-        const testPromises: Array<Promise<any>> = testOutputs.filter((testOutput: any) => {
-            if ((testOutput as Promise<any>).then !== undefined) {
-                return true;
-            } else {
-                return false;
-            }
-        });
+        const testPromises: TestPromises = testOutputs.filter((testOutput: any) =>
+          (testOutput as Promise<any>).then !== undefined);
 
         if (!testPromises.length) {
             testPromises.push(Promise.resolve());
