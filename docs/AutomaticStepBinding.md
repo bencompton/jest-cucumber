@@ -108,3 +108,14 @@ If you are using `autoBindSteps` with just a subset of your feature files (as de
 `loadFeatures` and `autoBindSteps` are utility functions that automate what you would normally do per feature file by calling `loadFeature`, then `defineFeature`, and then defining one `test` per scenario containing inline step definitions.
 
 `loadFeatures` will load multiple feature files specified in your glob pattern and `autoBindSteps` will loop through every feature file, calling `defineFeature` for each one. It will then call `test` for each scenario within each feature file, and will loop through the steps in each scenario, attempting to match the steps with with one of the step definitions within the functions you are binding. If no matching step definition is found for a particular step, or more than one matching step definition is found, errors will occur.
+
+## Concurrent execution with autobind
+
+With Jest, you can use `test.concurrent('test run concurrently', () => { ... })` to concurrenly execute multiple tests in the same file. Though its still an experimental feature of Jest with a few known issues, `jest-cucumber` includes this feature into `autobinds` with a flag incase required.
+
+
+```javascript
+    ...
+    autoBindSteps(features, [ countDownSteps ], true);
+    ...
+```

@@ -12,7 +12,7 @@ const registerStep = (stepMatcher: string | RegExp, stepFunction: () => any) => 
 export const createAutoBindSteps = (jestLike: IJestLike) => {
     const defineFeature = createDefineFeature(jestLike);
 
-    return (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+    return (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[], concurrent=false) => {
         stepDefinitions.forEach((stepDefinitionCallback) => {
             stepDefinitionCallback({
                 defineStep: registerStep,
@@ -37,7 +37,8 @@ export const createAutoBindSteps = (jestLike: IJestLike) => {
                 const scenarios = [...feature.scenarios, ...scenarioOutlineScenarios];
 
                 scenarios.forEach((scenario) => {
-                    test(scenario.title, (options) => {
+                    const testExecution = concurrent ? test.concurrent : test;
+                    testExecution(scenario.title, (options) => {
                         scenario.steps.forEach((step, stepIndex) => {
                             const matches = globalSteps
                                 .filter((globalStep) => matchSteps(step.stepText, globalStep.stepMatcher));
