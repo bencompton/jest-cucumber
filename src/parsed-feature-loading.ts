@@ -42,15 +42,27 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
 
 const parseStepArgument = (astStep: any) => {
     if (astStep) {
-        // FIXME - astStep.argument no longer exists
-        switch (astStep.argument) {
-            case 'dataTable':
-                return parseDataTable(astStep.dataTable);
-            case 'docString':
-                return astStep.docString.content;
-            default:
-                return null;
+
+        if(astStep.dataTable !== undefined){
+            return parseDataTable(astStep.dataTable);
         }
+
+
+        if(astStep.docString !== undefined) {
+            return astStep.docString.content
+        }
+
+        return null;
+
+        // // FIXME - astStep.argument no longer exists
+        // switch (astStep.argument) {
+        //     case 'dataTable':
+        //         return parseDataTable(astStep.dataTable);
+        //     case 'docString':
+        //         return astStep.docString.content;
+        //     default:
+        //         return null;
+        // }
     } else {
         return null;
     }
