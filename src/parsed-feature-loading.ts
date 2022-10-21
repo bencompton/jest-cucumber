@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration, Options } from './configuration';
 import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
+import ITokenMatcher from '@cucumber/gherkin/dist/src/ITokenMatcher';
 
 const parseDataTableRow = (astDataTableRow: any) => {
     return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -336,40 +337,13 @@ const createTranslationMap = (translateDialect: Dialect) => {
     return translationMap;
 };
 
-export const parseFeatureMarkdown = (featureText: string, options?: Options): ParsedFeature => {
-    let ast: any;
-    options = getJestCucumberConfiguration(options);
-
-    try {
-        const mdTokenMatcher = new GherkinInMarkdownTokenMatcher('en')
-        const builder = new AstBuilder(uuidv4 as any);
-        ast = new Parser(builder, mdTokenMatcher).parse(featureText);
-    } catch (err) {
-        throw new Error(`Error parsing feature Gherkin: ${err.message}`);
-    }
-
-    let astFeature = collapseRulesAndBackgrounds(ast.feature);
-
-    if (astFeature.language !== 'en') {
-        astFeature = translateKeywords(astFeature);
-    }
-
-    return {
-        title: astFeature.name,
-        scenarios: parseScenarios(astFeature),
-        scenarioOutlines: parseScenarioOutlines(astFeature),
-        tags: parseTags(astFeature),
-        options,
-    } as ParsedFeature;
-};
-export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
+export const parseFeature = (featureText: string, tokenMatcher: ITokenMatcher<any>, options?: Options): ParsedFeature => {
     let ast: any;
     options = getJestCucumberConfiguration(options);
 
     try {
         const builder = new AstBuilder(uuidv4 as any);
-        const matcherClassic = new GherkinClassicTokenMatcher()
-        ast = new Parser(builder, matcherClassic).parse(featureText);
+        ast = new Parser(builder, tokenMatcher).parse(featureText);
     } catch (err) {
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
@@ -398,11 +372,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
 
-        if(featureFilePath.endsWith(".md")){
-            return parseFeatureMarkdown(featureText, options);
-        }else {
-            return parseFeature(featureText, options);
-        }
+        const tokenMatcher = identifyGherkinDialect(featureFilePath)
+        return parseFeature(featureText,tokenMatcher, options)
 
     } catch (err) {
         if (err.code === 'ENOENT') {
@@ -412,6 +383,14 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
         throw err;
     }
 };
+
+const identifyGherkinDialect = (featureFilePath: string): ITokenMatcher<any> => {
+    if(featureFilePath.endsWith(".md")){
+        return new GherkinInMarkdownTokenMatcher();
+    }else {
+        return new GherkinClassicTokenMatcher();
+    }
+}
 
 export const loadFeatures = (globPattern: string, options?: Options) => {
     const featureFiles = globSync(globPattern);

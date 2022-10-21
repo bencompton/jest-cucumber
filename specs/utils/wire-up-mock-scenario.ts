@@ -1,3 +1,4 @@
+import { GherkinClassicTokenMatcher } from '@cucumber/gherkin';
 import { parseFeature } from '../../src';
 import { Options } from '../../src/configuration';
 import { createDefineFeature, DefineFeatureFunction } from '../../src/feature-definition-creation';
@@ -13,7 +14,7 @@ export const wireUpMockFeature = (
     options?: Options,
 ) => {
     const defineMockFeature = createDefineFeature(mockTestRunner);
-    const mockFeature = parseFeature(featureFile, options);
+    const mockFeature = parseFeature(featureFile, new GherkinClassicTokenMatcher(), options);
 
     if (mockStepDefinitions) {
         mockStepDefinitions(mockFeature, defineMockFeature);
