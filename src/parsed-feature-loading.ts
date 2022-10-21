@@ -386,7 +386,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
 
 const identifyGherkinDialect = (featureFilePath: string): ITokenMatcher<any> => {
     if(featureFilePath.endsWith(".md")){
-        return new GherkinInMarkdownTokenMatcher();
+        // FIXME - set the dialect here to support multiple languages
+        return new GherkinInMarkdownTokenMatcher('en');
     }else {
         return new GherkinClassicTokenMatcher();
     }
