@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
+import { Parser, AstBuilder, Dialect, dialects, GherkinInMarkdownTokenMatcher, GherkinClassicTokenMatcher } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration, Options } from './configuration';
@@ -332,13 +332,40 @@ const createTranslationMap = (translateDialect: Dialect) => {
     return translationMap;
 };
 
+export const parseFeatureMarkdown = (featureText: string, options?: Options): ParsedFeature => {
+    let ast: any;
+    options = getJestCucumberConfiguration(options);
+
+    try {
+        const mdTokenMatcher = new GherkinInMarkdownTokenMatcher('en')
+        const builder = new AstBuilder(uuidv4 as any);
+        ast = new Parser(builder, mdTokenMatcher).parse(featureText);
+    } catch (err) {
+        throw new Error(`Error parsing feature Gherkin: ${err.message}`);
+    }
+
+    let astFeature = collapseRulesAndBackgrounds(ast.feature);
+
+    if (astFeature.language !== 'en') {
+        astFeature = translateKeywords(astFeature);
+    }
+
+    return {
+        title: astFeature.name,
+        scenarios: parseScenarios(astFeature),
+        scenarioOutlines: parseScenarioOutlines(astFeature),
+        tags: parseTags(astFeature),
+        options,
+    } as ParsedFeature;
+};
 export const parseFeature = (featureText: string, options?: Options): ParsedFeature => {
     let ast: any;
     options = getJestCucumberConfiguration(options);
 
     try {
         const builder = new AstBuilder(uuidv4 as any);
-        ast = new Parser(builder).parse(featureText);
+        const matcherClassic = new GherkinClassicTokenMatcher()
+        ast = new Parser(builder, matcherClassic).parse(featureText);
     } catch (err) {
         throw new Error(`Error parsing feature Gherkin: ${err.message}`);
     }
@@ -366,7 +393,13 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
 
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
-        return parseFeature(featureText, options);
+
+        if(featureFilePath.endsWith(".md")){
+            return parseFeatureMarkdown(featureText, options);
+        }else {
+            return parseFeature(featureText, options);
+        }
+
     } catch (err) {
         if (err.code === 'ENOENT') {
             throw new Error(`Feature file not found (${absoluteFeatureFilePath})`);
