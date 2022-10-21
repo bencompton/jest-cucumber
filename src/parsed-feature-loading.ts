@@ -372,7 +372,7 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
     try {
         const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
 
-        const tokenMatcher = identifyGherkinDialect(featureFilePath)
+        const tokenMatcher = identifyGherkinDialect(featureFilePath, options)
         return parseFeature(featureText,tokenMatcher, options)
 
     } catch (err) {
@@ -384,12 +384,13 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
     }
 };
 
-const identifyGherkinDialect = (featureFilePath: string): ITokenMatcher<any> => {
+const identifyGherkinDialect = (featureFilePath: string, options?: Options): ITokenMatcher<any> => {
+    
+    const dialect = options?.dialect || undefined
     if(featureFilePath.endsWith(".md")){
-        // FIXME - set the dialect here to support multiple languages
-        return new GherkinInMarkdownTokenMatcher('en');
+        return new GherkinInMarkdownTokenMatcher(dialect);
     }else {
-        return new GherkinClassicTokenMatcher();
+        return new GherkinClassicTokenMatcher(dialect);
     }
 }
 

@@ -1,11 +1,9 @@
 import { loadFeature, defineFeature, DefineStepFunction } from '../../src';
 
-const feature = loadFeature('./specs/features/markdown-support.en-pirate.feature.md');
+const feature = loadFeature('./specs/features/markdown-support.en-pirate.feature.md',{
+  dialect: 'en-pirate'
+});
 
-// FIXME - code generation is not working....
-// FIXME - tests are not captured...
-// Root Cause - https://github.com/cucumber/common/blob/b43e36f5e0123023a71e5be859aef73209e2e796/gherkin/javascript/src/GherkinInMarkdownTokenMatcher.ts#L84
-// Language has to be set as a global option
 defineFeature(feature, (test) => {
   test('Simple addition', ({ when, then }) => {
     var result = 0
