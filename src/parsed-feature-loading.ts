@@ -54,15 +54,6 @@ const parseStepArgument = (astStep: any) => {
 
         return null;
 
-        // // FIXME - astStep.argument no longer exists
-        // switch (astStep.argument) {
-        //     case 'dataTable':
-        //         return parseDataTable(astStep.dataTable);
-        //     case 'docString':
-        //         return astStep.docString.content;
-        //     default:
-        //         return null;
-        // }
     } else {
         return null;
     }
