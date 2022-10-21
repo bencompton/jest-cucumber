@@ -42,6 +42,7 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
 
 const parseStepArgument = (astStep: any) => {
     if (astStep) {
+        // FIXME - astStep.argument no longer exists
         switch (astStep.argument) {
             case 'dataTable':
                 return parseDataTable(astStep.dataTable);
