@@ -1,7 +1,8 @@
 import { loadFeature, defineFeature, DefineStepFunction } from '../../src';
 
-const feature = loadFeature('./specs/features/markdown-support.feature.md');
+const feature = loadFeature('./specs/features/markdown-support.en-pirate.feature.md');
 
+// FIXME - code generation is not working....
 defineFeature(feature, (test) => {
   test('Simple addition', ({ when, then }) => {
     var result = 0
