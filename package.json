@@ -33,7 +33,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
-    "@cucumber/gherkin": "^17.0.0",
+    "@cucumber/gherkin": "^24.1.0",
     "@types/glob": "^7.1.3",
     "@types/jest": "^26.0.7",
     "@types/node": "^11.9.4",

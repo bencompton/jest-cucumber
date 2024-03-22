@@ -9,6 +9,8 @@ export type Options = {
     tagFilter?: string;
     errors?: ErrorOptions | boolean;
     scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
+    // see: https://cucumber.io/docs/gherkin/languages/
+    dialect?: string; 
 };
 
 export type ScenarioNameTemplateVars = {
