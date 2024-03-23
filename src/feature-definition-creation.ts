@@ -1,88 +1,93 @@
 import { checkThatFeatureFileAndStepDefinitionsHaveSameScenarios } from './validation/scenario-validation';
 import {
-    ScenarioFromStepDefinitions,
-    FeatureFromStepDefinitions,
-    StepFromStepDefinitions,
-    ParsedFeature,
-    ParsedScenario,
-    ParsedScenarioOutline,
+  ScenarioFromStepDefinitions,
+  FeatureFromStepDefinitions,
+  StepFromStepDefinitions,
+  ParsedFeature,
+  ParsedScenario,
+  ParsedScenarioOutline,
 } from './models';
 import {
-    ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
-    matchSteps,
+  ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps,
+  matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
 import { Options } from './configuration';
 
 export type StepsDefinitionCallbackOptions = {
-    defineStep: DefineStepFunction;
-    given: DefineStepFunction;
-    when: DefineStepFunction;
-    then: DefineStepFunction;
-    and: DefineStepFunction;
-    but: DefineStepFunction;
-    pending: () => void;
+  defineStep: DefineStepFunction;
+  given: DefineStepFunction;
+  when: DefineStepFunction;
+  then: DefineStepFunction;
+  and: DefineStepFunction;
+  but: DefineStepFunction;
+  pending: () => void;
 };
 
 export interface IJestLike {
-    describe: jest.Describe;
-    test: jest.It;
+  describe: jest.Describe;
+  test: jest.It;
 }
 
 export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenarioFunctionWithAliases) => void;
 
 export type DefineScenarioFunction = (
-    scenarioTitle: string,
-    stepsDefinitionCallback: StepsDefinitionCallbackFunction,
-    timeout?: number,
+  scenarioTitle: string,
+  stepsDefinitionCallback: StepsDefinitionCallbackFunction,
+  timeout?: number,
 ) => void;
 
 export type DefineScenarioFunctionWithAliases = DefineScenarioFunction & {
-    skip: DefineScenarioFunction;
-    only: DefineScenarioFunction;
-    concurrent: DefineScenarioFunction;
+  skip: DefineScenarioFunction;
+  only: DefineScenarioFunction;
+  concurrent: DefineScenarioFunction;
 };
 
 export type StepsDefinitionCallbackFunction = (options: StepsDefinitionCallbackOptions) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DefineStepFunction = (stepMatcher: string | RegExp, stepDefinitionCallback: (...args: any[]) => any) => any;
 export type DefineFeatureFunction = (
-    featureFromFile: ParsedFeature,
-    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
+  featureFromFile: ParsedFeature,
+  scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
 ) => void;
 
 export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction => {
-    const processScenarioTitleTemplate = (
-        scenarioTitle: string,
-        parsedFeature: ParsedFeature,
-        options: Options,
-        parsedScenario: ParsedScenario,
-        parsedScenarioOutline: ParsedScenarioOutline,
-    ) => {
-        if (options && options.scenarioNameTemplate) {
-            try {
-                return options && options.scenarioNameTemplate({
-                    featureTitle: parsedFeature.title,
-                    scenarioTitle: scenarioTitle.toString(),
-                    featureTags: parsedFeature.tags,
-                    scenarioTags: (parsedScenario || parsedScenarioOutline).tags,
-                });
-            } catch (err) {
-                throw new Error(
-                    `An error occurred while executing a scenario name template. \nTemplate:\n${options.scenarioNameTemplate}\nError:${err.message}`,
-                );
-            }
-        }
+  const processScenarioTitleTemplate = (
+    scenarioTitle: string,
+    parsedFeature: ParsedFeature,
+    options: Options,
+    parsedScenario: ParsedScenario,
+    parsedScenarioOutline: ParsedScenarioOutline,
+  ) => {
+    if (options && options.scenarioNameTemplate) {
+      try {
+        return (
+          options &&
+          options.scenarioNameTemplate({
+            featureTitle: parsedFeature.title,
+            scenarioTitle: scenarioTitle.toString(),
+            featureTags: parsedFeature.tags,
+            scenarioTags: (parsedScenario || parsedScenarioOutline).tags,
+          })
+        );
+      } catch (err) {
+        throw new Error(
+          `An error occurred while executing a scenario name template. \nTemplate:\n${options.scenarioNameTemplate}\nError:${err.message}`,
+        );
+      }
+    }
 
-        return scenarioTitle;
-    };
+    return scenarioTitle;
+  };
 
-    const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
-        let scenarioPending = false;
+  const checkForPendingSteps = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
+    let scenarioPending = false;
 
-        scenarioFromStepDefinitions.steps.forEach((step) => {
-            try {
-                if (step.stepFunction.toString().indexOf('pending()') !== -1) {
-                    const pendingTest = new Function(`
+    scenarioFromStepDefinitions.steps.forEach(step => {
+      try {
+        if (step.stepFunction.toString().indexOf('pending()') !== -1) {
+          // eslint-disable-next-line no-new-func
+          const pendingTest = new Function(`
                         let isPending = false;
 
                         const pending = function () {
@@ -94,232 +99,231 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
                         return isPending;
                     `);
 
-                    scenarioPending = pendingTest();
-                }
-            } catch (err) {
-                // Ignore
-            }
-        });
-
-        return scenarioPending;
-    };
-
-    const getTestFunction = (skippedViaTagFilter: boolean, only: boolean, skip: boolean, concurrent: boolean) => {
-        if (skip || skippedViaTagFilter) {
-            return jestLike.test.skip;
-        } else if (only) {
-            return jestLike.test.only;
-        } else if (concurrent) {
-            return jestLike.test.concurrent;
-        } else {
-            return jestLike.test;
+          scenarioPending = pendingTest();
         }
-    };
+      } catch (err) {
+        // Ignore
+      }
+    });
 
-    const defineScenario = (
-        scenarioTitle: string,
-        scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
-        parsedScenario: ParsedScenario,
-        only: boolean = false,
-        skip: boolean = false,
-        concurrent: boolean = false,
-        timeout: number | undefined = undefined,
+    return scenarioPending;
+  };
+
+  const getTestFunction = (skippedViaTagFilter: boolean, only: boolean, skip: boolean, concurrent: boolean) => {
+    if (skip || skippedViaTagFilter) {
+      return jestLike.test.skip;
+    }
+    if (only) {
+      return jestLike.test.only;
+    }
+    if (concurrent) {
+      return jestLike.test.concurrent;
+    }
+    return jestLike.test;
+  };
+
+  const defineScenario = (
+    scenarioTitle: string,
+    scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
+    parsedScenario: ParsedScenario,
+    only: boolean = false,
+    skip: boolean = false,
+
+    concurrent: boolean = false,
+    timeout: number | undefined = undefined,
+  ) => {
+    const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
+
+    testFunction(
+      scenarioTitle,
+      () => {
+        return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
+          const parsedStep = parsedScenario.steps[index];
+          const { stepArgument } = parsedStep;
+          const matches = matchSteps(parsedStep.stepText, scenarioFromStepDefinitions.steps[index].stepMatcher);
+
+          let matchArgs: string[] = [];
+
+          if (matches && (matches as RegExpMatchArray).length) {
+            matchArgs = (matches as RegExpMatchArray).slice(1);
+          }
+
+          const args = [...matchArgs];
+
+          if (stepArgument !== undefined && stepArgument !== null) {
+            args.push(stepArgument as string);
+          }
+
+          return promiseChain.then(() => {
+            return Promise.resolve()
+              .then(() => nextStep.stepFunction(...args))
+              .catch(error => {
+                const formattedError = error;
+                formattedError.message = `Failing step: "${parsedStep.stepText}"\n\nStep arguments: ${JSON.stringify(args)}\n\nError: ${error.message}`;
+                throw formattedError;
+              });
+          });
+        }, Promise.resolve());
+      },
+      timeout,
+    );
+  };
+
+  const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
+    return (stepMatcher: string | RegExp, stepFunction: (stepArguments?: unknown) => void | PromiseLike<never>) => {
+      const stepDefinition: StepFromStepDefinitions = {
+        stepMatcher,
+        stepFunction,
+      };
+
+      scenarioFromStepDefinitions.steps.push(stepDefinition);
+    };
+  };
+
+  const createDefineScenarioFunction = (
+    featureFromStepDefinitions: FeatureFromStepDefinitions,
+    parsedFeature: ParsedFeature,
+    only: boolean = false,
+    skip: boolean = false,
+    concurrent: boolean = false,
+  ) => {
+    const defineScenarioFunction: DefineScenarioFunction = (
+      scenarioTitle: string,
+      stepsDefinitionFunctionCallback: StepsDefinitionCallbackFunction,
+      timeout?: number,
     ) => {
-        const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
+      const scenarioFromStepDefinitions: ScenarioFromStepDefinitions = {
+        title: scenarioTitle,
+        steps: [],
+      };
 
-        testFunction(scenarioTitle, () => {
-            return scenarioFromStepDefinitions.steps.reduce((promiseChain, nextStep, index) => {
-                const parsedStep = parsedScenario.steps[index];
-                const stepArgument = parsedStep.stepArgument;
-                const matches = matchSteps(
-                    parsedStep.stepText,
-                    scenarioFromStepDefinitions.steps[index].stepMatcher,
-                );
+      featureFromStepDefinitions.scenarios.push(scenarioFromStepDefinitions);
 
-                let matchArgs: string[] = [];
+      stepsDefinitionFunctionCallback({
+        defineStep: createDefineStepFunction(scenarioFromStepDefinitions),
+        given: createDefineStepFunction(scenarioFromStepDefinitions),
+        when: createDefineStepFunction(scenarioFromStepDefinitions),
+        then: createDefineStepFunction(scenarioFromStepDefinitions),
+        and: createDefineStepFunction(scenarioFromStepDefinitions),
+        but: createDefineStepFunction(scenarioFromStepDefinitions),
+        pending: () => {
+          // Nothing to do
+        },
+      });
 
-                if (matches && (matches as RegExpMatchArray).length) {
-                    matchArgs = (matches as RegExpMatchArray).slice(1);
-                }
+      const parsedScenario = parsedFeature.scenarios.filter(
+        s => s.title.toLowerCase() === scenarioTitle.toLowerCase(),
+      )[0];
 
-                const args = [...matchArgs];
+      const parsedScenarioOutline = parsedFeature.scenarioOutlines.filter(
+        s => s.title.toLowerCase() === scenarioTitle.toLowerCase(),
+      )[0];
 
-                if (stepArgument !== undefined && stepArgument !== null) {
-                    args.push(stepArgument as string);
-                }
+      const { options } = parsedFeature;
 
-                return promiseChain.then(() => {
-                  return Promise.resolve()
-                    .then(() => nextStep.stepFunction(...args))
-                    .catch((error) => {
-                        error.message = `Failing step: "${parsedStep.stepText}"\n\nStep arguments: ${JSON.stringify(args)}\n\nError: ${error.message}`;
-                        throw error;
-                    });
-                });
-            }, Promise.resolve());
-        }, timeout);
-    };
+      // eslint-disable-next-line no-param-reassign
+      scenarioTitle = processScenarioTitleTemplate(
+        scenarioTitle,
+        parsedFeature,
+        options,
+        parsedScenario,
+        parsedScenarioOutline,
+      );
 
-    const createDefineScenarioFunction = (
-        featureFromStepDefinitions: FeatureFromStepDefinitions,
-        parsedFeature: ParsedFeature,
-        only: boolean = false,
-        skip: boolean = false,
-        concurrent: boolean = false,
-    ) => {
-        const defineScenarioFunction: DefineScenarioFunction = (
-            scenarioTitle: string,
-            stepsDefinitionFunctionCallback: StepsDefinitionCallbackFunction,
-            timeout?: number,
-        ) => {
-            const scenarioFromStepDefinitions: ScenarioFromStepDefinitions = {
-                title: scenarioTitle,
-                steps: [],
-            };
+      ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps(
+        options,
+        parsedScenario || parsedScenarioOutline,
+        scenarioFromStepDefinitions,
+      );
 
-            featureFromStepDefinitions.scenarios.push(scenarioFromStepDefinitions);
-
-            stepsDefinitionFunctionCallback({
-                defineStep: createDefineStepFunction(scenarioFromStepDefinitions),
-                given: createDefineStepFunction(scenarioFromStepDefinitions),
-                when: createDefineStepFunction(scenarioFromStepDefinitions),
-                then: createDefineStepFunction(scenarioFromStepDefinitions),
-                and: createDefineStepFunction(scenarioFromStepDefinitions),
-                but: createDefineStepFunction(scenarioFromStepDefinitions),
-                pending: () => {
-                    // Nothing to do
-                },
-            });
-
-            const parsedScenario = parsedFeature.scenarios
-                .filter((s) => s.title.toLowerCase() === scenarioTitle.toLowerCase())[0];
-
-            const parsedScenarioOutline = parsedFeature.scenarioOutlines
-                .filter((s) => s.title.toLowerCase() === scenarioTitle.toLowerCase())[0];
-
-            const options = parsedFeature.options;
-
-            scenarioTitle = processScenarioTitleTemplate(
-                scenarioTitle,
-                parsedFeature,
-                options,
-                parsedScenario,
-                parsedScenarioOutline,
-            );
-
-            ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps(
-                options,
-                parsedScenario || parsedScenarioOutline,
-                scenarioFromStepDefinitions,
-            );
-
-            if (checkForPendingSteps(scenarioFromStepDefinitions)) {
-                xtest(scenarioTitle, () => {
-                    // Nothing to do
-                }, undefined);
-            } else if (parsedScenario) {
-                defineScenario(
-                    scenarioTitle,
-                    scenarioFromStepDefinitions,
-                    parsedScenario,
-                    only,
-                    skip,
-                    concurrent,
-                    timeout,
-                );
-            } else if (parsedScenarioOutline) {
-                parsedScenarioOutline.scenarios.forEach((scenario) => {
-                    defineScenario(
-                        (scenario.title || scenarioTitle),
-                        scenarioFromStepDefinitions,
-                        scenario,
-                        only,
-                        skip,
-                        concurrent,
-                        timeout,
-                    );
-                });
-            }
-        };
-
-        return defineScenarioFunction;
-    };
-
-    const createDefineScenarioFunctionWithAliases = (
-        featureFromStepDefinitions: FeatureFromStepDefinitions,
-        parsedFeature: ParsedFeature,
-    ) => {
-        const defineScenarioFunctionWithAliases = createDefineScenarioFunction(
-            featureFromStepDefinitions,
-            parsedFeature,
+      if (checkForPendingSteps(scenarioFromStepDefinitions)) {
+        xtest(
+          scenarioTitle,
+          () => {
+            // Nothing to do
+          },
+          undefined,
         );
-
-        (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).only = createDefineScenarioFunction(
-            featureFromStepDefinitions,
-            parsedFeature,
-            true,
-            false,
-            false,
-        );
-
-        (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).skip = createDefineScenarioFunction(
-            featureFromStepDefinitions,
-            parsedFeature,
-            false,
-            true,
-            false,
-        );
-
-        (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).concurrent =
-            createDefineScenarioFunction(
-                featureFromStepDefinitions,
-                parsedFeature,
-                false,
-                false,
-                true,
-            );
-
-        return defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases;
+      } else if (parsedScenario) {
+        defineScenario(scenarioTitle, scenarioFromStepDefinitions, parsedScenario, only, skip, concurrent, timeout);
+      } else if (parsedScenarioOutline) {
+        parsedScenarioOutline.scenarios.forEach(scenario => {
+          defineScenario(
+            scenario.title || scenarioTitle,
+            scenarioFromStepDefinitions,
+            scenario,
+            only,
+            skip,
+            concurrent,
+            timeout,
+          );
+        });
+      }
     };
 
-    const createDefineStepFunction = (scenarioFromStepDefinitions: ScenarioFromStepDefinitions) => {
-        return (stepMatcher: string | RegExp, stepFunction: () => any) => {
-            const stepDefinition: StepFromStepDefinitions = {
-                stepMatcher,
-                stepFunction,
-            };
+    return defineScenarioFunction;
+  };
 
-            scenarioFromStepDefinitions.steps.push(stepDefinition);
-        };
+  const createDefineScenarioFunctionWithAliases = (
+    featureFromStepDefinitions: FeatureFromStepDefinitions,
+    parsedFeature: ParsedFeature,
+  ) => {
+    const defineScenarioFunctionWithAliases = createDefineScenarioFunction(featureFromStepDefinitions, parsedFeature);
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).only = createDefineScenarioFunction(
+      featureFromStepDefinitions,
+      parsedFeature,
+      true,
+      false,
+      false,
+    );
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).skip = createDefineScenarioFunction(
+      featureFromStepDefinitions,
+      parsedFeature,
+      false,
+      true,
+      false,
+    );
+
+    (defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases).concurrent = createDefineScenarioFunction(
+      featureFromStepDefinitions,
+      parsedFeature,
+      false,
+      false,
+      true,
+    );
+
+    return defineScenarioFunctionWithAliases as DefineScenarioFunctionWithAliases;
+  };
+
+  return function defineFeature(
+    featureFromFile: ParsedFeature,
+    scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
+  ) {
+    const featureFromDefinedSteps: FeatureFromStepDefinitions = {
+      title: featureFromFile.title,
+      scenarios: [],
     };
 
-    return function defineFeature(
-        featureFromFile: ParsedFeature,
-        scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
+    const parsedFeatureWithTagFiltersApplied = applyTagFilters(featureFromFile);
+
+    if (
+      parsedFeatureWithTagFiltersApplied.scenarios.length === 0 &&
+      parsedFeatureWithTagFiltersApplied.scenarioOutlines.length === 0
     ) {
-        const featureFromDefinedSteps: FeatureFromStepDefinitions = {
-            title: featureFromFile.title,
-            scenarios: [],
-        };
+      return;
+    }
 
-        const parsedFeatureWithTagFiltersApplied = applyTagFilters(featureFromFile);
+    jestLike.describe(featureFromFile.title, () => {
+      scenariosDefinitionCallback(
+        createDefineScenarioFunctionWithAliases(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
+      );
 
-        if (
-            parsedFeatureWithTagFiltersApplied.scenarios.length === 0
-                && parsedFeatureWithTagFiltersApplied.scenarioOutlines.length === 0
-        ) {
-            return;
-        }
-
-        jestLike.describe(featureFromFile.title, () => {
-            scenariosDefinitionCallback(
-                createDefineScenarioFunctionWithAliases(featureFromDefinedSteps, parsedFeatureWithTagFiltersApplied),
-            );
-
-            checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(
-                parsedFeatureWithTagFiltersApplied,
-                featureFromDefinedSteps,
-            );
-        });
-    };
+      checkThatFeatureFileAndStepDefinitionsHaveSameScenarios(
+        parsedFeatureWithTagFiltersApplied,
+        featureFromDefinedSteps,
+      );
+    });
+  };
 };
