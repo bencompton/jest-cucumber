@@ -223,7 +223,6 @@ defineFeature(feature, (test) => {
         thenIShouldNotSeeAValidationErrorAndGeneratedCode(then);
     });
 
-    // tslint:disable-next-line: max-line-length
     test('Enabled and a step in the step definitions doesn\'t match the step in the feature', ({ given, and, when, then }) => {
         givenStepsMustMatchFeatureFileIsEnabled(given);
         andIHaveAScenarioWhereTheStepMatcherForTheSecondStepDoesntMatchTheStep(and);
@@ -231,7 +230,6 @@ defineFeature(feature, (test) => {
         thenIShouldSeeAValidationErrorAndGeneratedCode(then);
     });
 
-    // tslint:disable-next-line: max-line-length
     test('Disabled and a step in the step definitions doesn\'t match the step in the feature', ({ given, and, when, then }) => {
         givenStepsMustMatchFeatureFileIsDisabled(given);
         andIHaveAScenarioWhereTheStepMatcherForTheSecondStepDoesntMatchTheStep(and);

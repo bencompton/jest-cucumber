@@ -3,7 +3,6 @@ import { generateStepCode, generateStepFunctionCall } from './step-generation';
 import { indent } from './utils';
 
 const scenarioTemplate = (scenarioTitle: string, steps: string, stepKeywords: string[]) => {
-    // tslint:disable-next-line:max-line-length
     return `test('${scenarioTitle.replace(/'+/g, `\\'`)}', ({ ${stepKeywords.join(', ')} }) => {\n${indent(steps, 1).slice(0, -1)}\n});`;
 };
 
@@ -31,6 +30,5 @@ export const generateScenarioCodeWithSeparateStepFunctions = (scenario: ParsedSc
     const stepFunctionCalls = scenario.steps.map((step, index) => generateStepFunctionCall(scenario.steps, index));
     const stepKeywords = getStepKeywords(scenario);
 
-    // tslint:disable-next-line:max-line-length
     return `${stepFunctionCode.join('\n\n')}\n\n${scenarioTemplate(scenario.title, stepFunctionCalls.join('\n'), stepKeywords)}`;
 };

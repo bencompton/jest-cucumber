@@ -14,7 +14,6 @@ const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
         match = tagRegex.exec(tagFilterExpression);
 
         if (match) {
-            // tslint:disable-next-line:max-line-length
             newTagFilterExpression = newTagFilterExpression.replace(match[1], `(tags.indexOf("${match[1].toLowerCase()}")!==-1)`);
 
             if (tags.indexOf(match[1]) !== -1) {

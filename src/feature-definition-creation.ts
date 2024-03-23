@@ -68,7 +68,6 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
                 });
             } catch (err) {
                 throw new Error(
-                    // tslint:disable-next-line:max-line-length
                     `An error occurred while executing a scenario name template. \nTemplate:\n${options.scenarioNameTemplate}\nError:${err.message}`,
                 );
             }

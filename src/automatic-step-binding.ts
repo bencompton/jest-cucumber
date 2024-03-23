@@ -48,7 +48,6 @@ export const createAutoBindSteps = (jestLike: IJestLike) => {
                                 options.defineStep(match.stepMatcher, match.stepFunction);
                             } else if (matches.length === 0) {
                                 const stepCode = generateStepCode(scenario.steps, stepIndex, false);
-                                // tslint:disable-next-line:max-line-length
                                 errors.push(`No matching step found for step "${step.stepText}" in scenario "${scenario.title}" in feature "${feature.title}". Please add the following step code: \n\n${stepCode}`);
                             } else {
                                 const matchingCode = matches.map((match) => `${match.stepMatcher.toString()}\n\n${match.stepFunction.toString()}`);

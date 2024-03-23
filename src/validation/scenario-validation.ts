@@ -47,7 +47,6 @@ const findScenarioFromStepDefinitions = (
         });
 
     if (matchingScenarios.length === 0 && errorOptions.scenariosMustMatchFeatureFile) {
-        // tslint:disable-next-line:max-line-length
         errors.push(`Feature file has a scenario titled "${scenarioTitle}", but no match found in step definitions. Try adding the following code:\n\n${generateScenarioCode(scenario)}`);
 
         return null;
