@@ -19,7 +19,7 @@ Jest is an excellent test runner with great features like parallel test executio
 ### Install Jest Cucumber:
 
 ```
-npm install jest-cucumber --save-dev
+npm install jest jest-cucumber --save-dev
 ```
 
 ### Add a Feature file:
