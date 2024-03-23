@@ -113,6 +113,7 @@ defineFeature(feature, (test) => {
 * [Scenario outlines](./docs/ScenarioOutlines.md)
 * [Step definition arguments](./docs/StepDefinitionArguments.md)
 * [Using Docstrings](./docs/UsingDocstrings.md)
+* [Contributing](./CONTRIBUTING.md)
 
 ## FAQ
 
