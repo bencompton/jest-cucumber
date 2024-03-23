@@ -19,7 +19,7 @@ Jest is an excellent test runner with great features like parallel test executio
 ### Install Jest Cucumber:
 
 ```
-npm install jest-cucumber --save-dev
+npm install jest jest-cucumber --save-dev
 ```
 
 ### Add a Feature file:
@@ -113,6 +113,7 @@ defineFeature(feature, (test) => {
 * [Scenario outlines](./docs/ScenarioOutlines.md)
 * [Step definition arguments](./docs/StepDefinitionArguments.md)
 * [Using Docstrings](./docs/UsingDocstrings.md)
+* [Contributing](./CONTRIBUTING.md)
 
 ## FAQ
 

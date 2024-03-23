@@ -95,8 +95,8 @@ export class MockTestRunner implements IJestLike {
             }
         });
 
-        const testPromises: Array<Promise<any>> = testOutputs.filter((testOutput: any) => {
-            if ((testOutput as Promise<any>).then !== undefined) {
+        const testPromises: Array<void | PromiseLike<unknown>> = testOutputs.filter((testOutput: any) => {
+            if ((testOutput as PromiseLike<unknown>).then !== undefined) {
                 return true;
             } else {
                 return false;
