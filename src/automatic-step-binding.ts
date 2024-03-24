@@ -31,7 +31,12 @@ export const createAutoBindSteps = (jestLike: IJestLike) => {
 
     features.forEach(feature => {
       defineFeature(feature, test => {
-        const scenarioOutlineScenarios = feature.scenarioOutlines.map(scenarioOutline => scenarioOutline.scenarios[0]);
+        const scenarioOutlineScenarios = feature.scenarioOutlines.map(scenarioOutline => ({
+          ...scenarioOutline.scenarios[0],
+          // we need to use the original title with un-expanded placeholders,
+          // otherwise it will try to match the expanded version in the feature file and fail.
+          title: scenarioOutline.title,
+        }));
 
         const scenarios = [...feature.scenarios, ...scenarioOutlineScenarios];
 
