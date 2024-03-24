@@ -34,150 +34,150 @@ Feature: Test
 `;
 
 export const emptyStepDefinitions: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, () => {
-        // No step definitions defined
-    });
+  defineMockFeature(mockFeature, () => {
+    // No step definitions defined
+  });
 };
 
 export const stepsForfeatureWithMultipleScenarios: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing some stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
+  defineMockFeature(mockFeature, test => {
+    test('Doing some stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
 
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
 
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
-        });
-
-        test('Doing some more stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
-
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
-
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
-        });
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
     });
+
+    test('Doing some more stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
+
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
+
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
+    });
+  });
 };
 
 export const stepsWithScenariosOutOfOrder: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing some more stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
+  defineMockFeature(mockFeature, test => {
+    test('Doing some more stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
 
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
 
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
-        });
-
-        test('Doing some stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
-
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
-
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
-        });
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
     });
+
+    test('Doing some stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
+
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
+
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
+    });
+  });
 };
 
 export const stepsWithStepsOutOfOrder: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing some stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
+  defineMockFeature(mockFeature, test => {
+    test('Doing some stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
 
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
 
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
-        });
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
     });
+  });
 };
 
 export const stepsWithMissingStep: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing some stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
+  defineMockFeature(mockFeature, test => {
+    test('Doing some stuff', ({ given, when }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
 
-            when('I do some stuff', () => {
-                // Nothing to do here
-            });
-        });
+      when('I do some stuff', () => {
+        // Nothing to do here
+      });
     });
+  });
 };
 
 export const stepsWithMismatchedSecondStep: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing some stuff', ({ given, when, then }) => {
-            given('I did some stuff', () => {
-                // Nothing to do here
-            });
+  defineMockFeature(mockFeature, test => {
+    test('Doing some stuff', ({ given, when, then }) => {
+      given('I did some stuff', () => {
+        // Nothing to do here
+      });
 
-            when('I don\'t do some stuff', () => {
-                // Nothing to do here
-            });
+      when("I don't do some stuff", () => {
+        // Nothing to do here
+      });
 
-            then('I should have done some stuff', () => {
-                // Nothing to do here
-            });
-        });
+      then('I should have done some stuff', () => {
+        // Nothing to do here
+      });
     });
+  });
 };
 
 export const steplessStepDefinitions: MockStepDefinitions = (
-    mockFeature: ParsedFeature,
-    defineMockFeature: DefineFeatureFunction,
+  mockFeature: ParsedFeature,
+  defineMockFeature: DefineFeatureFunction,
 ) => {
-    defineMockFeature(mockFeature, (test) => {
-        test('Doing nothing at all', ({ given, when, then }) => {
-            // No steps to define
-        });
+  defineMockFeature(mockFeature, test => {
+    test('Doing nothing at all', () => {
+      // No steps to define
     });
+  });
 };

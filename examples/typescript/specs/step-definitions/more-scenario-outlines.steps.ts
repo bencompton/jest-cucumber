@@ -3,7 +3,7 @@ import { SeriesSolver } from '../../src/series-solver';
 
 const feature = loadFeature('./examples/typescript/specs/features/more-scenario-outlines.feature');
 
-defineFeature(feature, (test) => {
+defineFeature(feature, test => {
   let solver: SeriesSolver;
   let solution: string;
   let terms: string[];
@@ -20,7 +20,7 @@ defineFeature(feature, (test) => {
   };
 
   const thenIShouldGetXAsTheAnswer = (then: DefineStepFunction) => {
-    then(/^I should get (.*) as the answer$/, (expectedSolution) => {
+    then(/^I should get (.*) as the answer$/, expectedSolution => {
       expect(solution).toBe(expectedSolution);
     });
   };
@@ -29,12 +29,13 @@ defineFeature(feature, (test) => {
     given(
       /^I have a series (.*) (.*) (.*) (.*) (.*) (.*) (.*)$/,
       (firstTerm, firstOperator, secondTerm, secondOperator, thirdTerm, thirdOperator, forthTerm) => {
-        expect(firstOperator).toEqual(secondOperator);
-        expect(firstOperator).toEqual(thirdOperator);
+        expect(firstOperator).toStrictEqual(secondOperator);
+        expect(firstOperator).toStrictEqual(thirdOperator);
 
         operator = firstOperator;
         terms = [firstTerm, secondTerm, thirdTerm, forthTerm];
-      });
+      },
+    );
 
     whenISolveTheSeries(when);
 
@@ -42,14 +43,12 @@ defineFeature(feature, (test) => {
   });
 
   test('Adding series', ({ given, when, then }) => {
-    given(
-      /^I add the following series:$/,
-      (table: [{ Series: string, Operator: string, Solution: string }]) => {
-        const row = table[0];
-        terms = row.Series.split(` ${row.Operator} `);
-        operator = row.Operator;
-        solver.add(terms, operator, row.Solution);
-      });
+    given(/^I add the following series:$/, (table: [{ Series: string; Operator: string; Solution: string }]) => {
+      const row = table[0];
+      terms = row.Series.split(` ${row.Operator} `);
+      operator = row.Operator;
+      solver.add(terms, operator, row.Solution);
+    });
 
     whenISolveTheSeries(when);
 

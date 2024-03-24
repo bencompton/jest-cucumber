@@ -7,15 +7,15 @@ import { MockTestRunner } from './mock-test-runner/mock-test-runner';
 export type MockStepDefinitions = (feature: ParsedFeature, defineFeature: DefineFeatureFunction) => void;
 
 export const wireUpMockFeature = (
-    mockTestRunner: MockTestRunner,
-    featureFile: string,
-    mockStepDefinitions: MockStepDefinitions | null,
-    options?: Options,
+  mockTestRunner: MockTestRunner,
+  featureFile: string,
+  mockStepDefinitions: MockStepDefinitions | null,
+  options?: Options,
 ) => {
-    const defineMockFeature = createDefineFeature(mockTestRunner);
-    const mockFeature = parseFeature(featureFile, options);
+  const defineMockFeature = createDefineFeature(mockTestRunner);
+  const mockFeature = parseFeature(featureFile, options);
 
-    if (mockStepDefinitions) {
-        mockStepDefinitions(mockFeature, defineMockFeature);
-    }
+  if (mockStepDefinitions) {
+    mockStepDefinitions(mockFeature, defineMockFeature);
+  }
 };
