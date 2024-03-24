@@ -23,7 +23,7 @@
     "cucumber"
   ],
   "author": "Ben Compton",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/bencompton/jest-cucumber/issues"
   },
