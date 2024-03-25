@@ -6,9 +6,9 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "jest": "jest --verbose",
-    "test": "npm run build & npm run lint & jest --color",
-    "update-snapshots": "jest --updateSnapshot",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --color",
+    "test:update-snapshots": "jest --updateSnapshot",
     "lint": "eslint src specs examples --ext js,jsx,ts,tsx",
     "lint:fix": "eslint src specs examples --ext js,jsx,ts,tsx --fix",
     "prepare": "husky"
