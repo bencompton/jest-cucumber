@@ -52,15 +52,15 @@ If you need to re-use the same step definitions across multiple feature files, a
 ```javascript
 // shared-steps.js
 	
-export const givenIHaveXDollarsInMyBankAccount = (given, account) => {
+export const givenIHaveXDollarsInMyBankAccount = (given, accountCallback) => {
   given(/I have \$(\d+) in my bank account/, balance => {
-    account.deposit(balance);
+      accountCallback().deposit(balance);
   });
 };
 
-export const thenMyBalanceShouldBe = (then, account) => {
+export const thenMyBalanceShouldBe = (then, accountCallback) => {
   then(/my balance should be \$(\d+)/, balance => {
-    expect(account.balance).toBe(parseInt(balance));
+    expect(accountCallback().balance).toBe(parseInt(balance));
   });
 };
 ```
@@ -78,23 +78,23 @@ defineFeature(feature, test => {
   });
 
   test('Making a deposit', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given, myAccount);
+    givenIHaveXDollarsInMyBankAccount(given, () => myAccount);
 
     when(/I deposit \$(\d+)/, deposit => {
       myAccount.deposit(deposit);
     });
 
-    thenMyBalanceShouldBe(then, myAccount);
+    thenMyBalanceShouldBe(then, () => myAccount);
   });
 	
   test('Making a withdrawal', ({ given, when, then }) => {
-    givenIHaveXDollarsInMyBankAccount(given, myAccount);
+    givenIHaveXDollarsInMyBankAccount(given, () => myAccount);
 
     when(/I withdraw \$(\d+)/, withdrawal => {
       myAccount.withdraw(withdrawal);
     });		
 
-    thenMyBalanceShouldBe(then, myAccount);
+    thenMyBalanceShouldBe(then, () => myAccount);
   });
 });
 ```
