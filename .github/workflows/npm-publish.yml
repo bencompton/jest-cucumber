@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+env:
+  HUSKY: 0
+
 jobs:
   npm-publish:
     name: Npm Publish
@@ -31,4 +34,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_AUTH_TOKEN: ${{ secrets.JEST_CUCUMBER_NPM_TOKEN }}
-        HUSKY: 0
