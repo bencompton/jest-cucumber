@@ -11,6 +11,7 @@
     "test:update-snapshots": "jest --updateSnapshot",
     "lint": "eslint src specs examples --ext js,jsx,ts,tsx",
     "lint:fix": "eslint src specs examples --ext js,jsx,ts,tsx --fix",
+    "release": "semantic-release",
     "prepare": "husky"
   },
   "repository": {
@@ -48,6 +49,7 @@
     "@pplancq/commitlint-config": "^2.1.1",
     "@pplancq/eslint-config": "^2.1.0",
     "@pplancq/prettier-config": "^1.0.1",
+    "@pplancq/semantic-release-config": "^1.2.0",
     "@types/glob": "^7.1.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.30",
@@ -58,6 +60,7 @@
     "jest": "^29.7.0",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
+    "semantic-release": "^23.0.6",
     "ts-jest": "^29.1.2",
     "tsc-files": "^1.1.4",
     "typescript": "^5.4.3"
@@ -86,6 +89,11 @@
   "commitlint": {
     "extends": [
       "@pplancq/commitlint-config"
+    ]
+  },
+  "release": {
+    "extends": [
+      "@pplancq/semantic-release-config"
     ]
   },
   "lint-staged": {
