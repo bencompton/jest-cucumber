@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+env:
+  HUSKY: 0 # for disable husky on ci
+
+jobs:
+  commitlint:
+    if: github.event_name == 'pull_request'
+    name: CommitLint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node v20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      # https://docs.npmjs.com/cli/v10/commands/npm-ci
+      - name: Install Package
+        run: npm ci
+
+      # https://commitlint.js.org/guides/ci-setup.html#github-actions
+      - name: Validate PR commits with commitlint
+        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose --color
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 21.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Testing with Node.js v${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Checks if package-lock.json is Up To Date
+      # https://www.npmjs.com/package/package-lock-utd
+      - name: Check package-lock.json
+        run: npm exec --yes package-lock-utd@1.1.3
+
+      # https://docs.npmjs.com/cli/v10/commands/npm-ci
+      - name: Install Package
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Test
+        run: npm run test:ci
+
+      - name: Run Build
+        run: npm run build
