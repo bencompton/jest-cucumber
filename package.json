@@ -6,9 +6,9 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "jest": "jest --verbose",
-    "test": "npm run build & npm run lint & jest --color",
-    "update-snapshots": "jest --updateSnapshot",
+    "test": "jest --watch",
+    "test:ci": "jest --coverage --color",
+    "test:update-snapshots": "jest --updateSnapshot",
     "lint": "eslint src specs examples --ext js,jsx,ts,tsx",
     "lint:fix": "eslint src specs examples --ext js,jsx,ts,tsx --fix",
     "prepare": "husky"
@@ -44,6 +44,8 @@
     }
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@pplancq/commitlint-config": "^2.1.1",
     "@pplancq/eslint-config": "^2.1.0",
     "@pplancq/prettier-config": "^1.0.1",
     "@types/glob": "^7.1.3",
@@ -79,6 +81,11 @@
       "@pplancq/eslint-config/node",
       "@pplancq/eslint-config/jest",
       "@pplancq/eslint-config/prettier"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@pplancq/commitlint-config"
     ]
   },
   "lint-staged": {
