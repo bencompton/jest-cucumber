@@ -1,6 +1,10 @@
 import { ParsedFeature } from './models';
 import { matchSteps } from './validation/step-definition-validation';
-import { StepsDefinitionCallbackFunction, createDefineFeature, IJestLike } from './feature-definition-creation';
+import {
+  createDefineFeature,
+  IJestLike,
+  type StepsDefinitionCallbackFunctionWithContext,
+} from './feature-definition-creation';
 import { generateStepCode } from './code-generation/step-generation';
 
 const globalSteps: Array<{ stepMatcher: string | RegExp; stepFunction: () => unknown }> = [];
@@ -12,11 +16,16 @@ const registerStep = (stepMatcher: string | RegExp, stepFunction: () => unknown)
 export const createAutoBindSteps = (jestLike: IJestLike) => {
   const defineFeature = createDefineFeature(jestLike);
 
-  return (parsedFeatures: ParsedFeature | ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+  return <C extends NonNullable<unknown> = NonNullable<unknown>>(
+    parsedFeatures: ParsedFeature | ParsedFeature[],
+    stepDefinitions: StepsDefinitionCallbackFunctionWithContext<C>[],
+  ) => {
     let features = parsedFeatures;
     if (!Array.isArray(features)) {
       features = [features];
     }
+
+    const context = {} as C;
 
     stepDefinitions.forEach(stepDefinitionCallback => {
       stepDefinitionCallback({
@@ -29,6 +38,7 @@ export const createAutoBindSteps = (jestLike: IJestLike) => {
         pending: () => {
           // Nothing to do
         },
+        context,
       });
     });
 
