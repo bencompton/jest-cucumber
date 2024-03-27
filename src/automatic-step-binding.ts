@@ -12,7 +12,12 @@ const registerStep = (stepMatcher: string | RegExp, stepFunction: () => unknown)
 export const createAutoBindSteps = (jestLike: IJestLike) => {
   const defineFeature = createDefineFeature(jestLike);
 
-  return (features: ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+  return (parsedFeatures: ParsedFeature | ParsedFeature[], stepDefinitions: StepsDefinitionCallbackFunction[]) => {
+    let features = parsedFeatures;
+    if (!Array.isArray(features)) {
+      features = [features];
+    }
+
     stepDefinitions.forEach(stepDefinitionCallback => {
       stepDefinitionCallback({
         defineStep: registerStep,

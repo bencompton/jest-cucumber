@@ -103,6 +103,17 @@ If you are using `autoBindSteps` with just a subset of your feature files (as de
     ],
 ```
 
+It's also possible to load a single feature via `autoBinSteps`, so you can keep the test parallelization that jest offers.
+
+```javascript
+import { loadFeature, autoBindSteps } from 'jest-cucumber';
+
+import { vendingMachineSteps } from 'specs/step-definitions/vending-machine-steps';
+
+const feature = loadFeature('specs/features/vending-machine.feature');
+autoBindSteps(feature, [ vendingMachineSteps ]);
+```
+
 ## How it works
 
 `loadFeatures` and `autoBindSteps` are utility functions that automate what you would normally do per feature file by calling `loadFeature`, then `defineFeature`, and then defining one `test` per scenario containing inline step definitions.
