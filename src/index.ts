@@ -8,7 +8,11 @@ export {
   generateCodeFromFeature,
   generateCodeWithSeparateFunctionsFromFeature,
 } from './code-generation/generate-code-by-line-number';
-export { StepsDefinitionCallbackFunction as StepDefinitions, IJestLike } from './feature-definition-creation';
+export {
+  StepsDefinitionCallbackFunction as StepDefinitions,
+  StepsDefinitionCallbackFunctionWithContext as StepDefinitionsWithContext,
+  IJestLike,
+} from './feature-definition-creation';
 
 const jestLike: IJestLike = {
   describe,
