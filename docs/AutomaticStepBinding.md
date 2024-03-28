@@ -113,6 +113,61 @@ import { vendingMachineSteps } from 'specs/step-definitions/vending-machine-step
 const feature = loadFeature('specs/features/vending-machine.feature');
 autoBindSteps(feature, [ vendingMachineSteps ]);
 ```
+## Use context with autoBindSteps
+
+To share data between `steps` and `stepDefinition` files during test execution, use the context to load the necessary information.
+
+In the example below, we initialise a `new VendingMachine()` via `beforeEach` in the `stepDefinition` function.
+This allows it to be added to the context, which can then be used directly in the steps or even in other `stepDefinition` files.
+
+```typescript
+// specs/step-definitions/global-vending-machine-steps.ts
+import { StepDefinitionsWithContext } from 'jest-cucumber';
+
+import { VendingMachine } from '../src/vending-machine';
+
+type Context = {
+  vendingMachine: VendingMachine;
+};
+
+export const globalVendingMachineSteps: StepDefinitionsWithContext<Context> = ({ given, and, when, then, context }) => {
+  beforeEach(() => {
+    context.vendingMachine = new VendingMachine();
+  });
+  
+  given(/^the vending machine has "(.*)" in stock$/, (itemName: string) => {
+    context.vendingMachine.stockItem(itemName, 1);
+  });
+
+  and('I have inserted the correct amount of money', () => {
+    context.vendingMachine.insertMoney(0.5);
+  });
+
+  when(/^I purchase "(.*)"$/, (itemName: string) => {
+    context.vendingMachine.dispenseItem(itemName);
+  });
+
+  then(/^my "(.*)" should be dispensed$/, (itemName: string) => {
+    const inventoryAmount = context.vendingMachine.items[itemName];
+    expect(inventoryAmount).toBe(0);
+  });
+};
+```
+```typescript
+// specs/step-definitions/expect-vending-machine-steps.ts
+import { StepDefinitionsWithContext } from 'jest-cucumber';
+
+type Context = {
+  vendingMachine: VendingMachine;
+};
+
+export const expectVendingMachineSteps: StepDefinitionsWithContext<Context> = ({ given, and, when, then, context }) => {
+  then(/^my "(.*)" should be dispensed$/, (itemName: string) => {
+    const inventoryAmount = context.vendingMachine.items[itemName];
+    expect(inventoryAmount).toBe(0);
+  });
+};
+```
 
 ## How it works
 

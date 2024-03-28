@@ -24,6 +24,11 @@ export type StepsDefinitionCallbackOptions = {
   pending: () => void;
 };
 
+export type StepsDefinitionCallbackOptionsWithContext<C extends NonNullable<unknown> = NonNullable<unknown>> =
+  StepsDefinitionCallbackOptions & {
+    context: C;
+  };
+
 export interface IJestLike {
   describe: jest.Describe;
   test: jest.It;
@@ -44,6 +49,9 @@ export type DefineScenarioFunctionWithAliases = DefineScenarioFunction & {
 };
 
 export type StepsDefinitionCallbackFunction = (options: StepsDefinitionCallbackOptions) => void;
+export type StepsDefinitionCallbackFunctionWithContext<C extends NonNullable<unknown> = NonNullable<unknown>> = (
+  options: StepsDefinitionCallbackOptionsWithContext<C>,
+) => void;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DefineStepFunction = (stepMatcher: string | RegExp, stepDefinitionCallback: (...args: any[]) => any) => any;
 export type DefineFeatureFunction = (
