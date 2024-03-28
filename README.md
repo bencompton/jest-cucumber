@@ -2,7 +2,9 @@
 
 Execute Gherkin scenarios in Jest
 
-[![Build Status](https://github.com/bencompton/jest-cucumber/actions/workflows/run-tests.yaml/badge.svg)](https://github.com/bencompton/jest-cucumber/actions/runs/1726741929) [![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
+[![Build](https://github.com/bencompton/jest-cucumber/actions/workflows/build.yaml/badge.svg?branch=master)](https://github.com/bencompton/jest-cucumber/actions/workflows/build.yaml)
+[![](https://img.shields.io/npm/v/jest-cucumber)](https://www.npmjs.com/package/jest-cucumber)
+[![npm downloads](https://img.shields.io/npm/dm/jest-cucumber.svg?style=flat-square)](https://www.npmjs.com/package/jest-cucumber)
 
 <img src="./images/jest-cucumber-demo.gif?raw=true" alt="Cucumber Jest Demo" />
 
