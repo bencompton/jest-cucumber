@@ -12,8 +12,14 @@ export const wireUpMockFeature = (
   mockStepDefinitions: MockStepDefinitions | null,
   options?: Options,
 ) => {
-  const defineMockFeature = createDefineFeature(mockTestRunner);
-  const mockFeature = parseFeature(featureFile, options);
+  const defineMockFeature = createDefineFeature();
+  const mockFeature = parseFeature(featureFile, {
+    ...options,
+    runner: {
+      describe: mockTestRunner.describe,
+      test: mockTestRunner.test,
+    },
+  });
 
   if (mockStepDefinitions) {
     mockStepDefinitions(mockFeature, defineMockFeature);

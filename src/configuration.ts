@@ -1,3 +1,5 @@
+import type { IJestLike } from './feature-definition-creation';
+
 export type ErrorOptions = {
   scenariosMustMatchFeatureFile: boolean;
   stepsMustMatchFeatureFile: boolean;
@@ -9,6 +11,7 @@ export type Options = {
   tagFilter?: string;
   errors?: ErrorOptions | boolean;
   scenarioNameTemplate?: (vars: ScenarioNameTemplateVars) => string;
+  runner?: IJestLike;
 };
 
 export type ScenarioNameTemplateVars = {

@@ -12,7 +12,7 @@ import {
   matchSteps,
 } from './validation/step-definition-validation';
 import { applyTagFilters } from './tag-filtering';
-import { Options } from './configuration';
+import { getJestCucumberConfiguration, Options } from './configuration';
 
 export type StepsDefinitionCallbackOptions = {
   defineStep: DefineStepFunction;
@@ -29,9 +29,20 @@ export type StepsDefinitionCallbackOptionsWithContext<C extends NonNullable<unkn
     context: C;
   };
 
+export type TestGroup = ((title: string, action: (...args: unknown[]) => void) => void) & {
+  skip: (title: string, action: (...args: unknown[]) => void) => void;
+  only: (title: string, action: (...args: unknown[]) => void) => void;
+};
+export interface FrameworkTestCall {
+  (title: string, action: (...args: unknown[]) => void | Promise<void> | undefined): void;
+  skip: (title: string, action: (...args: unknown[]) => void | Promise<void> | undefined) => void;
+  only: (title: string, action: (...args: unknown[]) => void | Promise<void> | undefined) => void;
+  concurrent: (title: string, action: (...args: unknown[]) => void | Promise<void> | undefined) => void;
+}
+
 export interface IJestLike {
-  describe: jest.Describe;
-  test: jest.It;
+  describe: TestGroup | jest.Describe;
+  test: FrameworkTestCall | jest.It;
 }
 
 export type ScenariosDefinitionCallbackFunction = (defineScenario: DefineScenarioFunctionWithAliases) => void;
@@ -59,7 +70,27 @@ export type DefineFeatureFunction = (
   scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
 ) => void;
 
-export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction => {
+const getJestLike = (jestLike?: IJestLike): IJestLike => {
+  const jestLikeConfig: Partial<IJestLike> = getJestCucumberConfiguration().runner ?? {};
+
+  if (typeof describe === 'function' && typeof test === 'function') {
+    jestLikeConfig.describe = describe;
+    jestLikeConfig.test = test;
+  }
+
+  jestLikeConfig.describe = jestLike?.describe ?? jestLikeConfig?.describe;
+  jestLikeConfig.test = jestLike?.test ?? jestLikeConfig?.test;
+
+  if (!jestLikeConfig?.test || !jestLikeConfig?.describe) {
+    throw new Error(
+      "The 'describe' and 'test' functions cannot be found. If you are using vitest or equivalent, please use the following function in your setupTest to configure jest-cucumber:\n\nimport { describe, test } from 'vitest';\nimport { setJestCucumberConfiguration } from './src';\n\nsetJestCucumberConfiguration({\n  runner: {\n    describe,\n    test,\n  },\n});\n\nPlease check your configuration.",
+    );
+  }
+
+  return jestLikeConfig as IJestLike;
+};
+
+export const createDefineFeature = (): DefineFeatureFunction => {
   const processScenarioTitleTemplate = (
     scenarioTitle: string,
     parsedFeature: ParsedFeature,
@@ -117,7 +148,13 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
     return scenarioPending;
   };
 
-  const getTestFunction = (skippedViaTagFilter: boolean, only: boolean, skip: boolean, concurrent: boolean) => {
+  const getTestFunction = (
+    skippedViaTagFilter: boolean,
+    only: boolean,
+    skip: boolean,
+    concurrent: boolean,
+    jestLike: IJestLike,
+  ) => {
     if (skip || skippedViaTagFilter) {
       return jestLike.test.skip;
     }
@@ -134,13 +171,14 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
     scenarioTitle: string,
     scenarioFromStepDefinitions: ScenarioFromStepDefinitions,
     parsedScenario: ParsedScenario,
+    jestLike: IJestLike,
     only: boolean = false,
     skip: boolean = false,
 
     concurrent: boolean = false,
     timeout: number | undefined = undefined,
   ) => {
-    const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent);
+    const testFunction = getTestFunction(parsedScenario.skippedViaTagFilter, only, skip, concurrent, jestLike);
 
     testFunction(
       scenarioTitle,
@@ -245,7 +283,7 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
       );
 
       if (checkForPendingSteps(scenarioFromStepDefinitions)) {
-        xtest(
+        options.runner?.test.skip(
           scenarioTitle,
           () => {
             // Nothing to do
@@ -253,13 +291,23 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
           undefined,
         );
       } else if (parsedScenario) {
-        defineScenario(scenarioTitle, scenarioFromStepDefinitions, parsedScenario, only, skip, concurrent, timeout);
+        defineScenario(
+          scenarioTitle,
+          scenarioFromStepDefinitions,
+          parsedScenario,
+          options.runner as IJestLike,
+          only,
+          skip,
+          concurrent,
+          timeout,
+        );
       } else if (parsedScenarioOutline) {
         parsedScenarioOutline.scenarios.forEach(scenario => {
           defineScenario(
             scenario.title || scenarioTitle,
             scenarioFromStepDefinitions,
             scenario,
+            options.runner as IJestLike,
             only,
             skip,
             concurrent,
@@ -309,12 +357,15 @@ export const createDefineFeature = (jestLike: IJestLike): DefineFeatureFunction 
     featureFromFile: ParsedFeature,
     scenariosDefinitionCallback: ScenariosDefinitionCallbackFunction,
   ) {
+    const jestLike = getJestLike(featureFromFile.options.runner);
+
     const featureFromDefinedSteps: FeatureFromStepDefinitions = {
       title: featureFromFile.title,
       scenarios: [],
     };
 
     const parsedFeatureWithTagFiltersApplied = applyTagFilters(featureFromFile);
+    parsedFeatureWithTagFiltersApplied.options.runner = jestLike;
 
     if (
       parsedFeatureWithTagFiltersApplied.scenarios.length === 0 &&

@@ -1,4 +1,4 @@
-import { createDefineFeature, IJestLike } from './feature-definition-creation';
+import { createDefineFeature } from './feature-definition-creation';
 import { createAutoBindSteps } from './automatic-step-binding';
 
 export { loadFeature, loadFeatures, parseFeature } from './parsed-feature-loading';
@@ -14,10 +14,5 @@ export {
   IJestLike,
 } from './feature-definition-creation';
 
-const jestLike: IJestLike = {
-  describe,
-  test,
-};
-
-export const defineFeature = createDefineFeature(jestLike);
-export const autoBindSteps = createAutoBindSteps(jestLike);
+export const defineFeature = createDefineFeature();
+export const autoBindSteps = createAutoBindSteps();
