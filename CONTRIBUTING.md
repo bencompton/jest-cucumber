@@ -9,10 +9,10 @@ The community looks forward to your contributions. 🎉
 
 > And if you like the project but don't have the time to contribute, that's okay. There are other easy ways to support the project and show your appreciation, and we'd love to hear from you:
 >
-> Give the project a star
-> Share it on social media
-> Refer to the project in your project's readme file.
-> Mention the project at local meetings and tell your friends/colleagues about it.
+> - Give the project a star
+> - Share it on social media
+> - Refer to the project in your project's readme file.
+> - Mention the project at local meetings and tell your friends/colleagues about it.
 
 ## Overview
 
