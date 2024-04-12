@@ -70,5 +70,8 @@ jobs:
       - name: Run Test
         run: npm run test:ci
 
+      - name: Run Test with vitest
+        run: npm run test:vitest
+
       - name: Run Build
         run: npm run build
