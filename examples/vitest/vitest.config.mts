@@ -1,14 +1,15 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { defineConfig } from 'vitest/config';
+import { resolve } from 'path'
 
 // eslint-disable-next-line import/no-default-export
 export default defineConfig({
   test: {
     globals: false,
-    setupFiles: 'vitest.setup.ts',
+    setupFiles: resolve(__dirname, './vitest.setup.ts'),
     clearMocks: true,
     css: false,
     reporters: ['basic'],
-    include: ['examples/**/*.steps.vitest.ts'],
+    include: [resolve(__dirname, './specs/**/*.steps.ts')],
   },
 });

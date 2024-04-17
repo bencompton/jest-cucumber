@@ -8,7 +8,7 @@
     "build": "tsc",
     "test": "jest --watch",
     "test:ci": "jest --coverage --color",
-    "test:vitest": "vitest run",
+    "test:vitest": "vitest run --config examples/vitest/vitest.config.mts",
     "test:update-snapshots": "jest --updateSnapshot",
     "lint": "eslint src specs examples --ext js,jsx,ts,tsx",
     "lint:fix": "eslint src specs examples --ext js,jsx,ts,tsx --fix",
@@ -82,6 +82,7 @@
     "testMatch": [
       "**/*.steps.ts"
     ],
+    "testPathIgnorePatterns": ["/node_modules/", "examples/vitest"],
     "moduleFileExtensions": [
       "js",
       "ts",
