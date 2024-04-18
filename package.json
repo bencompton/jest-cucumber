@@ -1,6 +1,6 @@
 {
   "name": "jest-cucumber",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "Execute Gherkin scenarios in Jest",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
@@ -82,7 +82,10 @@
     "testMatch": [
       "**/*.{steps,test}.ts"
     ],
-    "testPathIgnorePatterns": ["/node_modules/", "examples/vitest"],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "examples/vitest"
+    ],
     "moduleFileExtensions": [
       "js",
       "ts",
