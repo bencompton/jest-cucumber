@@ -105,6 +105,28 @@ const feature = loadFeature('../features/basic-scenarios.feature', { loadRelativ
 Please note that the path will be relative to the file that calls `loadFeature`, so if you use helper files which call `loadFeature` for you this might lead to unexpected results.
 Like all other flags you can set the flag globally to always use relative imports.
 
+## Configure test runner
+
+Some test runners, such as Vitest, do not globally expose the 'describe' and 'test' methods by default.
+
+```javascript
+import { describe, test } from 'vitest';
+
+const feature = loadFeature(
+  'specs/features/basic-scenarios.feature',
+  {
+    runner: {
+      describe,
+      test,
+    }
+  },
+);
+```
+
+With this configuration, jest-cucumber is able to use Vitest's 'describe' and 'test' methods.
+
+> ℹ️ Other test runners such as Mocha, Jasmine, or equivalent should be compatible. But this has not been tested here.
+
 ## Global configuration
 
 To avoid repeating the same configuration settings in every step definition file, it is also possible to specify configuration parameters globally. Note that configuration settings specified in step definition files take precedence over global configuration.

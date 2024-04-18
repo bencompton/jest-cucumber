@@ -105,6 +105,7 @@ defineFeature(feature, (test) => {
 
 ## Additional Documentation
 
+* [Run with another test runner](./docs/RunWithAnotherTestRunner.md)
 * [Asynchronous steps](./docs/AsynchronousSteps.md)
 * [Automatic step Binding](./docs/AutomaticStepBinding.md)
 * [Backgrounds](./docs/Backgrounds.md)
