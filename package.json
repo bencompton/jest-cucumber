@@ -70,7 +70,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/*.steps.ts"
+      "**/*.{steps,test}.ts"
     ],
     "moduleFileExtensions": [
       "js",
