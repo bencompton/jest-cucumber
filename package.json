@@ -80,7 +80,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/*.steps.ts"
+      "**/*.{steps,test}.ts"
     ],
     "testPathIgnorePatterns": ["/node_modules/", "examples/vitest"],
     "moduleFileExtensions": [

@@ -347,7 +347,8 @@ export const loadFeature = (featureFilePath: string, options?: Options) => {
   const callSite = callsites()[1];
   const fileOfCaller = (callSite && callSite.getFileName()) || '';
   const dirOfCaller = dirname(fileOfCaller);
-  const absoluteFeatureFilePath = resolve(options && options.loadRelativePath ? dirOfCaller : '', featureFilePath);
+  const resolveOptions = getJestCucumberConfiguration(options);
+  const absoluteFeatureFilePath = resolve(resolveOptions.loadRelativePath ? dirOfCaller : '', featureFilePath);
 
   try {
     const featureText: string = readFileSync(absoluteFeatureFilePath, 'utf8');
