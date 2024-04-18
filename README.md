@@ -105,18 +105,18 @@ defineFeature(feature, (test) => {
 
 ## Additional Documentation
 
-* [Run with another test runner](./docs/RunWithAnotherTestRunner.md)
 * [Asynchronous steps](./docs/AsynchronousSteps.md)
 * [Automatic step Binding](./docs/AutomaticStepBinding.md)
 * [Backgrounds](./docs/Backgrounds.md)
 * [Configuration options](./docs/AdditionalConfiguration.md)
+* [Contributing](./CONTRIBUTING.md)
 * [Gherkin tables](./docs/GherkinTables.md)
 * [Re-using step definitions](./docs/ReusingStepDefinitions.md)
 * [Running the examples](./docs/RunningTheExamples.md)
+* [Running with another test runner](./docs/RunWithAnotherTestRunner.md)
 * [Scenario outlines](./docs/ScenarioOutlines.md)
 * [Step definition arguments](./docs/StepDefinitionArguments.md)
 * [Using Docstrings](./docs/UsingDocstrings.md)
-* [Contributing](./CONTRIBUTING.md)
 
 ## FAQ
 
