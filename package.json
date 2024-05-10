@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/bencompton/jest-cucumber#readme",
   "dependencies": {
-    "@cucumber/gherkin": "^17.0.0",
+    "@cucumber/gherkin": "^28.0.0",
     "callsites": "^3.0.0",
     "glob": "^10.3.10",
     "uuid": "^9.0.1"

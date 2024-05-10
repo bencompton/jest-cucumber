@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { sync as globSync } from 'glob';
 import { dirname, resolve } from 'path';
 import callsites from 'callsites';
-import { Parser, AstBuilder, Dialect, dialects } from '@cucumber/gherkin';
+import { Parser, AstBuilder, Dialect, dialects, GherkinClassicTokenMatcher } from '@cucumber/gherkin';
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration, Options } from './configuration';
@@ -41,18 +41,13 @@ const parseDataTable = (astDataTable: any, astDataTableHeader?: any) => {
 };
 
 const parseStepArgument = (astStep: any) => {
-  if (astStep) {
-    switch (astStep.argument) {
-      case 'dataTable':
-        return parseDataTable(astStep.dataTable);
-      case 'docString':
-        return astStep.docString.content;
-      default:
-        return null;
-    }
-  } else {
-    return null;
+  if (astStep?.dataTable) {
+    return parseDataTable(astStep.dataTable);
   }
+  if (astStep?.docString) {
+    return astStep.docString.content;
+  }
+  return null;
 };
 
 const parseStep = (astStep: any) => {
@@ -323,7 +318,8 @@ export const parseFeature = (featureText: string, options?: Options): ParsedFeat
 
   try {
     const builder = new AstBuilder(uuidv4 as any);
-    ast = new Parser(builder).parse(featureText);
+    const tokenMatcher = new GherkinClassicTokenMatcher();
+    ast = new Parser(builder, tokenMatcher).parse(featureText);
   } catch (err) {
     throw new Error(`Error parsing feature Gherkin: ${err.message}`);
   }
