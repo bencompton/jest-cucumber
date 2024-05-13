@@ -1,3 +1,10 @@
+## [4.3.0](https://github.com/bencompton/jest-cucumber/compare/v4.2.0...v4.3.0) (2024-05-13)
+
+
+### Features
+
+* **deps:** upgrade @cucumber/gherkin to v28 ([f814610](https://github.com/bencompton/jest-cucumber/commit/f814610c039fe0f555e463f0bbb09c62547c9aa7))
+
 ## [4.2.0](https://github.com/bencompton/jest-cucumber/compare/v4.1.0...v4.2.0) (2024-04-18)
 
 
