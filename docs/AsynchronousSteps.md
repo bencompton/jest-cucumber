@@ -42,7 +42,7 @@ defineFeature(feature, test => {
   test('Adding a todo', ({ given, when, then }) => {
     ...
 
-    when('I save my changes', (done) => {
+    when('I save my changes', done => {
       todo.saveChanges(() => {
           console.log('Changes saved');
           done(); // When the callback is called, the step will end
@@ -80,13 +80,14 @@ defineFeature(feature, test => {
   test('Adding a todo', ({ given, when, then }) => {
     ...
 
-    when(/I save my changes with name (\w+)/, (name, done) => {
-      todo.saveChanges((error) => {
+    when('I save my changes', done => {
+      todo.saveChanges(error => {
           if (error) {
             done(error); // the test will fail if called with an argument
+          } else {
+            console.log(`Changes saved`);
+            done(); // the test will succeed if no argument is passed
           }
-          console.log(`Changes saved with name ${name}`);
-          done(); // the test will succeed if no argument is passed
       });
     });
 
