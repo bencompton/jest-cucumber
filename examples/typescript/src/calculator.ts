@@ -20,7 +20,7 @@ export class Calculator {
   }
 
   public computeOutput() {
-    if (!this.firstOperand || !this.secondOperand || !this.operator) {
+    if (this.firstOperand === null || this.secondOperand === null) {
       return null;
     }
 

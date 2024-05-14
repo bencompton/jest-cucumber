@@ -15,10 +15,12 @@ export type FeatureFromStepDefinitions = {
   scenarios: ScenarioFromStepDefinitions[];
 };
 
+export type ParsedStepArgument = (string | []) | null;
+
 export type ParsedStep = {
   keyword: string;
   stepText: string;
-  stepArgument: string | NonNullable<unknown>;
+  stepArgument: ParsedStepArgument;
   lineNumber: number;
 };
 

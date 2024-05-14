@@ -7,7 +7,7 @@ import { Parser, AstBuilder, Dialect, dialects, GherkinClassicTokenMatcher } fro
 import { v4 as uuidv4 } from 'uuid';
 
 import { getJestCucumberConfiguration, Options } from './configuration';
-import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline } from './models';
+import { ParsedFeature, ParsedScenario, ParsedStep, ParsedScenarioOutline, ParsedStepArgument } from './models';
 
 const parseDataTableRow = (astDataTableRow: any) => {
   return astDataTableRow.cells.map((col: any) => col.value) as string[];
@@ -85,7 +85,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
       return processedStepText.replace(new RegExp(`<${nextTableColumn}>`, 'g'), exampleTableRow[nextTableColumn]);
     }, scenarioStep.stepText);
 
-    let stepArgument: string | NonNullable<unknown> = '';
+    let stepArgument: ParsedStepArgument = null;
 
     if (scenarioStep.stepArgument) {
       if (Array.isArray(scenarioStep.stepArgument)) {
@@ -106,7 +106,7 @@ const parseScenarioOutlineExampleSteps = (exampleTableRow: any, scenarioSteps: P
       } else {
         stepArgument = scenarioStep.stepArgument;
 
-        if (typeof scenarioStep.stepArgument === 'string' || scenarioStep.stepArgument instanceof String) {
+        if (typeof scenarioStep.stepArgument === 'string') {
           Object.keys(exampleTableRow).forEach(nextTableColumn => {
             stepArgument = (stepArgument as string).replace(
               new RegExp(`<${nextTableColumn}>`, 'g'),

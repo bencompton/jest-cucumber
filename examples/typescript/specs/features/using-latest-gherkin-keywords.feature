@@ -35,4 +35,4 @@ Feature: Using latest Gherkin keywords
             Examples: Unsuccessful division
 
             | firstOperand | secondOperand | output    |
-            | 4            | 0             | undefined |
+            | 4            | 0             | Infinity  |
