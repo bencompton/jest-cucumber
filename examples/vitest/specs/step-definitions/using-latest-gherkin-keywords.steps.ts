@@ -39,7 +39,7 @@ defineFeature(feature, test => {
   };
 
   const thenTheOutputOfXShouldBeDisplayed = (then: DefineStepFunction) => {
-    then(/^the output of "(\d+)" should be displayed$/, (expectedOutput: string) => {
+    then(/^the output of "(\w+)" should be displayed$/, (expectedOutput: string) => {
       if (!expectedOutput) {
         expect(output).toBeFalsy();
       } else {
