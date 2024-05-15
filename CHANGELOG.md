@@ -1,3 +1,10 @@
+## [4.4.0](https://github.com/bencompton/jest-cucumber/compare/v4.3.0...v4.4.0) (2024-05-15)
+
+
+### Features
+
+* add basic done callback compatibility in steps ([91dc81c](https://github.com/bencompton/jest-cucumber/commit/91dc81c8d1cf2be620710e8a2502ef7e0f7f7c5d))
+
 ## [4.3.0](https://github.com/bencompton/jest-cucumber/compare/v4.2.0...v4.3.0) (2024-05-13)
 
 
