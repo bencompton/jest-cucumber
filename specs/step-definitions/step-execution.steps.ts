@@ -1,7 +1,9 @@
 import { loadFeature, defineFeature, DefineStepFunction } from '../../src';
 import {
   asyncStep,
+  doneCallbackStep,
   failingAsyncStep,
+  failingDoneCallbackStep,
   failingSynchronousStep,
   featureToExecute,
   synchronousSteps,
@@ -104,6 +106,40 @@ defineFeature(feature, test => {
     given('a scenario with a failing async step', () => {
       featureFile = featureToExecute;
       stepDefinitions = failingAsyncStep(logs);
+    });
+
+    whenIExecuteThatScenarioInJestCucumber(when);
+    thenIShouldSeeTheErrorThatOccurred(then);
+    andIShouldSeeWhichStepFailed(and);
+
+    and('no more steps should execute', () => {
+      expect(logs).toHaveLength(2);
+      expect(logs[0]).toBe('given step');
+      expect(logs[1]).toBe('when step started');
+    });
+  });
+
+  test('Scenario with a done callback step', ({ given, when, then }) => {
+    given('a scenario with a done callback step', () => {
+      featureFile = featureToExecute;
+      stepDefinitions = doneCallbackStep(logs);
+    });
+
+    whenIExecuteThatScenarioInJestCucumber(when);
+
+    then('the next step should not execute until the done callback is called', () => {
+      expect(logs).toHaveLength(4);
+      expect(logs[0]).toBe('given step');
+      expect(logs[1]).toBe('when step started');
+      expect(logs[2]).toBe('when step completed');
+      expect(logs[3]).toBe('then step');
+    });
+  });
+
+  test('Scenario with a failing done callback step', ({ given, when, then, and }) => {
+    given('a scenario with a failing done callback step', () => {
+      featureFile = featureToExecute;
+      stepDefinitions = failingDoneCallbackStep(logs);
     });
 
     whenIExecuteThatScenarioInJestCucumber(when);

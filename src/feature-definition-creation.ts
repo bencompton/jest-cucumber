@@ -200,9 +200,25 @@ export const createDefineFeature = (): DefineFeatureFunction => {
             args.push(stepArgument as string);
           }
 
+          const hasDoneCallback = nextStep.stepFunction.length > args.length;
+
           return promiseChain.then(() => {
             return Promise.resolve()
-              .then(() => nextStep.stepFunction(...args))
+              .then(async () => {
+                if (hasDoneCallback) {
+                  return new Promise<void>((resolve, reject) => {
+                    const doneFunction = (reason?: Error | string) => {
+                      if (reason) {
+                        reject(typeof reason === 'string' ? new Error(reason) : reason);
+                      } else {
+                        resolve();
+                      }
+                    };
+                    nextStep.stepFunction(...args, doneFunction);
+                  });
+                }
+                return nextStep.stepFunction(...args);
+              })
               .catch(error => {
                 const formattedError = error;
                 formattedError.message = `Failing step: "${parsedStep.stepText}"\n\nStep arguments: ${JSON.stringify(args)}\n\nError: ${error.message}`;

@@ -104,3 +104,50 @@ export const failingAsyncStep = (logs: string[]): MockStepDefinitions => {
     });
   };
 };
+
+export const doneCallbackStep = (logs: string[]): MockStepDefinitions => {
+  return (mockFeature: ParsedFeature, defineMockFeature: DefineFeatureFunction) => {
+    defineMockFeature(mockFeature, test => {
+      test('Executing a scenario', ({ given, when, then }) => {
+        given('a given step', () => {
+          logs.push('given step');
+        });
+
+        when('i run the when step', done => {
+          logs.push('when step started');
+          setTimeout(() => {
+            logs.push('when step completed');
+            done();
+          }, 5);
+        });
+
+        then('it should run the then step', () => {
+          logs.push('then step');
+        });
+      });
+    });
+  };
+};
+
+export const failingDoneCallbackStep = (logs: string[]): MockStepDefinitions => {
+  return (mockFeature: ParsedFeature, defineMockFeature: DefineFeatureFunction) => {
+    defineMockFeature(mockFeature, test => {
+      test('Executing a scenario', ({ given, when, then }) => {
+        given('a given step', () => {
+          logs.push('given step');
+        });
+
+        when('i run the when step', done => {
+          logs.push('when step started');
+          setTimeout(() => {
+            done('when step failure');
+          }, 5);
+        });
+
+        then('it should run the then step', () => {
+          logs.push('then step');
+        });
+      });
+    });
+  };
+};

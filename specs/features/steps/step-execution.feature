@@ -32,3 +32,17 @@ Feature: Step definitions
       Then I should see the error that occurred
       And I should see which step failed
       And no more steps should execute
+
+  Rule: When a step function provides a done callback, then the next step should not be executed until the callback is called
+
+    Scenario: Scenario with a done callback step
+      Given a scenario with a done callback step
+      When I execute that scenario in Jest Cucumber
+      Then the next step should not execute until the done callback is called
+
+    Scenario: Scenario with a failing done callback step
+      Given a scenario with a failing done callback step
+      When I execute that scenario in Jest Cucumber
+      Then I should see the error that occurred
+      And I should see which step failed
+      And no more steps should execute
