@@ -3,7 +3,7 @@ import { createAutoBindSteps } from './automatic-step-binding';
 
 export { loadFeature, loadFeatures, parseFeature } from './parsed-feature-loading';
 export { DefineStepFunction } from './feature-definition-creation';
-export { setJestCucumberConfiguration } from './configuration';
+export { Options, ErrorOptions, ScenarioNameTemplateVars, setJestCucumberConfiguration } from './configuration';
 export {
   generateCodeFromFeature,
   generateCodeWithSeparateFunctionsFromFeature,
