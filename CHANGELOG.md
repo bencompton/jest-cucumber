@@ -1,3 +1,9 @@
+## [4.5.0](https://github.com/bencompton/jest-cucumber/compare/v4.4.0...v4.5.0) (2024-07-25)
+
+### Features
+
+* expose Options, ErrorOptions, ScenarioNameTemplateVars from configuration ([6a9a8c3](https://github.com/bencompton/jest-cucumber/commit/6a9a8c36c409d24d62e68f164bd439ddd87aa362))
+
 ## [4.4.0](https://github.com/bencompton/jest-cucumber/compare/v4.3.0...v4.4.0) (2024-05-15)
 
 
