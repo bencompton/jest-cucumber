@@ -103,10 +103,13 @@ export const createDefineFeature = (): DefineFeatureFunction => {
         return (
           options &&
           options.scenarioNameTemplate({
+            feature: parsedFeature,
             featureTitle: parsedFeature.title,
             scenarioTitle: scenarioTitle.toString(),
+            scenario: parsedScenario,
             featureTags: parsedFeature.tags,
             scenarioTags: (parsedScenario || parsedScenarioOutline).tags,
+            scenarioOutline: parsedScenarioOutline,
           })
         );
       } catch (err) {
@@ -283,14 +286,16 @@ export const createDefineFeature = (): DefineFeatureFunction => {
 
       const { options } = parsedFeature;
 
-      // eslint-disable-next-line no-param-reassign
-      scenarioTitle = processScenarioTitleTemplate(
-        scenarioTitle,
-        parsedFeature,
-        options,
-        parsedScenario,
-        parsedScenarioOutline,
-      );
+      if (!parsedScenarioOutline) {
+        // eslint-disable-next-line no-param-reassign
+        scenarioTitle = processScenarioTitleTemplate(
+          scenarioTitle,
+          parsedFeature,
+          options,
+          parsedScenario,
+          parsedScenarioOutline,
+        );
+      }
 
       ensureFeatureFileAndStepDefinitionScenarioHaveSameSteps(
         options,
@@ -319,6 +324,15 @@ export const createDefineFeature = (): DefineFeatureFunction => {
         );
       } else if (parsedScenarioOutline) {
         parsedScenarioOutline.scenarios.forEach(scenario => {
+          // eslint-disable-next-line no-param-reassign
+          scenarioTitle = processScenarioTitleTemplate(
+            scenarioTitle,
+            parsedFeature,
+            options,
+            parsedScenario,
+            parsedScenarioOutline,
+          );
+
           defineScenario(
             scenario.title || scenarioTitle,
             scenarioFromStepDefinitions,
