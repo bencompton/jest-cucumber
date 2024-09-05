@@ -73,7 +73,7 @@
     "ts-jest": "^29.1.2",
     "tsc-files": "^1.1.4",
     "typescript": "^5.4.3",
-    "vitest": "^1.4.0"
+    "vitest": "^2.0.5"
   },
   "jest": {
     "transform": {
