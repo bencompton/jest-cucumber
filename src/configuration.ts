@@ -1,4 +1,5 @@
 import type { IJestLike } from './feature-definition-creation';
+import { ParsedFeature, ParsedScenario, ParsedScenarioOutline } from './models';
 
 export type ErrorOptions = {
   scenariosMustMatchFeatureFile: boolean;
@@ -16,9 +17,12 @@ export type Options = {
 
 export type ScenarioNameTemplateVars = {
   featureTitle: string;
+  feature: ParsedFeature;
   scenarioTitle: string;
+  scenario: ParsedScenario;
   scenarioTags: string[];
   featureTags: string[];
+  scenarioOutline: ParsedScenarioOutline;
 };
 
 export const defaultErrorSettings = {
