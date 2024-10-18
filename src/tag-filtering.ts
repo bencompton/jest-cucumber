@@ -5,7 +5,7 @@ type TagFilterFunction = (tags: string[]) => boolean;
 const cachedTagFilterFunctions: { [tag: string]: TagFilterFunction } = {};
 
 const convertTagFilterExpressionToFunction = (tagFilterExpression: string) => {
-  const tagRegex = /(@[A-Za-z-_0-9]+)/g;
+  const tagRegex = /(@[A-Za-z-_.0-9]+)/g;
   const tags: string[] = [];
   let match: RegExpMatchArray | null = null;
   let newTagFilterExpression = `${tagFilterExpression}`;
